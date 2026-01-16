@@ -264,7 +264,7 @@ const App = () => {
       {/* Shows Internacionais */}
       <section className="py-32 bg-neutral-900/30 px-4">
         <div className="max-w-7xl mx-auto">
-          <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Shows Internacionais</h3>
+          <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Próximos Eventos</h3>
           <div className="grid md:grid-cols-3 gap-8">
             {entertainmentEvents.map((e, i) => (
               <div key={i} className="group flex flex-col items-center">
