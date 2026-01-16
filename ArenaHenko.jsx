@@ -30,6 +30,17 @@ const App = () => {
     { name: 'Contacto', href: '#contato' },
   ];
 
+  const services = [
+    { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8 text-red-400" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
+    { title: 'Receção Exclusiva', icon: <Award className="w-8 h-8 text-red-400" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
+    { title: 'Ambiente Premium', icon: <Music className="w-8 h-8 text-red-400" />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
+    { title: 'Networking', icon: <CheckCircle className="w-8 h-8 text-red-400" />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
+    { title: 'Vista Privilegiada', icon: <MapPin className="w-8 h-8 text-red-400" />, desc: 'Acesso exclusivo e visão privilegiada do campo/palco.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
+    { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8 text-red-400" />, desc: 'Ativações de marca em Ring LED e relatórios de envolvimento.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
+  ];
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [activeSportId, setActiveSportId] = useState(2); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
 
@@ -56,48 +67,105 @@ const App = () => {
 
   const entertainmentEvents = [
     { name: 'AC/DC', date: '2026', subtitle: 'PWR UP TOUR', image: 'https://i.imgur.com/XawIqwq.jpg', desc: 'O rock mundial invade o Morumbis.' },
-    { name: 'The Weeknd', date: '2026', subtitle: 'After Hours Til Dawn', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Experiência visual e sonora única.' },
-    { name: 'Festa do Peão', date: 'Agosto 2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko em Barretos.' },
+    { name: 'The Weeknd', date: '2026', subtitle: 'After Hours', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Show visual imperdível.' },
+    { name: 'Festa do Peão', date: 'Agosto 2026', subtitle: '70 Anos', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko em Barretos.' },
   ];
 
   const partnerLogos = [
-    { name: 'Mali Pizzaria', logoUrl: 'https://i.imgur.com/YxcN44a.png', extraSize: true },
+    { name: 'Mali', logoUrl: 'https://i.imgur.com/YxcN44a.png', extraSize: true },
     { name: 'Santa Helena', logoUrl: 'https://i.imgur.com/XjXzNik.png', extraSize: true },
     { name: 'Tirolez', logoUrl: 'https://i.imgur.com/4NmAzLu.png', extraSize: true },
     { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', extraSize: true },
     { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png' },
-    { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png' },
   ];
 
-  const getWaLink = (message) => {
-    const waNumber = '5511940741355';
-    return `https://wa.me/${waNumber}?text=${encodeURIComponent(message)}`;
-  };
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const getWaLink = (message) => `https://wa.me/5511940741355?text=${encodeURIComponent(message)}`;
 
   const selectedSport = sportEvents.find(s => s.id === activeSportId);
-  const nextMatch = sportEvents[0].matches[0]; 
 
   return (
     <div className="font-sans text-gray-100 bg-neutral-950 min-h-screen text-center overflow-x-hidden selection:bg-red-600">
-      <nav className="fixed w-full z-50 bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800 h-20 flex justify-between items-center px-8">
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800' : 'bg-transparent'} h-20 flex justify-between items-center px-8`}>
         <img src="https://i.imgur.com/cSYIvq6.png" className="h-8 w-auto" alt="Logo" />
         <div className="hidden md:flex space-x-8">
-          {navigation.map(n => <a key={n.name} href={n.href} className="text-sm font-bold uppercase text-gray-300 hover:text-red-500">{n.name}</a>)}
-          <a href="#contato" className="bg-red-600 text-white px-5 py-2 rounded-full font-black text-xs uppercase">Fale Connosco</a>
+          {navigation.map(n => <a key={n.name} href={n.href} className="text-xs font-black uppercase text-gray-300 hover:text-red-500 tracking-widest transition-colors">{n.name}</a>)}
+          <a href="#contato" className="bg-red-600 text-white px-5 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all">Fale Connosco</a>
         </div>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-white"><MenuIcon /></button>
       </nav>
 
-      <div className="relative h-[80vh] flex items-center justify-center overflow-hidden">
+      {/* Hero */}
+      <div className="relative h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-20"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
-        <div className="relative z-10">
+        <div className="relative z-10 px-4">
           <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">HENKO</span></h1>
           <p className="max-w-2xl mx-auto text-xl text-gray-400 font-light mb-10 uppercase tracking-[0.3em]">Hospitalidade Premium no Morumbis</p>
+          <a href="#calendario" className="inline-flex px-10 py-5 bg-red-600 text-white rounded-full font-black text-sm hover:bg-red-700 transition-all items-center gap-2 uppercase tracking-widest shadow-2xl shadow-red-900/40">Explorar Agenda <ArrowRight className="w-5 h-5"/></a>
         </div>
       </div>
 
-      <section id="calendario" className="py-24 px-4">
+      {/* Sobre Nós */}
+      <section id="sobre" className="py-32 px-4 border-b border-neutral-900">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+          <div className="text-left">
+            <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">A ARENA HENKO</span>
+            <h2 className="text-5xl font-black text-white uppercase mb-8 leading-tight">Excelência em <br/>Hospitalidade</h2>
+            <p className="text-gray-400 text-lg leading-relaxed mb-8 font-light">Localizada estrategicamente no Estádio do Morumbis, a Arena Henko redefine a experiência de eventos premium em São Paulo. Unimos conforto absoluto, gastronomia de elite e a emoção do esporte em um ambiente exclusivo.</p>
+            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-neutral-800">
+              <div><h4 className="text-3xl font-black text-white">5+</h4><p className="text-[10px] text-gray-500 uppercase font-black">Anos</p></div>
+              <div><h4 className="text-3xl font-black text-white">100+</h4><p className="text-[10px] text-gray-500 uppercase font-black">Eventos</p></div>
+              <div><h4 className="text-3xl font-black text-white">SP</h4><p className="text-[10px] text-gray-500 uppercase font-black">Sede</p></div>
+            </div>
+          </div>
+          <div className="grid gap-4">
+             <div className="bg-neutral-900/50 p-8 rounded-[32px] border border-neutral-800 text-left hover:border-red-900/50 transition-all">
+                <Star className="text-red-600 w-6 h-6 mb-4" />
+                <h4 className="text-xl font-black text-white uppercase mb-2">Missão</h4>
+                <p className="text-gray-500 text-sm">Criar momentos inesquecíveis através da hospitalidade de alto nível.</p>
+             </div>
+             <div className="bg-neutral-900/50 p-8 rounded-[32px] border border-neutral-800 text-left hover:border-red-900/50 transition-all">
+                <Shield className="text-red-600 w-6 h-6 mb-4" />
+                <h4 className="text-xl font-black text-white uppercase mb-2">Valores</h4>
+                <p className="text-gray-500 text-sm">Privacidade, exclusividade e atendimento personalizado em cada detalhe.</p>
+             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vantagens / Serviços */}
+      <section id="servicos" className="py-32 bg-neutral-900/30 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-black text-white uppercase mb-12 tracking-tighter">Temporada <span className="text-red-600">2026</span></h2>
+          <h2 className="text-4xl md:text-6xl font-black text-white uppercase mb-20 tracking-tighter">Vantagens Exclusivas</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {services.map((s, i) => (
+              <div key={i} className="group relative h-[450px] rounded-[40px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all">
+                <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={s.title} /></div>
+                <div className="absolute inset-0 bg-neutral-950/85 group-hover:bg-neutral-950/60 transition-all z-10"></div>
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
+                  <div className="bg-red-900/30 p-3 rounded-2xl w-fit mb-6 text-red-500">{s.icon}</div>
+                  <h3 className="text-2xl font-black text-white uppercase mb-3">{s.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Calendário e Resultados */}
+      <section id="calendario" className="py-32 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-16">
+            <h2 className="text-5xl font-black text-white uppercase tracking-tighter">Temporada <span className="text-red-600">2026</span></h2>
+            <div className="w-24 h-1 bg-red-600 mx-auto rounded-full mt-6 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>
+          </div>
+
           <div className="flex flex-wrap gap-2 mb-12 justify-center">
             {sportEvents.map(s => (
               <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500 hover:text-gray-300'}`}>
@@ -107,69 +175,65 @@ const App = () => {
           </div>
 
           {selectedSport && (
-            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[40px] p-8 md:p-12 border border-neutral-800 shadow-3xl">
+            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[50px] p-8 md:p-16 border border-neutral-800 shadow-3xl">
               <div className="flex flex-col items-center mb-16">
-                <div className="w-48 h-48 md:w-64 md:h-64 mb-6 bg-neutral-950 rounded-[32px] p-8 flex items-center justify-center border border-neutral-800 shadow-inner group transition-all hover:border-red-600/30 overflow-hidden">
-                  <img src={selectedSport.image} className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 ${selectedSport.id === 2 ? 'scale-[1.4] translate-y-3' : ''}`} alt="Campeonato" />
+                <div className="w-48 h-48 md:w-72 md:h-72 mb-8 bg-neutral-950 rounded-[40px] p-10 flex items-center justify-center border border-neutral-800 shadow-inner group transition-all hover:border-red-600/30 overflow-hidden relative">
+                  <img src={selectedSport.image} className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 ${selectedSport.id === 2 ? 'scale-[1.4] translate-y-3' : ''}`} alt="Champ" />
                 </div>
-                <h3 className="text-3xl font-black uppercase tracking-tight">{selectedSport.name}</h3>
-                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mt-2">{selectedSport.subtitle}</p>
+                <h3 className="text-4xl font-black text-white uppercase tracking-tight">{selectedSport.name}</h3>
+                <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mt-3">{selectedSport.subtitle}</p>
               </div>
 
               <div className="grid lg:grid-cols-2 gap-12 max-w-6xl mx-auto items-start text-left">
                 <div className="flex flex-col">
-                  <h4 className="text-red-500 text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-2 justify-center lg:justify-start"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
+                  <h4 className="text-red-500 text-[11px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3 justify-center lg:justify-start"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
                   <div className="space-y-4">
-                    {selectedSport.matches.length > 0 ? selectedSport.matches.map((match, mIdx) => (
-                      <div key={mIdx} className="bg-neutral-950/50 border border-neutral-800 rounded-[32px] overflow-hidden hover:border-red-600/30 transition-all">
-                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === mIdx ? null : mIdx)} className="w-full p-6 flex items-center justify-between">
+                    {selectedSport.matches.length > 0 ? selectedSport.matches.map((m, i) => (
+                      <div key={i} className="bg-neutral-950/50 border border-neutral-800 rounded-[32px] overflow-hidden hover:border-red-600/30 transition-all">
+                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-6 flex items-center justify-between">
                           <div className="flex items-center gap-6">
-                            <span className="text-[10px] font-black text-gray-500 w-10">{match.date}</span>
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-2">
-                                <img src={match.homeLogo} className="w-6 h-6 object-contain" alt="H" />
-                                <span className="text-[11px] font-black uppercase text-white">{match.home}</span>
-                              </div>
-                              <span className="text-[10px] font-black opacity-20">X</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-black uppercase text-white">{match.away}</span>
-                                <img src={match.awayLogo} className="w-6 h-6 object-contain" alt="A" />
-                              </div>
+                            <span className="text-[11px] font-black text-gray-600 w-10">{m.date}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[12px] font-black uppercase text-white">{m.home}</span>
+                              <img src={m.homeLogo} className="w-6 h-6 object-contain" alt="H" />
+                              <span className="text-[10px] font-black opacity-20">VS</span>
+                              <img src={m.awayLogo} className="w-6 h-6 object-contain" alt="A" />
+                              <span className="text-[12px] font-black uppercase text-white">{m.away}</span>
                             </div>
                           </div>
-                          <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedMatchKey === mIdx ? 'rotate-180 text-red-500' : ''}`} />
+                          <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedMatchKey === i ? 'rotate-180 text-red-500' : ''}`} />
                         </button>
-                        {expandedMatchKey === mIdx && (
+                        {expandedMatchKey === i && (
                           <div className="p-8 border-t border-neutral-800 bg-neutral-900/30 text-center animate-fade-in">
                             <div className="grid grid-cols-2 gap-6 mb-6 border-y border-neutral-800 py-6">
-                              <div><p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Início Partida</p><p className="text-md font-bold text-white">{match.time}</p></div>
-                              <div><p className="text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Lounge Arena</p><p className="text-md font-bold text-white">2h antes</p></div>
+                              <div><p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Hora do Jogo</p><p className="text-lg font-bold text-white">{m.time}</p></div>
+                              <div><p className="text-[10px] text-gray-500 uppercase font-black tracking-widest mb-1">Lounge Henko</p><p className="text-lg font-bold text-white">2h antes</p></div>
                             </div>
-                            <button onClick={() => window.open(getWaLink(`Reserva para ${match.home} x ${match.away} no dia ${match.date}`))} className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl">Reservar Hospitalidade</button>
+                            <button onClick={() => window.open(getWaLink(`Gostaria de hospitalidade para ${m.home} x ${m.away}`))} className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl">Reservar Agora</button>
                           </div>
                         )}
                       </div>
-                    )) : <div className="p-10 border border-dashed border-neutral-800 rounded-[32px] text-center opacity-30 text-[10px] font-black uppercase">Aguardando datas</div>}
+                    )) : <div className="p-12 border border-dashed border-neutral-800 rounded-[32px] text-center opacity-30 text-[11px] font-black uppercase tracking-widest">Sem jogos agendados</div>}
                   </div>
                 </div>
 
                 <div className="flex flex-col">
-                  <h4 className="text-gray-400 text-[10px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-2 justify-center lg:justify-start"><History className="w-4 h-4"/> Últimos Placares</h4>
-                  <div className="max-h-[440px] overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-red-900">
-                    {selectedSport.results.length > 0 ? selectedSport.results.map((res, rIdx) => (
-                      <div key={rIdx} className="bg-neutral-950 border border-neutral-800 p-5 rounded-[32px] flex flex-col gap-4 group hover:border-gray-600 transition-all">
-                        <div className="flex justify-between items-center">
+                  <h4 className="text-gray-400 text-[11px] font-black uppercase tracking-[0.4em] mb-8 flex items-center gap-3 justify-center lg:justify-start"><History className="w-4 h-4"/> Histórico Temporada</h4>
+                  <div className="max-h-[460px] overflow-y-auto space-y-4 pr-3 scrollbar-thin scrollbar-thumb-red-900">
+                    {selectedSport.results.length > 0 ? selectedSport.results.map((res, i) => (
+                      <div key={i} className="bg-neutral-950 border border-neutral-800 p-6 rounded-[32px] flex flex-col gap-5 hover:border-gray-600 transition-all">
+                        <div className="flex justify-between items-center text-white">
                           <span className="text-[10px] font-black text-gray-600">{res.date}</span>
-                          <span className={`text-[8px] font-black uppercase px-2 py-1 rounded-full border ${res.location === 'Morumbis' ? 'bg-red-950/50 text-red-500 border-red-900/50' : 'bg-neutral-900 text-gray-600 border-neutral-800'}`}>{res.location}</span>
+                          <span className={`text-[8px] font-black uppercase px-3 py-1 rounded-full border ${res.location === 'Morumbis' ? 'bg-red-950/50 text-red-500 border-red-900/50' : 'bg-neutral-900 text-gray-600 border-neutral-800'}`}>{res.location}</span>
                         </div>
                         <div className="flex items-center justify-between gap-3">
-                          <div className="flex-1 flex flex-col items-center gap-2"><img src={res.homeLogo} className="w-10 h-10 object-contain" /><span className="text-[10px] font-black uppercase truncate">{res.home}</span></div>
-                          <div className="flex items-center gap-3 bg-black px-6 py-3 rounded-2xl border border-neutral-800 group-hover:border-red-900/50 transition-colors shadow-inner"><span className="text-2xl font-black tabular-nums">{res.scoreHome}</span><span className="text-red-700 font-black animate-pulse">:</span><span className="text-2xl font-black tabular-nums">{res.scoreAway}</span></div>
-                          <div className="flex-1 flex flex-col items-center gap-2"><img src={res.awayLogo} className="w-10 h-10 object-contain" /><span className="text-[10px] font-black uppercase truncate">{res.away}</span></div>
+                          <div className="flex-1 flex flex-col items-center gap-2"><img src={res.homeLogo} className="w-10 h-10 object-contain" /><span className="text-[10px] font-black uppercase truncate text-white">{res.home}</span></div>
+                          <div className="flex items-center gap-3 bg-black px-6 py-3 rounded-2xl border border-neutral-800 shadow-inner"><span className="text-2xl font-black tabular-nums text-white">{res.scoreHome}</span><span className="text-red-700 font-black animate-pulse">:</span><span className="text-2xl font-black tabular-nums text-white">{res.scoreAway}</span></div>
+                          <div className="flex-1 flex flex-col items-center gap-2"><img src={res.awayLogo} className="w-10 h-10 object-contain" /><span className="text-[10px] font-black uppercase truncate text-white">{res.away}</span></div>
                         </div>
-                        <div className="flex justify-center items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div><span className="text-[8px] font-black uppercase tracking-[0.2em] text-gray-500">Partida Encerrada</span></div>
+                        <div className="flex justify-center items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div><span className="text-[9px] font-black uppercase tracking-[0.3em] text-gray-600">Partida Finalizada</span></div>
                       </div>
-                    )) : <div className="p-10 border border-dashed border-neutral-800 rounded-[32px] text-center opacity-30 text-[10px] font-black uppercase">Sem registos</div>}
+                    )) : <div className="p-12 border border-dashed border-neutral-800 rounded-[32px] text-center opacity-30 text-[11px] font-black uppercase tracking-widest">Sem registos</div>}
                   </div>
                 </div>
               </div>
@@ -178,7 +242,83 @@ const App = () => {
         </div>
       </section>
 
-      <footer className="py-20 opacity-40 text-white"><img src="https://i.imgur.com/cSYIvq6.png" className="h-8 mx-auto mb-8" alt="Logo" /><p className="text-[10px] font-bold uppercase tracking-widest">© {new Date().getFullYear()} Arena Henko. Todos os direitos reservados.</p></footer>
+      {/* Shows Internacionais */}
+      <section className="py-32 bg-neutral-900/30 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Shows Internacionais</h3>
+          <div className="grid md:grid-cols-3 gap-8">
+            {entertainmentEvents.map((e, i) => (
+              <div key={i} className="group flex flex-col items-center">
+                <div className="relative rounded-[40px] overflow-hidden aspect-[4/5] mb-8 border border-neutral-800 group/img shadow-2xl w-full">
+                  <img src={e.image} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={e.name} />
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                    <button onClick={() => window.open(getWaLink(`Tenho interesse no show do ${e.name}`))} className="bg-red-600 text-white px-8 py-4 rounded-full font-black uppercase text-[11px] tracking-widest flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 fill-white" /> Consultar
+                    </button>
+                  </div>
+                </div>
+                <div className="inline-block px-5 py-1.5 bg-red-600 text-white text-[10px] font-black rounded-full mb-4 uppercase tracking-widest">{e.date}</div>
+                <h3 className="text-3xl font-black text-white uppercase">{e.name}</h3>
+                <p className="text-gray-500 text-sm mt-3 font-light px-6 leading-relaxed">{e.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Parceiros */}
+      <section id="parceiros" className="py-32 px-6">
+        <h3 className="text-xl text-gray-600 uppercase tracking-[0.5em] font-black mb-16 uppercase">Parceiros de Elite</h3>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-8 max-w-7xl mx-auto">
+          {partnerLogos.map(p => (
+            <div key={p.name} className="bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center p-6 hover:border-red-600/30 transition-all group">
+              <img src={p.logoUrl} className="h-full w-full object-contain filter grayscale group-hover:grayscale-0 transition-all duration-500 opacity-40 group-hover:opacity-100" alt={p.name} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Contacto */}
+      <section id="contato" className="py-40 bg-neutral-950 px-6 relative">
+        <div className="max-w-4xl mx-auto relative z-10">
+          <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8 font-black">Experiência.</span></h2>
+          <div className="grid md:grid-cols-3 gap-8 mb-20 text-white">
+             <a href="https://instagram.com/arenahenko" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group text-white">
+                <Instagram className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform" /><span className="font-black text-[11px] uppercase tracking-widest">Instagram</span>
+             </a>
+             <a href="https://wa.me/5511940741355" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group text-white">
+                <Phone className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform" /><span className="font-black text-[11px] uppercase tracking-widest">(11) 94074-1355</span>
+             </a>
+             <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group text-white">
+                <Mail className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform" /><span className="font-black text-[11px] uppercase tracking-widest">E-mail</span>
+             </a>
+          </div>
+          <div className="bg-neutral-900 p-12 rounded-[50px] border border-neutral-800 shadow-3xl text-left max-w-3xl mx-auto">
+             <form className="space-y-8">
+               <div className="grid md:grid-cols-2 gap-8 text-white text-white">
+                 <div className="flex flex-col gap-3">
+                   <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.3em] ml-2">Nome Completo</label>
+                   <input type="text" className="bg-neutral-950 border border-neutral-800 rounded-2xl px-6 py-5 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800" placeholder="Digite seu nome" />
+                 </div>
+                 <div className="flex flex-col gap-3">
+                   <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.3em] ml-2">E-mail</label>
+                   <input type="email" className="bg-neutral-950 border border-neutral-800 rounded-2xl px-6 py-5 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800" placeholder="seu@email.com" />
+                 </div>
+               </div>
+               <div className="flex flex-col gap-3">
+                 <label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.3em] ml-2">Mensagem</label>
+                 <textarea rows="4" className="bg-neutral-950 border border-neutral-800 rounded-3xl px-6 py-5 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800 resize-none" placeholder="Conte-nos sobre sua necessidade"></textarea>
+               </div>
+               <button type="button" className="w-full bg-red-600 py-6 rounded-3xl font-black uppercase text-xs tracking-[0.3em] shadow-3xl shadow-red-900/40 text-white hover:bg-red-700 active:scale-95 transition-all">Enviar Solicitação</button>
+             </form>
+          </div>
+        </div>
+      </section>
+
+      <footer className="py-24 border-t border-neutral-900 opacity-50 text-white">
+        <img src="https://i.imgur.com/cSYIvq6.png" className="h-10 mx-auto mb-10" alt="Logo" />
+        <p className="text-[11px] font-bold uppercase tracking-[0.5em]">© {new Date().getFullYear()} Arena Henko. Todos os direitos reservados.</p>
+      </footer>
     </div>
   );
 };
