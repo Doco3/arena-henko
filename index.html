@@ -4,9 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Arena Henko - Hospitalidade Premium</title>
+    <!-- Corrigido o link do Tailwind para carregar os estilos corretamente -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Ajuste para garantir que o scroll dos resultados seja suave e bonito */
+      .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+      .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+      .scrollbar-thin::-webkit-scrollbar-thumb { background: #450a0a; border-radius: 10px; }
+      .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #7f1d1d; }
+      html { scroll-behavior: smooth; }
+    </style>
   </head>
-  <body>
+  <body class="bg-neutral-950">
     <div id="root"></div>
     <script type="module" src="/main.jsx"></script>
   </body>
