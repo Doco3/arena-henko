@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 
 const App = () => {
-  const API_KEY = ""; 
+  const API_KEY = "c74abacd73mshe2a6d8613c8e399p16dd9bjsn0f6cdba0f27a"; 
   const SPFC_ID = "126"; 
 
   const teamLogos = {
