@@ -42,10 +42,10 @@ const App = () => {
     MIRASSOL: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Mirassol_FC_logo.png",
     CORINTHIANS: "https://i.imgur.com/Y7x93X4.png",
     PALMEIRAS: "https://i.imgur.com/6XvS8wM.png",
-    FLAMENGO: "https://i.imgur.com/FF7D8Xm.png",
+    FLAMENGO: "https://upload.wikimedia.org/wikipedia/commons/9/93/Flamengo-RJ_%28BRA%29.png",
     BRAGANTINO: "https://i.imgur.com/YwN9Tsh.png",
     GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
-    CHAPECOENSE: "https://a.espncdn.com/i/teamlogos/soccer/500/10839.png"
+    CHAPECOENSE: "https://static.wikia.nocookie.net/futebol/images/b/b6/Chapecoense.png/revision/latest?cb=20161220151034"
   };
 
   const navigation = [
