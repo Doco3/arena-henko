@@ -84,6 +84,9 @@ const App = () => {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  
+  // Estado para controlar os elementos visíveis na animação
+  const [visibleItems, setVisibleItems] = useState({});
 
   const [sportEvents] = useState([
     { 
@@ -161,6 +164,27 @@ const App = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Intersection Observer para animações de scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setVisibleItems((prev) => ({ ...prev, [entry.target.id]: true }));
+            // Opcional: Para de observar depois que apareceu
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 } // Dispara quando 15% do elemento estiver visível
+    );
+
+    const elements = document.querySelectorAll('.animate-on-scroll');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   // Countdown Logic
   useEffect(() => {
     // Definindo a data do próximo jogo
@@ -185,7 +209,7 @@ const App = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Auto-rotate Reviews with Smooth Animation
+  // Auto-rotate Reviews
   useEffect(() => {
     const timer = setInterval(() => {
       handleReviewChange((currentReviewIndex + 1) % reviews.length);
@@ -325,22 +349,32 @@ const App = () => {
         </div>
       </section>
 
-      {/* Vantagens / Serviços */}
+      {/* Vantagens / Serviços COM EFEITO DE ENTRADA SUAVE */}
       <section id="servicos" className="py-32 bg-neutral-900/30 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-black text-white uppercase mb-20 tracking-tighter">A Experiência Completa</h2>
           <div className="grid md:grid-cols-3 gap-8">
-            {services.map((s, i) => (
-              <div key={i} className="group relative h-[450px] rounded-[40px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all">
-                <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={s.title} /></div>
-                <div className="absolute inset-0 bg-neutral-950/85 group-hover:bg-neutral-950/60 transition-all z-10"></div>
-                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
-                  <div className="bg-red-900/30 p-3 rounded-2xl w-fit mb-6 text-red-500">{s.icon}</div>
-                  <h3 className="text-2xl font-black text-white uppercase mb-3 leading-none">{s.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+            {services.map((s, i) => {
+              const cardId = `service-card-${i}`;
+              const isVisible = visibleItems[cardId];
+              return (
+                <div 
+                  key={i} 
+                  id={cardId}
+                  // USO DO TAILWIND PARA TRANSIÇÃO SUAVE (SEM @KEYFRAMES)
+                  className={`group relative h-[450px] rounded-[40px] overflow-hidden border border-neutral-800 hover:border-red-600/50 animate-on-scroll transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                  style={{ transitionDelay: `${i * 150}ms` }} // Delay em cascata via inline style
+                >
+                  <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={s.title} /></div>
+                  <div className="absolute inset-0 bg-neutral-950/85 group-hover:bg-neutral-950/60 transition-all z-10"></div>
+                  <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
+                    <div className="bg-red-900/30 p-3 rounded-2xl w-fit mb-6 text-red-500">{s.icon}</div>
+                    <h3 className="text-2xl font-black text-white uppercase mb-3 leading-none">{s.title}</h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
