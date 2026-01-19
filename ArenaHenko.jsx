@@ -45,7 +45,8 @@ const App = () => {
     FLAMENGO: "https://upload.wikimedia.org/wikipedia/commons/9/93/Flamengo-RJ_%28BRA%29.png",
     BRAGANTINO: "https://i.imgur.com/YwN9Tsh.png",
     GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
-    CHAPECOENSE: "https://static.wikia.nocookie.net/futebol/images/b/b6/Chapecoense.png/revision/latest?cb=20161220151034"
+    // Link oficial da Wikimedia (PNG estável) - Resolve o erro do Vercel
+    CHAPECOENSE: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg/500px-Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg.png"
   };
 
   const navigation = [
