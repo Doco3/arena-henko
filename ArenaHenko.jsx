@@ -10,11 +10,12 @@ const ImageWithFallback = ({ src, alt, className, fallback }) => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    setError(false); // Reseta o erro se a URL da imagem mudar
+    setError(false); // Reseta o estado de erro se a URL da imagem mudar
   }, [src]);
 
   if (error) {
-    return fallback;
+    // Se der erro, mostra o fallback ou o escudo padrão
+    return fallback || <div className={`${className} bg-neutral-800 flex items-center justify-center rounded-full`}><Shield className="w-1/2 h-1/2 text-gray-600" /></div>;
   }
 
   return (
@@ -23,13 +24,13 @@ const ImageWithFallback = ({ src, alt, className, fallback }) => {
       alt={alt} 
       className={className} 
       onError={() => setError(true)}
-      referrerPolicy="no-referrer" // TRUQUE DE MESTRE: Evita bloqueios de hotlink (essencial para Imgur)
+      referrerPolicy="no-referrer" // Essencial para carregar imagens externas sem bloqueio
     />
   );
 };
 
 const App = () => {
-  // API CONFIGURATION - CHAVE INTEGRADA
+  // API CONFIGURATION
   const API_KEY = "c74abacd73mshe2a6d8613c8e399p16dd9bjsn0f6cdba0f27a"; 
   const SPFC_ID = "126"; 
 
@@ -45,8 +46,8 @@ const App = () => {
     FLAMENGO: "https://upload.wikimedia.org/wikipedia/commons/9/93/Flamengo-RJ_%28BRA%29.png",
     BRAGANTINO: "https://i.imgur.com/YwN9Tsh.png",
     GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
-    // Link oficial da Wikimedia (PNG estável) - Resolve o erro do Vercel
-    CHAPECOENSE: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg/500px-Associa%C3%A7%C3%A3o_Chapecoense_de_Futebol_logo.svg.png"
+    // Link atualizado conforme solicitado
+    CHAPECOENSE: "https://upload.wikimedia.org/wikipedia/pt/b/bc/Escudo_de_2018_da_Chapecoense.png"
   };
 
   const navigation = [
@@ -66,7 +67,7 @@ const App = () => {
     { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8 text-red-400" />, desc: 'Ativações de marca em Ring LED e relatórios de envolvimento.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
   ];
 
-  // REVIEWS DATA EXPANDIDA
+  // Dados dos Reviews
   const reviews = [
     { name: "Ricardo Silva", role: "Torcedor SPFC", text: "A melhor vista do Morumbis! O serviço de open food é impecável do início ao fim e a equipe super atenciosa. Recomendo de olhos fechados.", initial: "R" },
     { name: "Fernanda M.", role: "Camarote Premium", text: "Experiência única. A comodidade de chegar e ter tudo pronto, bebida gelada e comida quente, faz valer cada centavo. Voltarei sempre!", initial: "F" },
@@ -81,8 +82,6 @@ const App = () => {
   const [activeSportId, setActiveSportId] = useState(2); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  
-  // Carousel State
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -91,7 +90,7 @@ const App = () => {
       id: 2,
       name: 'Campeonato Paulista', 
       subtitle: 'Paulistão Sicredi 2026',
-      // VOLTANDO PARA O IMGUR DO USUÁRIO (com proteção de referrer ativada no componente)
+      // Link do Imgur (com referrerPolicy="no-referrer" no componente deve funcionar)
       image: 'https://i.imgur.com/Kl9LPUl.png', 
       matches: [
         { id: 'm2', date: '21/01', home: 'SPFC', away: 'Portuguesa', time: '19h30', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.PORTUGUESA, location: 'Morumbis', scarcity: 'Últimas Vagas' },
@@ -107,7 +106,6 @@ const App = () => {
       id: 4, 
       name: 'Copa do Brasil', 
       subtitle: 'Mata-Mata', 
-      // Link Wikimedia PT (Correto)
       image: 'https://upload.wikimedia.org/wikipedia/pt/9/96/CopaDoBrasil.png', 
       matches: [], 
       results: [] 
@@ -116,7 +114,7 @@ const App = () => {
       id: 3, 
       name: 'Sudamericana', 
       subtitle: 'CONMEBOL', 
-      // Link Wikimedia EN (Correto) - Filtro de cor branca aplicado via CSS
+      // Link oficial com filtro de cor aplicado via CSS para ficar branco
       image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', 
       matches: [], 
       results: [] 
@@ -125,13 +123,12 @@ const App = () => {
       id: 1, 
       name: 'Brasileirão', 
       subtitle: 'Série A', 
-      // Link ESPN (Correto)
       image: 'https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/85.png', 
       matches: [
         { id: 'br1', date: '28/01', home: 'SPFC', away: 'Flamengo', time: '21h30', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.FLAMENGO, location: 'Morumbis', scarcity: 'Alta Procura' },
         { id: 'br2', date: '11/02', home: 'SPFC', away: 'Grêmio', time: '21h30', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.GREMIO, location: 'Morumbis' },
         { id: 'br3', date: '12/03', home: 'SPFC', away: 'Chapecoense', time: '20h00', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.CHAPECOENSE, location: 'Morumbis' }
-      ], 
+      ],
       results: [] 
     },
   ]);
@@ -166,7 +163,7 @@ const App = () => {
 
   // Countdown Logic
   useEffect(() => {
-    // Definindo a data do próximo jogo: 21 de Janeiro de 2026 às 19:30
+    // Definindo a data do próximo jogo
     const matchDate = new Date('2026-01-21T19:30:00');
 
     const interval = setInterval(() => {
@@ -201,7 +198,7 @@ const App = () => {
     setTimeout(() => {
       setCurrentReviewIndex(newIndex);
       setIsAnimating(false);
-    }, 300); // Aguarda a animação de fade-out antes de trocar o texto
+    }, 300);
   };
 
   const nextReview = () => {
@@ -253,15 +250,15 @@ const App = () => {
           
           {/* Botões de Ação Rápida */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto relative z-20">
-              {/* Card Próximo Jogo com Contagem Regressiva */}
+              {/* Card Próximo Jogo */}
               <button onClick={() => window.open(getWaLink(`Quero reservar o jogo: ${nextMatch.home} x ${nextMatch.away}`))} className="relative bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all group text-left w-full overflow-visible">
-                  {/* Badge de Urgência */}
                   <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1">
                      <Zap className="w-3 h-3 fill-white" /> ÚLTIMAS VAGAS
                   </div>
 
                   <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 flex flex-col items-center justify-center h-full min-h-[60px]">
-                      <img src={nextMatch.homeLogo} className="w-8 h-8 object-contain" alt="Time" />
+                      {/* ATENÇÃO: AQUI ESTAVA O PROBLEMA! USANDO ImageWithFallback PARA BLINDAR OS ESCUDOS */}
+                      <ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" alt="Time" />
                   </div>
                   <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start">
@@ -271,8 +268,6 @@ const App = () => {
                         </div>
                         <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-white ml-2 transition-colors shrink-0 mt-2"/>
                       </div>
-                      
-                      {/* Cronômetro */}
                       <div className="flex items-center gap-2 mt-1 bg-black/40 p-1.5 rounded-lg w-fit border border-neutral-800/50">
                         <Timer className="w-3 h-3 text-red-500 animate-pulse" />
                         <div className="flex gap-1 text-[10px] font-mono text-gray-300">
@@ -286,6 +281,7 @@ const App = () => {
                   </div>
               </button>
 
+              {/* Card Próximo Show */}
               <button onClick={() => window.open(getWaLink(`Quero reservar o show: ${nextShow.name}`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all group text-left w-full">
                    <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-full min-h-[60px] flex items-center justify-center">
                       <Music className="w-6 h-6 text-white" />
@@ -336,7 +332,7 @@ const App = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {services.map((s, i) => (
               <div key={i} className="group relative h-[450px] rounded-[40px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all">
-                <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover transition-all duration-700" alt={s.title} /></div>
+                <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={s.title} /></div>
                 <div className="absolute inset-0 bg-neutral-950/85 group-hover:bg-neutral-950/60 transition-all z-10"></div>
                 <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
                   <div className="bg-red-900/30 p-3 rounded-2xl w-fit mb-6 text-red-500">{s.icon}</div>
@@ -351,9 +347,9 @@ const App = () => {
 
       {/* Calendário e Resultados */}
       <section id="calendario" className="py-32 px-4 text-white">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto text-white">
           <div className="mb-16">
-            <h2 className="text-5xl font-black text-white uppercase tracking-tighter">Temporada <span className="text-red-600 font-black">2026</span></h2>
+            <h2 className="text-5xl font-black text-white uppercase tracking-tighter text-white">Temporada <span className="text-red-600 font-black">2026</span></h2>
             <div className="w-24 h-1 bg-red-600 mx-auto rounded-full mt-6 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>
           </div>
 
@@ -366,7 +362,7 @@ const App = () => {
           </div>
 
           {selectedSport && (
-            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[40px] p-8 lg:p-12 border border-neutral-800 shadow-3xl text-white">
+            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[50px] p-8 md:p-16 border border-neutral-800 shadow-3xl text-white">
               <div className="grid lg:grid-cols-5 gap-8 lg:gap-16 items-center">
                 
                 {/* Coluna Esquerda: Identidade Visual - CENTRALIZADA */}
@@ -376,7 +372,7 @@ const App = () => {
                     <ImageWithFallback 
                       key={selectedSport.id}
                       src={selectedSport.image} 
-                      // APLICA FILTRO INVERT PARA SUL-AMERICANA (ID 3) E PARA O FALLBACK DO PAULISTÃO SE PRECISAR
+                      // APLICA FILTRO INVERT PARA SUL-AMERICANA (ID 3)
                       className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 p-2 ${selectedSport.id === 3 ? 'brightness-0 invert' : ''}`}
                       alt="Champ" 
                       fallback={<Trophy className="w-16 h-16 text-red-600" />} 
@@ -397,9 +393,10 @@ const App = () => {
                             <span className="text-[11px] font-black text-gray-600 w-10 text-left">{m.date}</span>
                             <div className="flex items-center gap-3">
                               <span className="text-[11px] lg:text-[12px] font-black uppercase hidden sm:block">{m.home}</span>
-                              <img src={m.homeLogo} className="w-6 h-6 object-contain" alt="H" />
+                              {/* ATENÇÃO: AQUI ESTAVA OUTRO PROBLEMA! AGORA USANDO ImageWithFallback PARA OS TIMES NA LISTA */}
+                              <ImageWithFallback src={m.homeLogo} className="w-6 h-6 object-contain" alt="H" />
                               <span className="text-[10px] font-black opacity-20">VS</span>
-                              <img src={m.awayLogo} className="w-6 h-6 object-contain" alt="A" />
+                              <ImageWithFallback src={m.awayLogo} className="w-6 h-6 object-contain" alt="A" />
                               <span className="text-[11px] lg:text-[12px] font-black uppercase hidden sm:block">{m.away}</span>
                             </div>
                             {/* TAG DE ESCASSEZ NO CARD DA LISTA */}
@@ -422,7 +419,7 @@ const App = () => {
                           </div>
                         )}
                       </div>
-                    )) : <div className="p-8 border border-dashed border-neutral-800 rounded-[24px] text-center opacity-30 text-[11px] font-black uppercase tracking-widest">Sem jogos no Morumbis agendados</div>}
+                    )) : <div className="p-8 border border-dashed border-neutral-800 rounded-[24px] text-center opacity-30 text-[11px] font-black uppercase tracking-widest text-white">Sem jogos no Morumbis agendados</div>}
                   </div>
                 </div>
 
@@ -488,7 +485,7 @@ const App = () => {
            
            {/* Carrossel de Reviews */}
            <div className="relative">
-              {/* Controles Laterais (Visíveis apenas em telas maiores para evitar clutter no mobile) */}
+              {/* Controles Laterais */}
               <button onClick={prevReview} className="hidden lg:flex absolute top-1/2 -left-12 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full border border-neutral-800 text-gray-500 hover:text-white hover:bg-neutral-800 transition-all z-10">
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -496,7 +493,7 @@ const App = () => {
                 <ChevronRight className="w-6 h-6" />
               </button>
 
-              <div className="grid md:grid-cols-3 gap-8 pt-12 pb-2"> {/* pt-12 para garantir que as aspas flutuem sem corte */}
+              <div className="grid md:grid-cols-3 gap-8 pt-12 pb-2">
                   {[0, 1, 2].map((offset) => {
                      const index = (currentReviewIndex + offset) % reviews.length;
                      const review = reviews[index];
@@ -538,12 +535,12 @@ const App = () => {
       {/* Contacto */}
       <section id="contato" className="py-40 bg-neutral-950 px-6 relative overflow-hidden text-white">
         <div className="max-w-4xl mx-auto relative z-10">
-          <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8">Experiência.</span></h2>
+          <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter text-white font-black">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8 font-black">Experiência.</span></h2>
           <div className="grid md:grid-cols-3 gap-8 mb-20">
-             <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group">
+             <a href="https://instagram.com/arenahenko" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group">
                 <Instagram className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform" /><span className="font-black text-[11px] uppercase tracking-[0.2em]">Instagram</span>
              </a>
-             <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group">
+             <a href="https://wa.me/5511940741355" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group">
                 <Phone className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform" /><span className="font-black text-[11px] uppercase tracking-[0.2em]">(11) 94074-1355</span>
              </a>
              <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600/30 group">
