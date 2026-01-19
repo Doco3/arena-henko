@@ -1,4 +1,4 @@
-/* CÓDIGO ARENA HENKO - RESTAURAÇÃO PREMIUM TOTAL */
+/* CÓDIGO ARENA HENKO - VERSÃO RESTAURADA DIRETORIA FULL */
 import React, { useState, useEffect } from 'react';
 import { 
   Menu as MenuIcon, X, Instagram, Mail, Phone, Calendar, Award, Users, Tv, Music, MapPin, 
@@ -7,13 +7,15 @@ import {
 } from 'lucide-react';
 
 const App = () => {
+  const API_KEY = "c74abacd73mshe2a6d8613c8e399p16dd9bjsn0f6cdba0f27a"; 
+  const SPFC_ID = "126"; 
+
   const navigation = [
     { name: 'Sobre', href: '#sobre' }, { name: 'Serviços', href: '#servicos' }, 
     { name: 'Calendário 2026', href: '#calendario' }, { name: 'Mídia & Parceiros', href: '#parceiros' }, 
     { name: 'Contacto', href: '#contato' }
   ];
 
-  // HOSPITALIDADE (6 ITENS RESTAURADOS)
   const services = [
     { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8 text-red-400" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
     { title: 'Receção Exclusiva', icon: <Award className="w-8 h-8 text-red-400" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
@@ -23,7 +25,6 @@ const App = () => {
     { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8 text-red-400" />, desc: 'Ativações de marca em Ring LED e patrocínios exclusivos.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
   ];
 
-  // PARCEIROS (15 ITENS COLORIDOS RESTAURADOS)
   const partnerLogos = [
     { name: 'Mali Pizzaria', logoUrl: 'https://i.imgur.com/YxcN44a.png', extraSize: true },
     { name: 'Santa Helena', logoUrl: 'https://i.imgur.com/XjXzNik.png', extraSize: true },
@@ -41,18 +42,22 @@ const App = () => {
     { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png' },
   ];
 
-  // SHOWS (IMAGENS RESTAURADAS)
   const entertainmentEvents = [
     { name: 'AC/DC', date: '2026', image: 'https://i.imgur.com/XawIqwq.jpg', desc: 'O rock mundial invade o Morumbis.' },
     { name: 'The Weeknd', date: '2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Show visual imperdível e exclusivo.' },
     { name: 'Festa do Peão', date: 'Agosto 2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko em Barretos.' },
   ];
 
-  // AGENDA MANUAL (ADICIONE SEUS JOGOS AQUI)
-  const [matches, setMatches] = useState([
-    { date: '21/01', home: 'SPFC', away: 'Portuguesa', time: '19h30', location: 'Morumbis' },
-    { date: '31/01', home: 'SPFC', away: 'Santos', time: '20h30', location: 'Morumbis' },
-    { date: '07/02', home: 'SPFC', away: 'Primavera', time: '20h30', location: 'Morumbis' },
+  const [activeSportId, setActiveSportId] = useState(2);
+  const [sportEvents, setSportEvents] = useState([
+    { id: 2, name: 'Campeonato Paulista', subtitle: 'Paulistão 2026', image: 'https://i.imgur.com/Kl9LPUl.png', matches: [
+      { date: '21/01', home: 'SPFC', away: 'Portuguesa', time: '19h30' },
+      { date: '31/01', home: 'SPFC', away: 'Santos', time: '20h30' },
+      { date: '07/02', home: 'SPFC', away: 'Primavera', time: '20h30' },
+    ]},
+    { id: 4, name: 'Copa do Brasil', subtitle: 'Mata-Mata', image: 'https://upload.wikimedia.org/wikipedia/pt/9/96/CopaDoBrasil.png', matches: [] },
+    { id: 3, name: 'Sudamericana', subtitle: 'CONMEBOL', image: 'https://www.ogol.com.br//img/logos/competicoes/269_imgbank_cs_20250311124354.png', matches: [] },
+    { id: 1, name: 'Brasileirão', subtitle: 'Série A', image: 'https://cdn-img.zerozero.pt/img/logos/competicoes/51_imgbank_d1_20250313102859.png', matches: [] },
   ]);
 
   const [scrolled, setScrolled] = useState(false);
@@ -63,27 +68,25 @@ const App = () => {
   }, []);
 
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
+  const selectedSport = sportEvents.find(s => s.id === activeSportId);
 
   return (
     <div className="font-sans text-gray-100 bg-neutral-950 min-h-screen text-center overflow-x-hidden selection:bg-red-600">
-      {/* Botão WhatsApp */}
       <a href={getWaLink("Olá! Gostaria de reservar hospitalidade na Arena Henko.")} target="_blank" className="fixed bottom-8 right-8 z-[100] bg-green-600 p-4 rounded-full shadow-2xl hover:scale-110 transition-transform"><MessageCircle className="w-8 h-8 fill-white text-white" /></a>
 
-      <nav className={`fixed w-full z-50 h-20 flex items-center justify-between px-8 transition-all ${scrolled ? 'bg-black/90 backdrop-blur-md border-b border-white/5' : 'bg-transparent'}`}>
+      <nav className={`fixed w-full z-50 h-20 flex items-center justify-between px-8 transition-all ${scrolled ? 'bg-black/80 backdrop-blur-md border-b border-white/5' : 'bg-transparent'}`}>
         <img src="https://i.imgur.com/cSYIvq6.png" className="h-8" />
         <div className="hidden md:flex gap-8 uppercase font-black text-[10px] tracking-widest text-gray-400">
           {navigation.map(n => <a key={n.name} href={n.href} className="hover:text-red-500 transition-colors">{n.name}</a>)}
         </div>
       </nav>
 
-      {/* Hero */}
-      <div className="pt-60 pb-40 relative px-4">
+      <div className="pt-60 pb-40 relative px-4 text-center">
         <div className="absolute inset-0 opacity-20 bg-[url('https://i.imgur.com/lKKQfgK.png')] bg-cover bg-center"></div>
         <h1 className="text-6xl md:text-9xl font-black uppercase leading-none relative z-10 text-white animate-fade-in-up tracking-tighter">ARENA <span className="text-red-600">HENKO</span></h1>
         <p className="text-gray-500 uppercase tracking-[0.3em] text-sm mt-6 relative z-10 font-bold">Hospitalidade Premium no Morumbis</p>
       </div>
 
-      {/* Sobre */}
       <section id="sobre" className="py-32 px-6 border-b border-white/5 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center text-left text-white">
         <div>
           <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">A ARENA</span>
@@ -92,12 +95,11 @@ const App = () => {
         </div>
         <div className="bg-neutral-900/50 p-10 rounded-[40px] border border-white/10 shadow-2xl flex flex-col gap-6">
             <Shield className="text-red-600 w-10 h-10" />
-            <h4 className="text-2xl font-black uppercase text-white">Privacidade VIP</h4>
+            <h4 className="text-2xl font-black uppercase text-white tracking-widest leading-none">Privacidade VIP</h4>
             <p className="text-gray-500 text-sm">Espaço monitorado e reservado para grandes negócios e experiências de elite.</p>
         </div>
       </section>
 
-      {/* Serviços / Vantagens Restauradas */}
       <section id="servicos" className="py-32 bg-neutral-900/30 px-4 text-white">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-black text-white uppercase mb-20 tracking-tighter">Hospitalidade</h2>
@@ -117,66 +119,66 @@ const App = () => {
         </div>
       </section>
 
-      {/* Agenda Morumbis Centralizada (Sem Resultados) */}
-      <section id="calendario" className="py-32 px-4">
-        <div className="max-w-4xl mx-auto text-white">
+      <section id="calendario" className="py-32 px-4 text-white">
+        <div className="max-w-7xl mx-auto">
           <h2 className="text-5xl font-black uppercase mb-16 text-center">Temporada <span className="text-red-600">2026</span></h2>
-          <div className="bg-neutral-900/40 backdrop-blur-sm rounded-[60px] p-12 border border-neutral-800 shadow-3xl text-center">
-                <img src="https://i.imgur.com/Kl9LPUl.png" className="w-40 mx-auto mb-10 scale-[1.3]" />
-                <h3 className="text-3xl font-black text-white uppercase mb-12 tracking-widest uppercase">Agenda Morumbis</h3>
-                <div className="space-y-4 text-left max-w-2xl mx-auto text-white">
-                  {matches.map((m, i) => (
+          <div className="flex flex-wrap gap-2 mb-12 justify-center">
+            {sportEvents.map(s => <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500'}`}>{s.name}</button>)}
+          </div>
+          {selectedSport && (
+            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-12 border border-neutral-800 shadow-3xl max-w-4xl mx-auto text-center">
+                <div className="w-56 h-56 bg-neutral-950 rounded-[40px] p-10 flex items-center justify-center border border-neutral-800 mx-auto mb-10 overflow-hidden shadow-inner"><img src={selectedSport.image} className={`max-w-full max-h-full object-contain ${selectedSport.id === 2 ? 'scale-[1.4] translate-y-3' : ''}`} /></div>
+                <h3 className="text-3xl font-black text-white uppercase mb-12 tracking-widest">Agenda Morumbis</h3>
+                <div className="space-y-4 text-left max-w-2xl mx-auto">
+                  {selectedSport.matches.length > 0 ? selectedSport.matches.map((m, i) => (
                     <div key={i} className="bg-neutral-950 border border-white/5 rounded-3xl p-8 flex justify-between items-center group hover:border-red-600/30 transition-all cursor-pointer shadow-xl text-white">
-                      <div className="flex items-center gap-10 text-white">
+                      <div className="flex items-center gap-10">
                         <span className="text-gray-600 font-black text-[12px]">{m.date}</span>
                         <span className="text-white font-black text-lg uppercase tracking-tight">{m.home} X {m.away}</span>
                       </div>
                       <div className="bg-red-600 p-3 rounded-2xl group-hover:scale-110 transition-transform shadow-lg"><ArrowRight className="w-4 h-4 text-white" /></div>
                     </div>
-                  ))}
+                  )) : <p className="text-center text-gray-600 italic font-black uppercase text-[10px] tracking-[0.4em]">Aguardando novas datas para esta competição...</p>}
                 </div>
-                <p className="text-[9px] text-gray-700 mt-10 uppercase font-black tracking-widest italic">Datas sujeitas a alteração pela federação</p>
-          </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Próximos Eventos com Imagens */}
       <section className="py-32 bg-neutral-900/30 px-4 text-white">
-        <h3 className="text-4xl font-black text-red-500 mb-20 uppercase tracking-tighter text-center font-black uppercase text-white">Próximos Eventos</h3>
+        <h3 className="text-4xl font-black text-red-500 mb-20 uppercase tracking-tighter text-center">Próximos Eventos</h3>
         <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto text-white">
           {entertainmentEvents.map((e, i) => (
             <div key={i} className="group relative rounded-[50px] overflow-hidden aspect-[4/5] shadow-3xl border border-white/5 text-white">
-                <img src={e.image} className="w-full h-full object-cover duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-40 group-hover:opacity-100 text-white" alt={e.name} />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-10 text-left text-white">
-                  <span className="bg-red-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full w-fit mb-4 tracking-widest font-black uppercase text-white">{e.date}</span>
-                  <h3 className="text-4xl font-black text-white uppercase leading-none font-black uppercase text-white">{e.name}</h3>
-                  <p className="text-gray-400 text-sm mt-4 font-light leading-relaxed text-white">{e.desc}</p>
+                <img src={e.image} className="w-full h-full object-cover duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-40 group-hover:opacity-100" alt={e.name} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-10 text-left">
+                  <span className="bg-red-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full w-fit mb-4 tracking-widest">{e.date}</span>
+                  <h3 className="text-4xl font-black text-white uppercase leading-none">{e.name}</h3>
+                  <p className="text-gray-400 text-sm mt-4 font-light leading-relaxed">{e.desc}</p>
                 </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Parceiros Coloridos Grid Completo (15 itens) */}
       <section id="parceiros" className="py-32 px-6 border-t border-neutral-900 text-white">
-        <h3 className="text-xl text-gray-600 uppercase tracking-[0.6em] font-black mb-16 text-center uppercase font-black uppercase text-white">Parceiros Comerciais</h3>
+        <h3 className="text-xl text-gray-600 uppercase tracking-[0.6em] font-black mb-16 text-center uppercase">Parceiros Comerciais</h3>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-7xl mx-auto text-white">
           {partnerLogos.map((p, i) => (
-            <div key={i} className="bg-neutral-900/50 border border-white/5 rounded-[40px] h-40 flex items-center justify-center p-8 hover:border-red-600/30 transition-all group shadow-xl text-white">
-              <img src={p.logoUrl} className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500 text-white" alt={p.name} />
+            <div key={i} className="bg-neutral-900/50 border border-white/5 rounded-[40px] h-40 flex items-center justify-center p-8 hover:border-red-600/30 transition-all group shadow-xl">
+              <img src={p.logoUrl} className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500" alt={p.name} />
             </div>
           ))}
         </div>
       </section>
 
-      {/* Contato */}
       <section id="contato" className="py-40 bg-neutral-950 px-6 border-t border-neutral-900 text-white">
-        <h2 className="text-6xl md:text-9xl font-black mb-16 uppercase tracking-tighter text-white font-black uppercase text-white text-white text-center leading-none">Reserve seu <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8">Espaço.</span></h2>
+        <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter text-white font-black uppercase text-center leading-none">Reserve seu <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8">Espaço.</span></h2>
         <div className="bg-neutral-900 p-12 rounded-[60px] border border-white/5 shadow-3xl max-w-3xl mx-auto text-left backdrop-blur-sm text-white">
            <form className="space-y-8 text-white">
              <div className="grid md:grid-cols-2 gap-8 text-white">
-               <div className="flex flex-col gap-3 text-white"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] ml-2 text-white">Nome Completo</label><input type="text" className="bg-neutral-950 border border-white/10 rounded-3xl px-8 py-6 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800 text-white" placeholder="Digite seu nome" /></div>
-               <div className="flex flex-col gap-3 text-white"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] ml-2 text-white">E-mail Corporativo</label><input type="email" className="bg-neutral-950 border border-white/10 rounded-3xl px-8 py-6 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800 text-white" placeholder="seu@email.com" /></div>
+               <div className="flex flex-col gap-3 text-white"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] ml-2 text-white font-black uppercase">Nome Completo</label><input type="text" className="bg-neutral-950 border border-white/10 rounded-3xl px-8 py-6 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800 text-white" placeholder="Digite seu nome" /></div>
+               <div className="flex flex-col gap-3 text-white"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] ml-2 text-white font-black uppercase text-white">E-mail Corporativo</label><input type="email" className="bg-neutral-950 border border-white/10 rounded-3xl px-8 py-6 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800 text-white" placeholder="seu@email.com" /></div>
              </div>
              <button type="button" className="w-full bg-red-600 py-7 rounded-[32px] font-black uppercase text-xs tracking-[0.5em] shadow-3xl hover:bg-red-700 transition-all active:scale-95 shadow-red-900/40 text-white font-black uppercase text-white">Solicitar Cotação Premium</button>
            </form>
