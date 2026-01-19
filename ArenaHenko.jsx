@@ -43,7 +43,9 @@ const App = () => {
     CORINTHIANS: "https://i.imgur.com/Y7x93X4.png",
     PALMEIRAS: "https://i.imgur.com/6XvS8wM.png",
     FLAMENGO: "https://i.imgur.com/FF7D8Xm.png",
-    BRAGANTINO: "https://i.imgur.com/YwN9Tsh.png"
+    BRAGANTINO: "https://i.imgur.com/YwN9Tsh.png",
+    GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
+    CHAPECOENSE: "https://a.espncdn.com/i/teamlogos/soccer/500/10839.png"
   };
 
   const navigation = [
@@ -124,7 +126,11 @@ const App = () => {
       subtitle: 'Série A', 
       // Link ESPN (Correto)
       image: 'https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/85.png', 
-      matches: [], 
+      matches: [
+        { id: 'br1', date: '28/01', home: 'SPFC', away: 'Flamengo', time: '21h30', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.FLAMENGO, location: 'Morumbis', scarcity: 'Alta Procura' },
+        { id: 'br2', date: '11/02', home: 'SPFC', away: 'Grêmio', time: '21h30', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.GREMIO, location: 'Morumbis' },
+        { id: 'br3', date: '12/03', home: 'SPFC', away: 'Chapecoense', time: '20h00', homeLogo: teamLogos.SPFC, awayLogo: teamLogos.CHAPECOENSE, location: 'Morumbis' }
+      ], 
       results: [] 
     },
   ]);
