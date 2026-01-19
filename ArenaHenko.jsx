@@ -11,16 +11,13 @@ const App = () => {
   const SPFC_ID = "126"; 
 
   const navigation = [
-    { name: 'Sobre', href: '#sobre' }, { name: 'Serviços', href: '#servicos' }, { name: 'Calendário 2026', href: '#calendario' }, { name: 'Mídia & Parceiros', href: '#parceiros' }, { name: 'Contacto', href: '#contato' }
+    { name: 'Sobre', href: '#sobre' }, { name: 'Serviços', href: '#servicos' }, { name: 'Calendário 2026', href: '#calendario' }, { name: 'Parceiros', href: '#parceiros' }, { name: 'Contacto', href: '#contato' }
   ];
 
   const services = [
-    { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8 text-red-400" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
-    { title: 'Receção Exclusiva', icon: <Award className="w-8 h-8 text-red-400" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
-    { title: 'Ambiente Premium', icon: <Music className="w-8 h-8 text-red-400" />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
-    { title: 'Networking', icon: <CheckCircle className="w-8 h-8 text-red-400" />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
-    { title: 'Vista Privilegiada', icon: <MapPin className="w-8 h-8 text-red-400" />, desc: 'Acesso exclusivo e visão privilegiada do campo/palco.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
-    { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8 text-red-400" />, desc: 'Ativações de marca em Ring LED e patrocínios.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
+    { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8 text-red-400" />, desc: 'Ponto exclusivo para networking e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
+    { title: 'Ambiente Premium', icon: <Music className="w-8 h-8 text-red-400" />, desc: 'Open bar e Open Food com culinária sofisticada e entretenimento.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
+    { title: 'Vista Privilegiada', icon: <MapPin className="w-8 h-8 text-red-400" />, desc: 'Acesso exclusivo e a melhor visão do espetáculo no estádio.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
   ];
 
   const partnerLogos = [
@@ -30,6 +27,13 @@ const App = () => {
     { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', extraSize: true },
     { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png' },
     { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extraSize: true },
+    { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png' },
+  ];
+
+  const entertainmentEvents = [
+    { name: 'AC/DC', date: '2026', image: 'https://i.imgur.com/XawIqwq.jpg', desc: 'O rock mundial invade o Morumbis.' },
+    { name: 'The Weeknd', date: '2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Show visual imperdível e exclusivo.' },
+    { name: 'Festa do Peão', date: 'Agosto 2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko em Barretos.' },
   ];
 
   const [activeSportId, setActiveSportId] = useState(2);
@@ -77,9 +81,9 @@ const App = () => {
   return (
     <div className="font-sans text-gray-100 bg-neutral-950 min-h-screen text-center overflow-x-hidden selection:bg-red-600">
       {/* Botão WhatsApp */}
-      <a href="https://wa.me/5511940741355" target="_blank" className="fixed bottom-8 right-8 z-[100] bg-green-600 p-4 rounded-full shadow-2xl hover:scale-110 transition-transform"><MessageCircle className="w-8 h-8 fill-white text-white" /></a>
+      <a href="https://wa.me/5511940741355" target="_blank" className="fixed bottom-8 right-8 z-[100] bg-green-600 p-4 rounded-full shadow-2xl hover:scale-110 transition-transform shadow-green-900/40"><MessageCircle className="w-8 h-8 fill-white text-white" /></a>
 
-      <nav className={`fixed w-full z-50 h-20 flex items-center justify-between px-8 transition-all ${scrolled ? 'bg-black/80 backdrop-blur-md border-b border-white/5' : 'bg-transparent'}`}>
+      <nav className={`fixed w-full z-50 h-20 flex items-center justify-between px-8 transition-all ${scrolled ? 'bg-black/90 backdrop-blur-md border-b border-white/5' : 'bg-transparent'}`}>
         <img src="https://i.imgur.com/cSYIvq6.png" className="h-8" />
         <div className="hidden md:flex gap-8 uppercase font-black text-[10px] tracking-widest text-gray-400">
           {navigation.map(n => <a key={n.name} href={n.href} className="hover:text-red-500 transition-colors">{n.name}</a>)}
@@ -89,79 +93,115 @@ const App = () => {
       {/* Hero */}
       <div className="pt-60 pb-40 relative px-4">
         <div className="absolute inset-0 opacity-20 bg-[url('https://i.imgur.com/lKKQfgK.png')] bg-cover bg-center"></div>
-        <h1 className="text-6xl md:text-9xl font-black uppercase leading-none relative z-10 text-white animate-fade-in-up">ARENA <span className="text-red-600">HENKO</span></h1>
-        <p className="text-gray-500 uppercase tracking-[0.3em] text-sm mt-6 relative z-10 font-bold">Hospitalidade Premium no Morumbis</p>
+        <h1 className="text-6xl md:text-9xl font-black uppercase leading-none relative z-10 text-white animate-fade-in-up tracking-tighter">ARENA <span className="text-red-600">HENKO</span></h1>
+        <p className="text-gray-500 uppercase tracking-[0.4em] text-sm mt-6 relative z-10 font-bold">Hospitalidade Premium no Morumbis</p>
       </div>
 
       {/* Sobre */}
-      <section id="sobre" className="py-32 px-6 border-b border-neutral-900 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center text-left">
+      <section id="sobre" className="py-32 px-6 border-b border-neutral-900 max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center text-left text-white">
         <div>
           <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4 block">A ARENA</span>
-          <h2 className="text-5xl font-black text-white uppercase mb-8">Hospitalidade <br/>Exclusiva</h2>
-          <p className="text-gray-400 leading-relaxed italic">Localizada no coração do Estádio do Morumbis, a Arena Henko redefine a experiência VIP para eventos e espetáculos.</p>
+          <h2 className="text-5xl font-black uppercase mb-8 leading-tight">Excelência <br/>Em Hospitalidade</h2>
+          <p className="text-gray-400 leading-relaxed italic font-light text-lg">A Arena Henko redefine o conceito de hospitalidade em estádios, oferecendo exclusividade e conforto em cada detalhe.</p>
         </div>
-        <div className="bg-neutral-900/50 p-10 rounded-[40px] border border-white/5"><Shield className="text-red-600 w-10 h-10 mb-6" /><h4 className="text-2xl font-black text-white uppercase mb-4">Ambiente Seguro</h4><p className="text-gray-500">Privacidade total e segurança em cada detalhe da sua estadia.</p></div>
+        <div className="bg-neutral-900/50 p-10 rounded-[40px] border border-white/10 shadow-2xl flex flex-col gap-6">
+            <Shield className="text-red-600 w-10 h-10" />
+            <h4 className="text-2xl font-black uppercase text-white">Privacidade Garantida</h4>
+            <p className="text-gray-500 text-sm">Espaço exclusivo projetado para networking empresarial e experiências VIP inesquecíveis.</p>
+        </div>
       </section>
 
-      {/* Calendário Agenda Unificada */}
-      <section id="calendario" className="py-32 px-4">
+      {/* Vantagens / Serviços */}
+      <section id="servicos" className="py-32 bg-neutral-900/30 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-5xl font-black uppercase mb-16">Temporada <span className="text-red-600">2026</span></h2>
+          <h2 className="text-4xl md:text-6xl font-black text-white uppercase mb-20 tracking-tighter">Experiência VIP</h2>
+          <div className="grid md:grid-cols-3 gap-8 text-left">
+            {services.map((s, i) => (
+              <div key={i} className="group relative h-[450px] rounded-[50px] overflow-hidden border border-white/5 hover:border-red-600/50 transition-all shadow-3xl">
+                <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110"><img src={s.imageUrl} className="w-full h-full object-cover opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-60" alt={s.title} /></div>
+                <div className="absolute inset-0 bg-neutral-950/85 group-hover:bg-neutral-950/40 transition-all"></div>
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end">
+                  <div className="bg-red-900/30 p-4 rounded-2xl w-fit mb-6 text-red-500 shadow-xl">{s.icon}</div>
+                  <h3 className="text-2xl font-black text-white uppercase mb-3 leading-none">{s.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed font-light">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Calendário Agenda Única Morumbis */}
+      <section id="calendario" className="py-32 px-4">
+        <div className="max-w-7xl mx-auto text-white">
+          <h2 className="text-5xl font-black uppercase mb-16 text-center">Temporada <span className="text-red-600">2026</span></h2>
           <div className="flex flex-wrap gap-2 mb-12 justify-center">
             {sportEvents.map(s => <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-4 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500'}`}>{s.name}</button>)}
           </div>
           {selectedSport && (
-            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[50px] p-12 border border-neutral-800 shadow-3xl max-w-4xl mx-auto">
-                <div className="w-56 h-56 bg-neutral-950 rounded-[40px] p-10 flex items-center justify-center border border-neutral-800 mx-auto mb-10 overflow-hidden"><img src={selectedSport.image} className={`max-w-full max-h-full object-contain ${selectedSport.id === 2 ? 'scale-[1.4]' : ''}`} /></div>
-                <h3 className="text-3xl font-black text-white uppercase mb-12">Agenda Morumbis</h3>
+            <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-12 border border-neutral-800 shadow-3xl max-w-4xl mx-auto text-center">
+                <div className="w-56 h-56 bg-neutral-950 rounded-[40px] p-10 flex items-center justify-center border border-neutral-800 mx-auto mb-10 overflow-hidden shadow-inner"><img src={selectedSport.image} className={`max-w-full max-h-full object-contain ${selectedSport.id === 2 ? 'scale-[1.4] translate-y-2' : ''}`} /></div>
+                <h3 className="text-3xl font-black text-white uppercase mb-12 tracking-widest">Agenda Morumbis</h3>
                 <div className="space-y-4 text-left max-w-2xl mx-auto">
                   {selectedSport.matches.length > 0 ? selectedSport.matches.map((m, i) => (
-                    <div key={i} className="bg-neutral-950 border border-neutral-800 rounded-3xl p-6 flex justify-between items-center group hover:border-red-600/30 transition-all">
-                      <div className="flex items-center gap-6"><span className="text-gray-500 font-black text-[11px]">{m.date}</span><span className="text-white font-black text-sm uppercase">{m.home} X {m.away}</span></div>
-                      <ArrowRight className="w-4 h-4 text-red-600 group-hover:translate-x-1 transition-transform" />
+                    <div key={i} className="bg-neutral-950 border border-white/5 rounded-[32px] p-8 flex justify-between items-center group hover:border-red-600/30 transition-all cursor-pointer shadow-xl">
+                      <div className="flex items-center gap-10">
+                        <span className="text-gray-600 font-black text-[12px]">{m.date}</span>
+                        <span className="text-white font-black text-lg uppercase tracking-tight">{m.home} X {m.away}</span>
+                      </div>
+                      <div className="bg-red-600 p-3 rounded-2xl group-hover:scale-110 transition-transform shadow-lg"><ArrowRight className="w-5 h-5 text-white" /></div>
                     </div>
-                  )) : <p className="text-gray-600 text-center italic uppercase text-xs tracking-widest">Aguardando novos agendamentos...</p>}
+                  )) : <p className="text-center text-gray-600 italic font-black uppercase text-[10px] tracking-[0.4em]">Sincronizando agenda oficial...</p>}
                 </div>
             </div>
           )}
         </div>
       </section>
 
-      {/* Próximos Eventos */}
+      {/* Próximos Eventos (Shows) */}
       <section className="py-32 bg-neutral-900/30 px-4">
-        <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Próximos Eventos</h3>
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {["AC/DC", "The Weeknd", "Barretos"].map(e => (
-            <div key={e} className="bg-neutral-900 h-64 rounded-[40px] border border-white/5 flex flex-col items-center justify-center font-black uppercase text-xl relative group overflow-hidden">
-                <div className="absolute inset-0 bg-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                {e}<span className="text-[10px] text-gray-600 mt-2 font-bold tracking-widest">Show 2026</span>
+        <h3 className="text-4xl font-black text-red-500 mb-20 uppercase tracking-tighter text-center">Próximos Eventos</h3>
+        <div className="grid md:grid-cols-3 gap-10 max-w-7xl mx-auto">
+          {entertainmentEvents.map((e, i) => (
+            <div key={i} className="group relative rounded-[50px] overflow-hidden aspect-[4/5] shadow-3xl border border-white/5">
+                <img src={e.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0 opacity-40 group-hover:opacity-100" alt={e.name} />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent flex flex-col justify-end p-10 text-left">
+                  <span className="bg-red-600 text-white text-[10px] font-black uppercase px-4 py-1.5 rounded-full w-fit mb-4 tracking-widest">{e.date}</span>
+                  <h3 className="text-4xl font-black text-white uppercase leading-none">{e.name}</h3>
+                  <p className="text-gray-400 text-sm mt-4 font-light leading-relaxed">{e.desc}</p>
+                </div>
             </div>
           ))}
         </div>
       </section>
 
       {/* Parceiros Grelha Colorida */}
-      <section id="parceiros" className="py-32 px-6">
-        <h3 className="text-xl text-gray-600 uppercase tracking-[0.5em] font-black mb-16 text-center">Parceiros de Elite</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6 max-w-6xl mx-auto">
+      <section id="parceiros" className="py-32 px-6 border-t border-neutral-900">
+        <h3 className="text-xl text-gray-600 uppercase tracking-[0.6em] font-black mb-16 text-center uppercase">Parceiros Comerciais</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 max-w-7xl mx-auto">
           {partnerLogos.map((p, i) => (
-            <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center p-8 hover:border-red-600/30 transition-all"><img src={p.logoUrl} className="max-h-full max-w-full object-contain" /></div>
+            <div key={i} className="bg-neutral-900/50 border border-white/5 rounded-[40px] h-40 flex items-center justify-center p-8 hover:border-red-600/30 transition-all group shadow-xl">
+              <img src={p.logoUrl} className="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-500" alt={p.name} />
+            </div>
           ))}
         </div>
       </section>
 
-      {/* Contato */}
+      {/* Contato Final */}
       <section id="contato" className="py-40 bg-neutral-950 px-6 border-t border-neutral-900">
-        <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter text-white">Fale <span className="text-red-600">Connosco.</span></h2>
-        <div className="bg-neutral-900 p-12 rounded-[50px] border border-neutral-800 shadow-3xl max-w-2xl mx-auto text-left">
-           <form className="space-y-6">
-             <div className="flex flex-col gap-2"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.2em] ml-2">Nome</label><input type="text" className="bg-neutral-950 border border-neutral-800 rounded-2xl px-6 py-4 text-white focus:border-red-600 outline-none transition-all" /></div>
-             <button type="button" className="w-full bg-red-600 py-5 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-red-700 transition-all">Enviar Solicitação</button>
+        <h2 className="text-6xl md:text-9xl font-black mb-16 uppercase tracking-tighter text-white">Reserve seu <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8">Espaço.</span></h2>
+        <div className="bg-neutral-900 p-12 rounded-[60px] border border-white/5 shadow-3xl max-w-3xl mx-auto text-left backdrop-blur-sm">
+           <form className="space-y-8">
+             <div className="grid md:grid-cols-2 gap-8 text-white">
+               <div className="flex flex-col gap-3"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] ml-2">Nome Completo</label><input type="text" className="bg-neutral-950 border border-white/10 rounded-3xl px-8 py-6 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800" placeholder="Digite seu nome" /></div>
+               <div className="flex flex-col gap-3"><label className="text-[10px] font-black uppercase text-gray-500 tracking-[0.4em] ml-2">E-mail Corporativo</label><input type="email" className="bg-neutral-950 border border-white/10 rounded-3xl px-8 py-6 text-white focus:border-red-600 outline-none transition-all font-bold placeholder:text-gray-800" placeholder="seu@email.com" /></div>
+             </div>
+             <button type="button" className="w-full bg-red-600 py-7 rounded-[32px] font-black uppercase text-xs tracking-[0.5em] shadow-3xl hover:bg-red-700 transition-all active:scale-95 shadow-red-900/40">Solicitar Cotação Premium</button>
            </form>
         </div>
       </section>
 
-      <footer className="py-24 opacity-50 text-white"><p className="text-[10px] font-bold uppercase tracking-[0.5em]">© 2026 ARENA HENKO. TODOS OS DIREITOS RESERVADOS.</p></footer>
+      <footer className="py-24 border-t border-neutral-900 opacity-40 text-white text-white"><p className="text-[11px] font-bold uppercase tracking-[0.5em]">© 2026 ARENA HENKO. TODOS OS DIREITOS RESERVADOS.</p></footer>
     </div>
   );
 };
