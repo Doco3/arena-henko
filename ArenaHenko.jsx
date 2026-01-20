@@ -158,6 +158,20 @@ const App = () => {
     { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png' },
   ];
 
+  // Adicionando Favicon Dinamicamente
+  useEffect(() => {
+    const link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      const newLink = document.createElement('link');
+      newLink.rel = 'icon';
+      document.head.appendChild(newLink);
+      newLink.href = 'https://i.imgur.com/cSYIvq6.png'; // Logo da Arena Henko
+    } else {
+      link.href = 'https://i.imgur.com/cSYIvq6.png';
+    }
+    document.title = "Arena Henko"; // Define o título da aba
+  }, []);
+
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
