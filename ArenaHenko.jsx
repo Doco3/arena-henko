@@ -158,6 +158,37 @@ const App = () => {
     { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png' },
   ];
 
+  // Função auxiliar para converter string de data/hora em objeto Date
+  const parseMatchDate = (dateStr, timeStr) => {
+    // Formato esperado: DD/MM e HHhMM
+    const [day, month] = dateStr.split('/').map(Number);
+    const [hours, minutes] = timeStr.replace('h', ':').split(':').map(Number);
+    const year = 2026; // Ano fixo conforme contexto do app
+    return new Date(year, month - 1, day, hours, minutes);
+  };
+
+  // Encontrar o próximo jogo REAL (filtrando passados)
+  const getNextUpcomingMatch = () => {
+    const now = new Date();
+    // Coleta todos os jogos de todos os campeonatos
+    const allMatches = sportEvents.flatMap(sport => 
+      sport.matches.map(match => ({
+        ...match,
+        sportName: sport.name,
+        parsedDate: parseMatchDate(match.date, match.time)
+      }))
+    );
+
+    // Filtra apenas os futuros e ordena por data
+    const futureMatches = allMatches
+      .filter(m => m.parsedDate > now)
+      .sort((a, b) => a.parsedDate - b.parsedDate);
+
+    return futureMatches.length > 0 ? futureMatches[0] : null;
+  };
+
+  const nextMatch = getNextUpcomingMatch();
+
   // Adicionando Favicon Dinamicamente
   useEffect(() => {
     const link = document.querySelector("link[rel~='icon']");
@@ -201,12 +232,11 @@ const App = () => {
 
   // Countdown Logic
   useEffect(() => {
-    // Definindo a data do próximo jogo
-    const matchDate = new Date('2026-01-21T19:30:00');
+    if (!nextMatch) return; // Se não tiver jogo futuro, não roda countdown
 
     const interval = setInterval(() => {
       const now = new Date();
-      const difference = matchDate - now;
+      const difference = nextMatch.parsedDate - now;
 
       if (difference > 0) {
         setTimeLeft({
@@ -217,11 +247,12 @@ const App = () => {
         });
       } else {
         setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        // Opcional: Forçar re-render para atualizar o próximo jogo assim que o tempo acabar
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [nextMatch]); // Recria o timer se o próximo jogo mudar
 
   // Auto-rotate Reviews
   useEffect(() => {
@@ -251,8 +282,13 @@ const App = () => {
 
   const selectedSport = sportEvents.find(s => s.id === activeSportId);
 
+  // Filtra jogos passados para a exibição da lista também
+  const visibleMatches = selectedSport ? selectedSport.matches.filter(m => {
+     const mDate = parseMatchDate(m.date, m.time);
+     return mDate > new Date();
+  }) : [];
+
   // Quick Access Data
-  const nextMatch = sportEvents[0].matches[0];
   const nextShow = entertainmentEvents[0];
 
   return (
@@ -288,36 +324,42 @@ const App = () => {
           
           {/* Botões de Ação Rápida */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto relative z-20">
-              {/* Card Próximo Jogo */}
-              <button onClick={() => window.open(getWaLink(`Quero reservar o jogo: ${nextMatch.home} x ${nextMatch.away}`))} className="relative bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all group text-left w-full overflow-visible">
-                  <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1">
-                     <Zap className="w-3 h-3 fill-white" /> ÚLTIMAS VAGAS
-                  </div>
+              {/* Card Próximo Jogo - RENDERIZAÇÃO CONDICIONAL */}
+              {nextMatch ? (
+                <button onClick={() => window.open(getWaLink(`Quero reservar o jogo: ${nextMatch.home} x ${nextMatch.away}`))} className="relative bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all group text-left w-full overflow-visible">
+                    <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1">
+                       <Zap className="w-3 h-3 fill-white" /> ÚLTIMAS VAGAS
+                    </div>
 
-                  <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 flex flex-col items-center justify-center h-full min-h-[60px]">
-                      {/* ATENÇÃO: AQUI ESTAVA O PROBLEMA! USANDO ImageWithFallback PARA BLINDAR OS ESCUDOS */}
-                      <ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" alt="Time" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <p className="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1 flex items-center gap-2"><Ticket className="w-3 h-3 text-red-500"/> Próximo Jogo</p>
-                          <p className="text-sm font-black text-white uppercase truncate mb-1">{nextMatch.home} x {nextMatch.away}</p>
+                    <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 flex flex-col items-center justify-center h-full min-h-[60px]">
+                        {/* ATENÇÃO: AQUI ESTAVA O PROBLEMA! USANDO ImageWithFallback PARA BLINDAR OS ESCUDOS */}
+                        <ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" alt="Time" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="text-[9px] text-gray-400 uppercase font-black tracking-widest mb-1 flex items-center gap-2"><Ticket className="w-3 h-3 text-red-500"/> Próximo Jogo</p>
+                            <p className="text-sm font-black text-white uppercase truncate mb-1">{nextMatch.home} x {nextMatch.away}</p>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-white ml-2 transition-colors shrink-0 mt-2"/>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-white ml-2 transition-colors shrink-0 mt-2"/>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1 bg-black/40 p-1.5 rounded-lg w-fit border border-neutral-800/50">
-                        <Timer className="w-3 h-3 text-red-500 animate-pulse" />
-                        <div className="flex gap-1 text-[10px] font-mono text-gray-300">
-                          <span className="text-white font-bold">{String(timeLeft.days).padStart(2, '0')}</span>d
-                          <span className="text-neutral-600">:</span>
-                          <span className="text-white font-bold">{String(timeLeft.hours).padStart(2, '0')}</span>h
-                          <span className="text-neutral-600">:</span>
-                          <span className="text-white font-bold">{String(timeLeft.minutes).padStart(2, '0')}</span>m
+                        <div className="flex items-center gap-2 mt-1 bg-black/40 p-1.5 rounded-lg w-fit border border-neutral-800/50">
+                          <Timer className="w-3 h-3 text-red-500 animate-pulse" />
+                          <div className="flex gap-1 text-[10px] font-mono text-gray-300">
+                            <span className="text-white font-bold">{String(timeLeft.days).padStart(2, '0')}</span>d
+                            <span className="text-neutral-600">:</span>
+                            <span className="text-white font-bold">{String(timeLeft.hours).padStart(2, '0')}</span>h
+                            <span className="text-neutral-600">:</span>
+                            <span className="text-white font-bold">{String(timeLeft.minutes).padStart(2, '0')}</span>m
+                          </div>
                         </div>
-                      </div>
-                  </div>
-              </button>
+                    </div>
+                </button>
+              ) : (
+                <div className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center justify-center text-gray-500 text-xs font-black uppercase tracking-widest w-full">
+                  Aguardando nova agenda
+                </div>
+              )}
 
               {/* Card Próximo Show */}
               <button onClick={() => window.open(getWaLink(`Quero reservar o show: ${nextShow.name}`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 hover:shadow-[0_0_20px_rgba(220,38,38,0.2)] transition-all group text-left w-full">
@@ -430,11 +472,11 @@ const App = () => {
                   <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mt-3">{selectedSport.subtitle}</p>
                 </div>
 
-                {/* Coluna Direita: Agenda Compacta */}
+                {/* Coluna Direita: Agenda Compacta - AGORA FILTRADA */}
                 <div className="lg:col-span-3 w-full">
                   <h4 className="text-red-500 text-[11px] font-black uppercase tracking-[0.4em] mb-6 flex items-center gap-3 justify-center lg:justify-start"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
                   <div className="space-y-3">
-                    {selectedSport.matches.length > 0 ? selectedSport.matches.map((m, i) => (
+                    {visibleMatches.length > 0 ? visibleMatches.map((m, i) => (
                       <div key={i} className="bg-neutral-950/50 border border-neutral-800 rounded-[24px] overflow-hidden hover:border-red-600/30 transition-all text-white relative">
                         <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-5 flex items-center justify-between">
                           <div className="flex items-center gap-4 lg:gap-6">
@@ -467,7 +509,7 @@ const App = () => {
                           </div>
                         )}
                       </div>
-                    )) : <div className="p-8 border border-dashed border-neutral-800 rounded-[24px] text-center opacity-30 text-[11px] font-black uppercase tracking-widest text-white">Sem jogos no Morumbis agendados</div>}
+                    )) : <div className="p-8 border border-dashed border-neutral-800 rounded-[24px] text-center opacity-30 text-[11px] font-black uppercase tracking-widest text-white">Sem jogos futuros no Morumbis agendados</div>}
                   </div>
                 </div>
 
