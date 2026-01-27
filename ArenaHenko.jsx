@@ -10,7 +10,8 @@ import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, d
 
 // --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-prod-v1';
+// RULE 1: Use o appId fornecido pelo sistema para garantir permissões corretas
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-prod';
 
 let auth, db;
 if (firebaseConfig) {
@@ -20,10 +21,10 @@ if (firebaseConfig) {
 }
 
 // --- CONFIGURAÇÃO DO APP ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // 
+const ADMIN_HASH = "SGVua29AMjAyNiM="; // Senha: Henko@2026#
 const DEMO_MODE = true;
 
-// --- DADOS ESTÁTICOS (DEFINIDOS UMA ÚNICA VEZ NO TOPO) ---
+// --- DADOS ESTÁTICOS (DEFINIDOS NO TOPO) ---
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
@@ -47,12 +48,12 @@ const ARENA_MENU_LINKS = [
 ];
 
 const ARENA_SERVICES_DATA = [
-  { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
-  { title: 'Recepção Exclusiva', icon: <Award className="w-8 h-8" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
-  { title: 'Ambiente Premium', icon: <Music className="w-8 h-8" />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
-  { title: 'Networking', icon: <CheckCircle className="w-8 h-8" />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
-  { title: 'Vista Privilegiada', icon: <MapPin className="w-8 h-8" />, desc: 'Acesso exclusivo e visão privilegiada do campo/palco.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
-  { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8" />, desc: 'Ativações de marca em Ring LED e relatórios de envolvimento.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
+  { title: 'Lounge de Hospitalidade', icon: <Users className="w-8 h-8 text-red-500" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
+  { title: 'Recepção Exclusiva', icon: <Award className="w-8 h-8 text-red-500" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
+  { title: 'Ambiente Premium', icon: <Music className="w-8 h-8 text-red-500" />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
+  { title: 'Networking', icon: <CheckCircle className="w-8 h-8 text-red-500" />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
+  { title: 'Vista Privilegiada', icon: <MapPin className="w-8 h-8 text-red-500" />, desc: 'Acesso exclusivo e visão panorâmica do campo/palco.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
+  { title: 'Branding & Mídia', icon: <Tv className="w-8 h-8 text-red-500" />, desc: 'Ativações de marca em Ring LED e relatórios de envolvimento.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
 ];
 
 const SPORT_EVENTS_DATA = [
@@ -103,7 +104,7 @@ const REVIEWS_DATA = [
   { name: "Pedro Almeida", role: "Empresário", text: "Simplesmente fantástico. O ambiente para networking é ótimo.", initial: "P" }
 ];
 
-// --- COMPONENTES AUXILIARES ---
+// --- UTILITÁRIOS (DEFINIDOS UMA ÚNICA VEZ) ---
 
 const ImageWithFallback = ({ src, alt, className, fallback }) => {
   const [error, setError] = useState(false);
@@ -136,28 +137,25 @@ const compressImage = (file) => {
 // --- COMPONENTE PRINCIPAL ---
 
 const App = () => {
-  // Estados de Navegação
+  // --- ESTADOS ---
   const [currentView, setCurrentView] = useState('home'); 
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminInputPass, setAdminInputPass] = useState('');
   const [loginError, setLoginError] = useState(''); 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  // Estados de Conteúdo
   const [activeSportId, setActiveSportId] = useState(2); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [toast, setToast] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
-
-  // Estados Firebase
   const [user, setUser] = useState(null);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Handlers de UI
+  // --- LÓGICA DE UI ---
+
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -198,11 +196,14 @@ const App = () => {
   const isUploadAllowed = (dateStr, timeStr) => {
     if (DEMO_MODE) return true; 
     const matchDate = parseMatchDate(dateStr, timeStr);
-    const diffHours = (new Date() - matchDate) / (1000 * 60 * 60);
+    const now = new Date();
+    const diffHours = (now - matchDate) / (1000 * 60 * 60);
     return diffHours >= -2 && diffHours <= 4;
   };
 
   const generateMatchHashtag = (home, away) => `#ArenaHenko${home.replace(/\s+/g, '')}x${away.replace(/\s+/g, '')}`;
+
+  // --- FIREBASE OPS ---
 
   const handleAdminLogin = (e) => {
     e.preventDefault(); 
@@ -213,41 +214,15 @@ const App = () => {
   const handleDeletePhoto = async (photoId) => {
     if (!db || !user) return;
     try {
+      // RULE 1: Absolute path
       const photoDoc = doc(db, 'artifacts', appId, 'public', 'data', 'fan_gallery', photoId);
       await deleteDoc(photoDoc);
       setDeleteConfirmId(null);
-      showToast("Foto removida com sucesso!");
+      showToast("Foto removida!");
     } catch (err) {
-      showToast("Erro ao remover foto.");
+      showToast("Erro ao remover.");
     }
   };
-
-  // Efeitos Firebase
-  useEffect(() => {
-    if (!auth) return;
-    const initAuth = async () => {
-      try {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
-        else await signInAnonymously(auth);
-      } catch (e) { console.error("Auth error:", e); }
-    };
-    initAuth();
-    const unsubscribe = onAuthStateChanged(auth, setUser);
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
-    if (!user || !db) return;
-    const photosCollection = collection(db, 'artifacts', appId, 'public', 'data', 'fan_gallery');
-    const unsubscribe = onSnapshot(photosCollection, (snapshot) => {
-      const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-      setGalleryPhotos(photos);
-    }, (err) => {
-      console.error("Firestore Error:", err);
-    });
-    return () => unsubscribe();
-  }, [user]);
 
   const handleFileUpload = async (event, matchId) => {
     const file = event.target.files?.[0];
@@ -255,6 +230,7 @@ const App = () => {
     setIsUploading(true);
     try {
       const compressedBase64 = await compressImage(file);
+      // RULE 1: Public path for cross-device sync
       const photosCollection = collection(db, 'artifacts', appId, 'public', 'data', 'fan_gallery');
       await addDoc(photosCollection, {
         matchId, 
@@ -265,13 +241,45 @@ const App = () => {
       });
       showToast("Sua foto foi enviada!");
     } catch (err) { 
-      console.error(err); 
       showToast("Erro ao enviar foto.");
     } finally { 
       setIsUploading(false); 
       if (fileInputRef.current) fileInputRef.current.value = ''; 
     }
   };
+
+  // RULE 3: Auth Barrier
+  useEffect(() => {
+    if (!auth) return;
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+        else await signInAnonymously(auth);
+      } catch (e) { console.error("Firebase Auth Error:", e); }
+    };
+    initAuth();
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+    return () => unsubscribe();
+  }, []);
+
+  // Sync listener: Only active after user is set
+  useEffect(() => {
+    if (!user || !db) return;
+    
+    // RULE 1: Explicit Path
+    const photosCollection = collection(db, 'artifacts', appId, 'public', 'data', 'fan_gallery');
+    
+    const unsubscribe = onSnapshot(photosCollection, (snapshot) => {
+      const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      // RULE 2: Sort in memory
+      photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+      setGalleryPhotos(photos);
+    }, (err) => {
+      console.error("Firestore Permission/Sync Error:", err);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -297,14 +305,14 @@ const App = () => {
 
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
 
-  // --- RENDERIZADORES DE TELA ---
+  // --- RENDERIZADORES ---
 
   const renderHome = () => (
     <div className="animate-fadeIn">
       {/* Hero */}
       <section className="relative h-[95vh] flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-30"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero Arena" /></div>
-        <div className="relative z-10 px-4 text-center max-w-4xl mx-auto text-white">
+        <div className="relative z-10 px-4 text-center max-w-5xl mx-auto text-white">
           <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">HENKO</span></h1>
           <p className="text-lg md:text-xl text-gray-400 font-light mb-12 uppercase tracking-[0.3em]">Hospitalidade Premium & Experiências</p>
           <button onClick={() => handleNavClick('home', '#calendario')} className="inline-flex px-12 py-5 bg-red-600 text-white rounded-full font-black text-sm hover:bg-red-700 transition-all items-center gap-3 uppercase tracking-widest shadow-2xl">Explorar Agenda <ArrowRight className="w-5 h-5"/></button>
@@ -315,7 +323,7 @@ const App = () => {
                 <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50">ÚLTIMAS VAGAS</div>
                 <div className="bg-neutral-800 p-3 rounded-2xl group-hover:bg-red-600 transition-colors shrink-0"><ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" /></div>
                 <div className="flex-1 min-w-0">
-                   <p className="text-[9px] text-red-500 font-black uppercase tracking-widest mb-1 flex items-center gap-1 text-red-500"><Ticket className="w-3 h-3"/> Próximo Jogo</p>
+                   <p className="text-[9px] text-red-500 font-black uppercase tracking-widest mb-1 flex items-center gap-1 text-red-500 uppercase font-bold"><Ticket className="w-3 h-3"/> Próximo Jogo</p>
                    <p className="text-sm font-black truncate uppercase text-white">{nextMatch.home} x {nextMatch.away}</p>
                    <div className="bg-black/40 px-2 py-1 rounded-lg text-[9px] font-mono text-gray-300 border border-neutral-800 w-fit mt-1 uppercase tracking-tighter">
                       {String(timeLeft.days).padStart(2, '0')}D : {String(timeLeft.hours).padStart(2, '0')}H : {String(timeLeft.minutes).padStart(2, '0')}M
@@ -352,12 +360,12 @@ const App = () => {
           </div>
           <div className="grid gap-4">
              <div className="bg-neutral-900/50 p-8 rounded-[48px] border border-neutral-800 hover:border-red-900/50 transition-all group">
-                <Star className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform" />
+                <Star className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform text-red-600" />
                 <h4 className="text-xl font-black uppercase mb-2">Hospitalidade Elite</h4>
                 <p className="text-gray-500 text-sm font-light">Serviço de catering premium assinado por chefs e atendimento especializado.</p>
              </div>
              <div className="bg-neutral-900/50 p-8 rounded-[48px] border border-neutral-800 hover:border-red-900/50 transition-all group text-white">
-                <Shield className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform" />
+                <Shield className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform text-red-600" />
                 <h4 className="text-xl font-black uppercase mb-2">Privacidade Total</h4>
                 <p className="text-gray-500 text-sm font-light">Ambiente climatizado, seguro e reservado para networking de alto valor.</p>
              </div>
@@ -369,12 +377,12 @@ const App = () => {
       <section id="servicos" className="py-32 px-4 bg-neutral-900/20 text-white">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 tracking-tighter">A Experiência Completa</h2>
-          <div className="grid md:grid-cols-3 gap-6 text-white">
+          <div className="grid md:grid-cols-3 gap-6 text-white text-left">
             {ARENA_SERVICES_DATA.map((s, i) => (
               <div key={i} className="group relative h-[480px] rounded-[56px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
                 <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" alt={s.title} /></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent z-10"></div>
-                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left text-white">
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end">
                   <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md">
                     {s.icon}
                   </div>
@@ -400,8 +408,8 @@ const App = () => {
             ))}
           </div>
 
-          <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-8 border border-neutral-800 shadow-3xl">
-             <div className="grid lg:grid-cols-5 gap-12 items-center text-center">
+          <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-8 border border-neutral-800 shadow-3xl text-white">
+             <div className="grid lg:grid-cols-5 gap-12 items-start text-center">
                 <div className="lg:col-span-2 flex flex-col items-center">
                    <div className="w-48 h-48 mb-8 bg-neutral-950 rounded-[48px] p-10 flex items-center justify-center border border-neutral-800 overflow-hidden relative shadow-inner">
                       <ImageWithFallback key={activeSportId} src={SPORT_EVENTS_DATA.find(s => s.id === activeSportId).image} className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 p-2 ${activeSportId === 3 ? 'brightness-0 invert' : ''}`} fallback={<Trophy className="w-20 h-20 text-red-600" />} />
@@ -409,7 +417,7 @@ const App = () => {
                    <h3 className="text-3xl font-black uppercase tracking-tight leading-none text-white">{SPORT_EVENTS_DATA.find(s => s.id === activeSportId).name}</h3>
                    <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mt-4 text-gray-500">{SPORT_EVENTS_DATA.find(s => s.id === activeSportId).subtitle}</p>
                 </div>
-                <div className="lg:col-span-3 w-full space-y-4 text-left">
+                <div className="lg:col-span-3 w-full space-y-4 text-left text-white">
                   <h4 className="text-red-500 text-[11px] font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3 justify-center lg:justify-start text-red-500 uppercase tracking-widest"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
                   {SPORT_EVENTS_DATA.find(s => s.id === activeSportId).matches.length > 0 ? SPORT_EVENTS_DATA.find(s => s.id === activeSportId).matches.map((m, i) => (
                     <div key={i} className="bg-neutral-950/80 border border-neutral-800 rounded-[32px] overflow-hidden hover:border-red-600/30 transition-all text-white">
@@ -421,7 +429,7 @@ const App = () => {
                                 <span className="text-xs font-black opacity-30 text-white">VS</span>
                                 <img src={m.awayLogo} className="w-10 h-10 object-contain" alt="A" />
                               </div>
-                              <div className="hidden sm:block text-left text-white">
+                              <div className="hidden sm:block text-left text-white font-bold">
                                 <p className="text-sm font-black uppercase">{m.home} x {m.away}</p>
                                 <p className="text-[10px] text-gray-500 font-bold uppercase">{m.time}</p>
                               </div>
@@ -433,7 +441,7 @@ const App = () => {
                              <div className="grid md:grid-cols-2 gap-8 mb-4 text-center">
                                 <div className="p-6 bg-black/40 rounded-[32px] border border-neutral-800 flex flex-col justify-between h-full min-h-[200px]">
                                    <div>
-                                      <p className="text-[10px] text-gray-500 font-black uppercase mb-2 tracking-widest uppercase">Hospitalidade Arena</p>
+                                      <p className="text-[10px] text-gray-500 font-black uppercase mb-2 tracking-widest uppercase text-gray-500">Hospitalidade Arena</p>
                                       <p className="text-2xl font-black text-white uppercase tracking-tight">2H ANTES DO JOGO</p>
                                    </div>
                                    <button onClick={() => window.open(getWaLink(`Quero reservar para o jogo ${m.home} x ${m.away} dia ${m.date}`))} className="w-full mt-6 bg-red-600 py-4 rounded-2xl font-black uppercase text-xs shadow-xl hover:bg-red-700 transition-colors text-white">Garantir Lugar</button>
@@ -470,15 +478,15 @@ const App = () => {
       <section className="py-32 px-4 bg-neutral-900/30 text-center text-white">
          <div className="max-w-7xl mx-auto">
             <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Shows & Entretenimento</h3>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-3 gap-8 text-white">
                {ENTERTAINMENT_EVENTS_DATA.map((e, i) => (
                   <div key={i} className="flex flex-col items-center group cursor-pointer text-white" onClick={() => window.open(getWaLink(`Tenho interesse no show do ${e.name} na Arena Henko`))}>
                      <div className="relative rounded-[48px] overflow-hidden aspect-[4/5] border border-neutral-800 shadow-2xl w-full mb-8 transition-all duration-700 group-hover:scale-[1.03] group-hover:border-red-600/50">
                         <img src={e.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:brightness-110" alt={e.name} />
                      </div>
-                     <span className="bg-red-600 text-white text-[10px] font-black px-5 py-1.5 rounded-full mb-4 uppercase tracking-widest">{e.date}</span>
+                     <span className="bg-red-600 text-white text-[10px] font-black px-5 py-1.5 rounded-full mb-4 uppercase tracking-widest text-white">{e.date}</span>
                      <h4 className="text-3xl font-black uppercase mb-2 tracking-tighter text-white uppercase">{e.name}</h4>
-                     <p className="text-gray-500 text-sm font-light mb-6 uppercase tracking-widest">{e.desc}</p>
+                     <p className="text-gray-500 text-sm font-light mb-6 uppercase tracking-widest text-gray-500">{e.desc}</p>
                   </div>
                ))}
             </div>
@@ -488,8 +496,8 @@ const App = () => {
       {/* Parceiros */}
       <section id="parceiros" className="py-32 px-8 bg-neutral-950 border-y border-neutral-900 text-white">
          <div className="max-w-7xl mx-auto text-center text-white">
-            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16">Marcas de Elite Connosco</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center">
+            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16 text-gray-600">Marcas de Elite Connosco</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center text-white">
                {PARTNER_LOGOS_DATA.map((p, i) => (
                   <div key={i} className={`bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center transition-all group hover:border-red-600/30 ${p.extraSize ? 'p-4' : 'p-8'}`}>
                     <img src={p.logoUrl} className={`h-full w-full object-contain transition-all duration-500 group-hover:scale-110 ${p.extraSize ? 'scale-110' : ''}`} alt={p.name} />
@@ -499,17 +507,20 @@ const App = () => {
          </div>
       </section>
 
-      {/* Reviews Section */}
-      <section className="py-32 px-4 bg-neutral-900/10 text-center text-white text-center">
-         <div className="max-w-7xl mx-auto">
-            <h3 className="text-4xl font-black uppercase mb-20 tracking-tighter text-white">A Melhor Avaliação do Estádio</h3>
+      {/* Reviews */}
+      <section className="py-32 px-4 bg-neutral-900/10 text-center text-white">
+         <div className="max-w-7xl mx-auto text-white text-center">
+            <div className="flex justify-center gap-2 mb-8 text-yellow-500">
+               {[1,2,3,4,5].map(i => <Star key={i} className="w-6 h-6 fill-yellow-500 text-yellow-500" />)}
+            </div>
+            <h3 className="text-4xl font-black uppercase mb-20 tracking-tighter text-white uppercase">A Melhor Avaliação do Estádio</h3>
             <div className="grid md:grid-cols-3 gap-8 text-left text-white">
                {REVIEWS_DATA.map((r, i) => (
                   <div key={i} className="bg-neutral-900/50 p-10 rounded-[56px] border border-neutral-800 relative group hover:border-red-600/30 transition-all text-white">
                      <Quote className="w-12 h-12 text-red-600/10 absolute top-8 right-8 group-hover:text-red-600/20 transition-colors" />
-                     <p className="text-gray-300 text-sm italic mb-10 leading-relaxed font-light">"{r.text}"</p>
+                     <p className="text-gray-300 text-sm italic mb-10 leading-relaxed font-light text-gray-300">"{r.text}"</p>
                      <div className="flex items-center gap-4 text-white">
-                        <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center font-black text-red-500 uppercase">{r.initial}</div>
+                        <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center font-black text-red-500 uppercase text-red-500 font-bold">{r.initial}</div>
                         <div>
                            <p className="text-white text-xs font-black uppercase tracking-wider">{r.name}</p>
                            <p className="text-gray-600 text-[10px] font-bold uppercase">{r.role}</p>
@@ -570,10 +581,10 @@ const App = () => {
             </form>
          </div>
        ) : (
-         <div className="w-full max-w-7xl px-4 text-white">
+         <div className="w-full max-w-7xl px-4 text-white text-center">
             <div className="flex justify-between items-center mb-20 text-white">
-                <button onClick={() => setIsAdminLoggedIn(false)} className="bg-neutral-800 text-gray-400 px-10 py-4 rounded-full font-black uppercase text-[10px] hover:text-white transition-all shadow-xl">Sair</button>
-                <h2 className="text-4xl font-black uppercase tracking-tighter text-white uppercase tracking-widest">Moderação Fan Cam</h2>
+                <button onClick={() => setIsAdminLoggedIn(false)} className="bg-neutral-800 text-gray-400 px-10 py-4 rounded-full font-black uppercase text-[10px] hover:text-white transition-all shadow-xl text-gray-400">Sair</button>
+                <h2 className="text-4xl font-black uppercase tracking-tighter text-white uppercase tracking-widest text-white">Moderação Fan Cam</h2>
                 <div className="w-24"></div>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 text-white">
@@ -587,7 +598,7 @@ const App = () => {
                            <button onClick={() => setDeleteConfirmId(null)} className="bg-neutral-800 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl text-white"><X className="w-6 h-6" /></button>
                         </div>
                       ) : (
-                        <button onClick={() => setDeleteConfirmId(photo.id)} className="bg-red-600 text-white p-6 rounded-full border-4 border-neutral-950 shadow-2xl hover:scale-110 text-white"><Trash2 className="w-6 h-6 text-white" /></button>
+                        <button onClick={() => setDeleteConfirmId(photo.id)} className="bg-red-600 text-white p-6 rounded-full border-4 border-neutral-950 shadow-2xl hover:scale-110 text-white text-white"><Trash2 className="w-6 h-6 text-white" /></button>
                       )}
                    </div>
                 </div>
@@ -643,7 +654,7 @@ const App = () => {
       {/* Menu Mobile Overlay */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[1000] bg-neutral-950/98 backdrop-blur-3xl flex flex-col items-center justify-center space-y-10 md:hidden animate-fadeIn text-white text-center">
-          <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white p-3 border border-neutral-800 rounded-full text-white"><X className="w-10 h-10 text-white" /></button>
+          <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white p-3 border border-neutral-800 rounded-full text-white text-white"><X className="w-10 h-10 text-white" /></button>
           {ARENA_MENU_LINKS.map(n => (
             <button key={n.name} onClick={() => handleNavClick(n.view, n.href)} className="text-4xl font-black uppercase hover:text-red-500 tracking-tighter text-white">{n.name}</button>
           ))}
