@@ -26,7 +26,7 @@ const db = getFirestore(app);
 const ADMIN_HASH = "SGVua29AMjAyNiM="; 
 const LOGO_URL = 'https://i.imgur.com/cSYIvq6.png'; 
 
-// --- 2. CONSTANTES DE DADOS GLOBAIS (ESTRUTURA BLINDADA) ---
+// --- 2. CONSTANTES DE DADOS GLOBAIS (ORDEM BLINDADA) ---
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
@@ -108,11 +108,11 @@ const REVIEWS_DATA = [
 // --- 3. UTILITÁRIOS ---
 const ImageWithFallback = ({ src, alt, className, style }) => {
   const [error, setError] = useState(false);
-  if (error) return <div className={`${className} bg-neutral-800 flex items-center justify-center`}><Shield className="w-6 h-6 text-gray-600" /></div>;
+  if (error) return <div className={`${className} bg-neutral-800 flex items-center justify-center rounded-xl`}><Shield className="w-6 h-6 text-gray-600" /></div>;
   return <img src={src} alt={alt} className={className} style={style} onError={() => setError(true)} />;
 };
 
-// --- 4. COMPONENTE PRINCIPAL (APP) ---
+// --- 4. COMPONENTE PRINCIPAL ---
 const App = () => {
   // Estados
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
@@ -136,6 +136,7 @@ const App = () => {
             ...m,
             pDate: new Date(2026, parseInt(m.date.split('/')[1]) - 1, parseInt(m.date.split('/')[0]))
         })));
+        // Data atual simulada: 27/01/2026
         const future = all.filter(m => m.pDate >= new Date(2026, 0, 27));
         return future.sort((a,b) => a.pDate - b.pDate)[0] || null;
     } catch(e) { return null; }
@@ -198,7 +199,16 @@ const App = () => {
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
 
   return (
-    <div className="font-sans text-white bg-black animate-fadeIn overflow-x-hidden">
+    <div className="font-sans text-white bg-black animate-fadeIn overflow-x-hidden scroll-smooth">
+      <style>{`
+        @keyframes customFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-smooth { animation: customFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        html { scroll-behavior: smooth; }
+      `}</style>
+
       {/* Navbar */}
       <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 bg-black/60 backdrop-blur-xl border-b border-white/5 py-4`}>
         <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
@@ -207,9 +217,9 @@ const App = () => {
           </div>
           <div className="hidden md:flex items-center gap-10 font-black uppercase text-[10px] tracking-widest">
             {NAV_LINKS.map(link => (
-              <a key={link.name} href={link.href} className="hover:text-red-600 transition-colors">{link.name}</a>
+              <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300">{link.name}</a>
             ))}
-            <button onClick={() => document.getElementById('login-modal').classList.remove('hidden')} className="hover:text-red-600 transition-colors p-2 bg-white/5 rounded-full">
+            <button onClick={() => document.getElementById('login-modal').classList.remove('hidden')} className="hover:text-red-600 transition-all p-2 bg-white/5 rounded-full">
                <LockKeyhole className="w-5 h-5" />
             </button>
           </div>
@@ -238,7 +248,7 @@ const App = () => {
           </h1>
           <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg font-light">Hospitalidade Premium & Experiências</p>
           
-          <div className="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto mb-12 font-black">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
             {nextMatch && (
               <div onClick={() => window.open(getWaLink(`Interesse no jogo ${nextMatch.home} x ${nextMatch.away}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left relative group shadow-2xl">
                 <div className="absolute top-4 right-4 bg-red-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg animate-pulse z-20">
@@ -262,7 +272,7 @@ const App = () => {
                 <Music className="w-7 h-7" />
               </div>
               <div className="flex-1">
-                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Próximo Evento</p>
+                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black uppercase">Próximo Evento</p>
                 <h3 className="text-base font-black uppercase leading-none text-white">{nextEvent.name}</h3>
                 <p className="text-red-600 text-[9px] mt-2 font-mono uppercase tracking-widest">{nextEvent.date}</p>
               </div>
@@ -272,7 +282,7 @@ const App = () => {
         </div>
       </section>
 
-      {/* Sobre com Selo Verde */}
+      {/* Sobre Blindado */}
       <section id="sobre" className="py-24 px-6 bg-neutral-950 border-y border-neutral-900 font-black">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <div className="text-center sm:text-left">
@@ -293,19 +303,20 @@ const App = () => {
             </div>
           </div>
           <div className="grid gap-4">
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl">
-                <Shield className="text-emerald-500 w-8 h-8 shrink-0" />
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group">
+                {/* Ícone Reduzido ao Vermelho conforme solicitado */}
+                <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
                 <div><h4 className="text-sm font-black uppercase italic text-white">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal">Somos credenciados e oficiais no Morumbis. Fuja de fraudes.</p></div>
              </div>
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl">
-                <Award className="text-red-600 w-8 h-8 shrink-0" />
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group">
+                <Award className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
                 <div><h4 className="text-sm font-black uppercase italic text-white">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal">Buffet premium liberado e bebidas de primeira classe.</p></div>
              </div>
           </div>
         </div>
       </section>
 
-      {/* Serviços (Full Experience) */}
+      {/* Serviços */}
       <section id="servicos" className="py-24 px-6 bg-black text-center font-black">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black">Full Experience</h2>
@@ -325,7 +336,7 @@ const App = () => {
         </div>
       </section>
 
-      {/* Agenda (Calendário) */}
+      {/* Agenda (Calendário) com Efeito Smooth */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white">
         <div className="max-w-6xl mx-auto font-black">
           <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic text-white font-black">Agenda <span className="text-red-600">2026</span></h2>
@@ -334,7 +345,8 @@ const App = () => {
               <button key={s.id} onClick={() => { setActiveSportId(s.id); setExpandedMatchKey(null); }} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500 hover:text-white border border-white/5'}`}>{s.name}</button>
             ))}
           </div>
-          <div className="bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl">
+          {/* Aba com Animação Smooth de entrada baseada na key do campeonato */}
+          <div key={activeSportId} className="bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth">
              <div className="grid lg:grid-cols-5 gap-12 items-center">
                 <div className="lg:col-span-2 text-center group">
                     <div className="bg-black w-44 h-44 mx-auto rounded-3xl p-8 border border-neutral-800 flex items-center justify-center mb-6 transition-transform duration-500 hover:scale-110 shadow-2xl overflow-hidden">
@@ -356,7 +368,7 @@ const App = () => {
                                 <Zap className="w-3 h-3 fill-white" /> {m.scarcity}
                              </div>
                          )}
-                         <div className={`bg-neutral-950 border transition-all rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'}`}>
+                         <div className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'}`}>
                             <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-7 flex items-center justify-between group">
                                 <div className="flex items-center gap-8 font-black text-white">
                                     <span className="text-xs text-gray-500 w-10 font-black">{m.date}</span>
@@ -368,13 +380,13 @@ const App = () => {
                                     <span className="uppercase text-sm hidden sm:block font-black text-white">{m.away}</span>
                                     </div>
                                 </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform ${expandedMatchKey === i ? 'rotate-180 text-red-600' : 'text-gray-700'}`} />
+                                <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMatchKey === i ? 'rotate-180 text-red-600' : 'text-gray-700'}`} />
                             </button>
-                            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px]' : 'max-h-0'}`}>
+                            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}>
                                 <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 font-black text-white text-left">
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-[9px] text-gray-400 uppercase tracking-widest font-black">
                                         <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><Clock className="w-3 h-3"/> Horário</span><span className="text-white text-xs font-black">{m.time}</span></div>
-                                        <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><LockKeyhole className="w-3 h-3"/> Abertura</span><span className="text-red-500 text-xs font-black font-black">2h Antes</span></div>
+                                        <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><LockKeyhole className="w-3 h-3"/> Abertura</span><span className="text-red-500 text-xs font-black font-black font-black">2h Antes</span></div>
                                         <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><Wine className="w-3 h-3"/> Open Bar</span><span className="text-white text-[8px] font-black">Premium & Drinks</span></div>
                                         <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><Coffee className="w-3 h-3"/> Open Food</span><span className="text-white text-[8px] font-black">Buffet Completo</span></div>
                                     </div>
@@ -383,7 +395,7 @@ const App = () => {
                             </div>
                          </div>
                       </div>
-                    )) : <p className="text-center text-gray-700 uppercase text-[10px] py-16 font-black tracking-widest italic text-white">Novas datas em breve.</p>}
+                    )) : <p className="text-center text-gray-700 uppercase text-[10px] py-16 font-black tracking-widest italic text-white font-black">Novas datas em breve.</p>}
                 </div>
              </div>
           </div>
@@ -392,18 +404,18 @@ const App = () => {
 
       {/* Próximos Eventos */}
       <section id="eventos" className="py-24 px-6 bg-black">
-        <div className="max-w-7xl mx-auto font-black text-white">
+        <div className="max-w-7xl mx-auto font-black text-white font-black">
           <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white font-black">Próximos <span className="text-red-600">Eventos</span></h2>
           <div className="grid md:grid-cols-3 gap-12 font-black">
             {SHOWS_DATA.map((show, i) => (
               <div key={i} className="group flex flex-col font-black">
-                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900">
-                    <img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={show.name} />
+                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900 font-black">
+                    <img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110 font-black" alt={show.name} />
                 </div>
                 <div className="px-2 text-left font-black">
-                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">{show.date}</span>
-                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
-                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal">{show.desc}</p>
+                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block font-black">{show.date}</span>
+                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none font-black">{show.name}</h3>
+                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal font-black">{show.desc}</p>
                     <button onClick={() => window.open(getWaLink(`Interesse no evento ${show.name}`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-500 transition-colors group/btn font-black uppercase">
                         Ver Disponibilidade <div className="p-2.5 bg-neutral-900 rounded-full group-hover/btn:bg-red-600 transition-all font-black"><ArrowRight className="w-4 h-4"/></div>
                     </button>
@@ -414,11 +426,11 @@ const App = () => {
         </div>
       </section>
 
-      {/* Parceiros - 13 Logos Coloridos (Zoom ajustado) */}
-      <section id="parceiros" className="py-24 bg-neutral-900/40 border-y border-neutral-900 px-10 font-black">
+      {/* Parceiros - 13 Logos Coloridos (Zoom ajustado e fundo mais claro) */}
+      <section id="parceiros" className="py-24 bg-neutral-800/40 border-y border-neutral-900 px-10 font-black">
          <div className="max-w-7xl mx-auto text-center font-black">
             <h3 className="text-[10px] text-gray-500 uppercase tracking-[0.6em] mb-20 font-black italic uppercase">Marcas de Elite Conosco</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-10 items-center font-black">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-10 items-center font-black text-center">
                {PARTNERS_DATA.map((p, i) => (
                   <div key={i} className={`h-20 flex items-center justify-center transition-transform duration-500 ${p.extra ? 'hover:scale-150 scale-140' : 'hover:scale-125'} font-black`}>
                     <img src={p.logoUrl} className="max-h-full max-w-full object-contain" alt={p.name} />
@@ -453,8 +465,8 @@ const App = () => {
 
       {/* Footer Final */}
       <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
-          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left font-black">
+          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white font-black">
             <img src={LOGO_URL} alt="Arena Henko" className="h-14 w-auto object-contain" />
             <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white">Arena Henko &copy; 2026</p>
           </div>
