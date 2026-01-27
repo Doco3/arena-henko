@@ -10,7 +10,8 @@ import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, d
 
 // --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-v1';
+// appId fixo para garantir que celular e PC acessem o mesmo banco de dados
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-prod-v1';
 
 let auth, db;
 if (firebaseConfig) {
@@ -20,10 +21,10 @@ if (firebaseConfig) {
 }
 
 // --- CONFIGURAÇÃO DO APP ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // Senha: Henko@2026#
+const ADMIN_HASH = "SGVua29AMjAyNiM="; // Henko@2026#
 const DEMO_MODE = true;
 
-// --- DADOS ESTÁTICOS (DEFINIDOS NO TOPO PARA EVITAR ERROS DE REFERÊNCIA) ---
+// --- DADOS ESTÁTICOS ---
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
@@ -295,8 +296,8 @@ const App = () => {
       {/* Hero */}
       <section className="relative h-[95vh] flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-30"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero Background" /></div>
-        <div className="relative z-10 px-4 text-center max-w-4xl mx-auto text-white">
-          <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter text-white">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">HENKO</span></h1>
+        <div className="relative z-10 px-4 text-center max-w-5xl mx-auto text-white">
+          <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">HENKO</span></h1>
           <p className="text-lg md:text-xl text-gray-400 font-light mb-12 uppercase tracking-[0.3em]">Hospitalidade Premium & Experiências</p>
           <button onClick={() => handleNavClick('home', '#calendario')} className="inline-flex px-12 py-5 bg-red-600 text-white rounded-full font-black text-sm hover:bg-red-700 transition-all items-center gap-3 uppercase tracking-widest shadow-2xl">Explorar Agenda <ArrowRight className="w-5 h-5"/></button>
 
@@ -312,7 +313,7 @@ const App = () => {
                       {String(timeLeft.days).padStart(2, '0')}D : {String(timeLeft.hours).padStart(2, '0')}H : {String(timeLeft.minutes).padStart(2, '0')}M
                    </div>
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-700 group-hover:text-white" />
+                <ArrowRight className="w-5 h-5 text-gray-700 group-hover:text-white transition-colors" />
               </button>
             )}
             <button onClick={() => window.open(getWaLink(`Interesse nos shows da Arena Henko`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-5 rounded-3xl flex items-center gap-4 hover:border-red-600 transition-all text-left group">
@@ -360,12 +361,12 @@ const App = () => {
       <section id="servicos" className="py-32 px-4 bg-neutral-900/20 text-white">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 tracking-tighter">A Experiência Completa</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6 text-white">
             {ARENA_SERVICES_DATA.map((s, i) => (
               <div key={i} className="group relative h-[480px] rounded-[56px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
                 <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" alt={s.title} /></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent z-10"></div>
-                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left text-white">
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
                   <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md">
                     {s.icon}
                   </div>
@@ -443,6 +444,7 @@ const App = () => {
                                         {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-white"/> : <Upload className="w-4 h-4"/>}
                                         {isUploading ? "ENVIANDO..." : "SUBIR FOTO"}
                                       </button>
+                                      <p className="text-center mt-3 text-[9px] font-bold text-gray-600 uppercase tracking-widest">{generateMatchHashtag(m.home, m.away)}</p>
                                    </div>
                                 </div>
                              </div>
@@ -535,7 +537,7 @@ const App = () => {
             <div key={photo.id} className="aspect-[4/5] relative group overflow-hidden rounded-[56px] border border-neutral-800 bg-neutral-900 shadow-2xl transition-all hover:border-red-600/50 hover:-translate-y-3">
               <img src={photo.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Moment" />
               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 opacity-80"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-10 text-left">
+              <div className="absolute bottom-0 left-0 right-0 p-10 text-left text-white">
                 <span className="bg-red-600 text-white text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest mb-3 inline-block border border-red-500/30 backdrop-blur-sm">{getMatchTitle(photo.matchId)}</span>
                 <p className="text-white text-lg font-black uppercase tracking-tight text-white">{photo.userName}</p>
                 <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-widest">{new Date(photo.timestamp).toLocaleDateString()}</p>
@@ -652,7 +654,7 @@ const App = () => {
            <LockKeyhole className="w-6 h-6 text-gray-500 group-hover:text-red-600 text-white" />
         </div>
         <img src="https://i.imgur.com/cSYIvq6.png" className="h-12 mx-auto mb-10 grayscale opacity-30" alt="Footer Logo" />
-        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-gray-400 mb-2">Hospitalidade Arena Henko © 2026</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-gray-400 mb-2 text-white">Hospitalidade Arena Henko © 2026</p>
         <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-gray-500">Morumbis • São Paulo • Brasil</p>
       </footer>
     </div>
