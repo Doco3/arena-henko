@@ -10,7 +10,6 @@ import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, d
 
 // --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-// appId fixo para garantir que celular e PC acessem o mesmo banco de dados
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-prod-v1';
 
 let auth, db;
@@ -21,10 +20,10 @@ if (firebaseConfig) {
 }
 
 // --- CONFIGURAÇÃO DO APP ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // Henko@2026#
+const ADMIN_HASH = "SGVua29AMjAyNiM="; // 
 const DEMO_MODE = true;
 
-// --- DADOS ESTÁTICOS ---
+// --- DADOS ESTÁTICOS (DEFINIDOS UMA ÚNICA VEZ NO TOPO) ---
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
@@ -104,7 +103,7 @@ const REVIEWS_DATA = [
   { name: "Pedro Almeida", role: "Empresário", text: "Simplesmente fantástico. O ambiente para networking é ótimo.", initial: "P" }
 ];
 
-// --- UTILITÁRIOS ---
+// --- COMPONENTES AUXILIARES ---
 
 const ImageWithFallback = ({ src, alt, className, fallback }) => {
   const [error, setError] = useState(false);
@@ -134,8 +133,10 @@ const compressImage = (file) => {
   });
 };
 
+// --- COMPONENTE PRINCIPAL ---
+
 const App = () => {
-  // --- ESTADOS NAVEGAÇÃO ---
+  // Estados de Navegação
   const [currentView, setCurrentView] = useState('home'); 
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminInputPass, setAdminInputPass] = useState('');
@@ -143,20 +144,20 @@ const App = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  // --- ESTADOS CONTEÚDO ---
+  // Estados de Conteúdo
   const [activeSportId, setActiveSportId] = useState(2); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [toast, setToast] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
+  // Estados Firebase
   const [user, setUser] = useState(null);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  // --- LÓGICA ---
-
+  // Handlers de UI
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -197,8 +198,7 @@ const App = () => {
   const isUploadAllowed = (dateStr, timeStr) => {
     if (DEMO_MODE) return true; 
     const matchDate = parseMatchDate(dateStr, timeStr);
-    const now = new Date();
-    const diffHours = (now - matchDate) / (1000 * 60 * 60);
+    const diffHours = (new Date() - matchDate) / (1000 * 60 * 60);
     return diffHours >= -2 && diffHours <= 4;
   };
 
@@ -222,16 +222,14 @@ const App = () => {
     }
   };
 
-  // --- FIREBASE SYNC ---
+  // Efeitos Firebase
   useEffect(() => {
     if (!auth) return;
     const initAuth = async () => {
       try {
         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
         else await signInAnonymously(auth);
-      } catch (e) {
-        console.error("Auth Error:", e);
-      }
+      } catch (e) { console.error("Auth error:", e); }
     };
     initAuth();
     const unsubscribe = onAuthStateChanged(auth, setUser);
@@ -259,10 +257,20 @@ const App = () => {
       const compressedBase64 = await compressImage(file);
       const photosCollection = collection(db, 'artifacts', appId, 'public', 'data', 'fan_gallery');
       await addDoc(photosCollection, {
-        matchId, image: compressedBase64, userId: user.uid, userName: "Torcedor VIP", timestamp: Date.now()
+        matchId, 
+        image: compressedBase64, 
+        userId: user.uid, 
+        userName: "Torcedor VIP", 
+        timestamp: Date.now()
       });
       showToast("Sua foto foi enviada!");
-    } catch (err) { console.error(err); } finally { setIsUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
+    } catch (err) { 
+      console.error(err); 
+      showToast("Erro ao enviar foto.");
+    } finally { 
+      setIsUploading(false); 
+      if (fileInputRef.current) fileInputRef.current.value = ''; 
+    }
   };
 
   useEffect(() => {
@@ -289,14 +297,14 @@ const App = () => {
 
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
 
-  // --- RENDERIZADORES ---
+  // --- RENDERIZADORES DE TELA ---
 
   const renderHome = () => (
     <div className="animate-fadeIn">
       {/* Hero */}
       <section className="relative h-[95vh] flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-30"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero Background" /></div>
-        <div className="relative z-10 px-4 text-center max-w-5xl mx-auto text-white">
+        <div className="absolute inset-0 z-0 opacity-30"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero Arena" /></div>
+        <div className="relative z-10 px-4 text-center max-w-4xl mx-auto text-white">
           <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800">HENKO</span></h1>
           <p className="text-lg md:text-xl text-gray-400 font-light mb-12 uppercase tracking-[0.3em]">Hospitalidade Premium & Experiências</p>
           <button onClick={() => handleNavClick('home', '#calendario')} className="inline-flex px-12 py-5 bg-red-600 text-white rounded-full font-black text-sm hover:bg-red-700 transition-all items-center gap-3 uppercase tracking-widest shadow-2xl">Explorar Agenda <ArrowRight className="w-5 h-5"/></button>
@@ -304,7 +312,7 @@ const App = () => {
           <div className="mt-20 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-3xl mx-auto">
             {nextMatch && (
               <button onClick={() => handleNavClick('home', '#calendario')} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-5 rounded-3xl flex items-center gap-4 hover:border-red-600 transition-all text-left group relative">
-                <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 text-white">ÚLTIMAS VAGAS</div>
+                <div className="absolute -top-3 -right-2 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50">ÚLTIMAS VAGAS</div>
                 <div className="bg-neutral-800 p-3 rounded-2xl group-hover:bg-red-600 transition-colors shrink-0"><ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" /></div>
                 <div className="flex-1 min-w-0">
                    <p className="text-[9px] text-red-500 font-black uppercase tracking-widest mb-1 flex items-center gap-1 text-red-500"><Ticket className="w-3 h-3"/> Próximo Jogo</p>
@@ -366,7 +374,7 @@ const App = () => {
               <div key={i} className="group relative h-[480px] rounded-[56px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
                 <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-100" alt={s.title} /></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent z-10"></div>
-                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left text-white">
                   <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md">
                     {s.icon}
                   </div>
@@ -392,7 +400,7 @@ const App = () => {
             ))}
           </div>
 
-          <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-8 border border-neutral-800 shadow-3xl text-white">
+          <div className="bg-neutral-900/30 backdrop-blur-sm rounded-[60px] p-8 border border-neutral-800 shadow-3xl">
              <div className="grid lg:grid-cols-5 gap-12 items-center text-center">
                 <div className="lg:col-span-2 flex flex-col items-center">
                    <div className="w-48 h-48 mb-8 bg-neutral-950 rounded-[48px] p-10 flex items-center justify-center border border-neutral-800 overflow-hidden relative shadow-inner">
@@ -405,7 +413,7 @@ const App = () => {
                   <h4 className="text-red-500 text-[11px] font-black uppercase tracking-[0.5em] mb-8 flex items-center gap-3 justify-center lg:justify-start text-red-500 uppercase tracking-widest"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
                   {SPORT_EVENTS_DATA.find(s => s.id === activeSportId).matches.length > 0 ? SPORT_EVENTS_DATA.find(s => s.id === activeSportId).matches.map((m, i) => (
                     <div key={i} className="bg-neutral-950/80 border border-neutral-800 rounded-[32px] overflow-hidden hover:border-red-600/30 transition-all text-white">
-                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-6 flex items-center justify-between text-white">
+                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-6 flex items-center justify-between">
                            <div className="flex items-center gap-6">
                               <span className="text-lg font-black text-red-600 w-16">{m.date}</span>
                               <div className="flex items-center gap-4">
@@ -458,7 +466,7 @@ const App = () => {
         </div>
       </section>
 
-      {/* Shows - Flyers Master com Zoom */}
+      {/* Shows */}
       <section className="py-32 px-4 bg-neutral-900/30 text-center text-white">
          <div className="max-w-7xl mx-auto">
             <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em]">Shows & Entretenimento</h3>
@@ -477,11 +485,11 @@ const App = () => {
          </div>
       </section>
 
-      {/* Parceiros - 13 Logos Coloridas */}
+      {/* Parceiros */}
       <section id="parceiros" className="py-32 px-8 bg-neutral-950 border-y border-neutral-900 text-white">
          <div className="max-w-7xl mx-auto text-center text-white">
             <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16">Marcas de Elite Connosco</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center text-white">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center">
                {PARTNER_LOGOS_DATA.map((p, i) => (
                   <div key={i} className={`bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center transition-all group hover:border-red-600/30 ${p.extraSize ? 'p-4' : 'p-8'}`}>
                     <img src={p.logoUrl} className={`h-full w-full object-contain transition-all duration-500 group-hover:scale-110 ${p.extraSize ? 'scale-110' : ''}`} alt={p.name} />
@@ -491,7 +499,7 @@ const App = () => {
          </div>
       </section>
 
-      {/* Reviews */}
+      {/* Reviews Section */}
       <section className="py-32 px-4 bg-neutral-900/10 text-center text-white text-center">
          <div className="max-w-7xl mx-auto">
             <h3 className="text-4xl font-black uppercase mb-20 tracking-tighter text-white">A Melhor Avaliação do Estádio</h3>
@@ -537,7 +545,7 @@ const App = () => {
             <div key={photo.id} className="aspect-[4/5] relative group overflow-hidden rounded-[56px] border border-neutral-800 bg-neutral-900 shadow-2xl transition-all hover:border-red-600/50 hover:-translate-y-3">
               <img src={photo.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Moment" />
               <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 opacity-80"></div>
-              <div className="absolute bottom-0 left-0 right-0 p-10 text-left text-white">
+              <div className="absolute bottom-0 left-0 right-0 p-10 text-left">
                 <span className="bg-red-600 text-white text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest mb-3 inline-block border border-red-500/30 backdrop-blur-sm">{getMatchTitle(photo.matchId)}</span>
                 <p className="text-white text-lg font-black uppercase tracking-tight text-white">{photo.userName}</p>
                 <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-widest">{new Date(photo.timestamp).toLocaleDateString()}</p>
@@ -632,7 +640,7 @@ const App = () => {
         </button>
       </nav>
 
-      {/* Menu Mobile */}
+      {/* Menu Mobile Overlay */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[1000] bg-neutral-950/98 backdrop-blur-3xl flex flex-col items-center justify-center space-y-10 md:hidden animate-fadeIn text-white text-center">
           <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white p-3 border border-neutral-800 rounded-full text-white"><X className="w-10 h-10 text-white" /></button>
