@@ -8,16 +8,26 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 
-// --- CONFIGURAÇÃO DO FIREBASE (RULE 1 & 3) ---
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-  apiKey: "", 
-  authDomain: "arena-henko-official.firebaseapp.com",
-  projectId: "arena-henko-official",
-  storageBucket: "arena-henko-official.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:000000000000"
+// --- CONFIGURAÇÃO DO FIREBASE (SISTEMA DE SEGURANÇA) ---
+const getFirebaseConfig = () => {
+  try {
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      return JSON.parse(__firebase_config);
+    }
+  } catch (e) {
+    console.error("Erro ao processar config do Firebase", e);
+  }
+  return {
+    apiKey: "", 
+    authDomain: "arena-henko-official.firebaseapp.com",
+    projectId: "arena-henko-official",
+    storageBucket: "arena-henko-official.appspot.com",
+    messagingSenderId: "000000000000",
+    appId: "1:000000000000:web:000000000000"
+  };
 };
 
+const firebaseConfig = getFirebaseConfig();
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-prod';
 
 const app = initializeApp(firebaseConfig);
@@ -25,10 +35,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // --- CONFIGURAÇÕES DO APP ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // Senha: Henko@2026#
+const ADMIN_HASH = "SGVua29AMjAyNiM="; 
 const LOGO_WM_URL = 'https://i.imgur.com/cSYIvq6.png';
 
-// --- DADOS ESTÁTICOS ---
+// --- DADOS ESTÁTICOS (PADRONIZADOS) ---
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
   SAO_BERNARDO: "https://upload.wikimedia.org/wikipedia/pt/e/e7/S%C3%A3o_Bernardo_Futebol_Clube_Logo.PNG",
@@ -178,11 +188,11 @@ const App = () => {
 
   const availableAlbums = [
     'Geral',
-    ...SPORT_DATA.flatMap(s => s.matches.map(m => `${m.home} x ${m.away}`)),
-    ...SHOWS_DATA.map(e => e.name)
+    ...(SPORT_DATA || []).flatMap(s => s.matches.map(m => `${m.home} x ${m.away}`)),
+    ...(SHOWS_DATA || []).map(e => e.name)
   ];
 
-  // Helper de Data - Robustez contra tela branca
+  // Helper de Data - CORRIGIDO
   const parseMatchDate = (dateStr, timeStr) => {
     if (!dateStr || !timeStr) return new Date(2099, 0, 1);
     try {
@@ -236,7 +246,7 @@ const App = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast("Baixando imagem...");
+    showToast("Fazendo download...");
   };
 
   const handleDeletePhoto = async (photoId) => {
@@ -282,9 +292,7 @@ const App = () => {
       } catch (e) { console.error("Auth error", e); }
     };
     initAuth();
-    const unsubscribe = onAuthStateChanged(auth, (u) => {
-      setUser(u);
-    });
+    const unsubscribe = onAuthStateChanged(auth, setUser);
     return () => unsubscribe();
   }, []);
 
@@ -296,8 +304,6 @@ const App = () => {
       const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
       setGalleryPhotos(photos);
-    }, (err) => {
-      console.error("Firestore Error:", err);
     });
     return () => unsubscribe();
   }, [user]);
@@ -354,7 +360,7 @@ const App = () => {
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto relative z-20">
               {nextMatch && (
                 <button onClick={() => window.open(getWaLink(`Quero reservar o jogo: ${nextMatch.home} x ${nextMatch.away}`))} className="relative bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 transition-all group text-left w-full overflow-visible">
-                    <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1 uppercase">
+                    <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[8px] font-bold px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1 uppercase">
                        <Zap className="w-3 h-3 fill-white" /> ÚLTIMAS VAGAS
                     </div>
                     <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-[60px] flex items-center justify-center font-bold">
@@ -375,13 +381,13 @@ const App = () => {
                     </div>
                 </button>
               )}
-              <button onClick={() => window.open(getWaLink(`Interesse shows Arena Henko`))} className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-full min-h-[60px] flex items-center justify-center text-white font-bold">
+              <button onClick={() => window.open(getWaLink(`Interesse shows Arena Henko`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 transition-all group text-left w-full text-white">
                    <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-full min-h-[60px] flex items-center justify-center text-white font-bold">
                       <Music className="w-6 h-6 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
                       <p className="text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-1 flex items-center gap-2 font-black"><Star className="w-3 h-3"/> Próximo Show</p>
-                      <h3 className="text-sm font-bold text-white uppercase truncate font-bold">{SHOWS_DATA[0].name}</h3>
+                      <h3 className="text-sm font-bold uppercase truncate font-bold">{SHOWS_DATA[0].name}</h3>
                       <p className="text-[10px] text-red-500 font-bold uppercase">{SHOWS_DATA[0].date}</p>
                   </div>
                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-white ml-2 shrink-0 transition-colors"/>
@@ -390,13 +396,12 @@ const App = () => {
         </div>
       </section>
 
-      {/* Sobre */}
       <section id="sobre" className="py-32 px-4 border-b border-neutral-900 text-center text-white bg-neutral-950">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center text-left">
           <div>
             <span className="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">EXCLUSIVIDADE</span>
-            <h2 className="text-5xl font-black text-white uppercase mb-8 leading-tight">O palco da sua próxima história</h2>
-            <p className="text-gray-400 text-lg leading-relaxed mb-8 font-light">Localizada no coração do Morumbis, a Arena Henko redefine hospitalidade. Gastronomia, conforto e a melhor vista do espetáculo em um ambiente planejado para o seu prazer.</p>
+            <h2 className="text-5xl font-bold text-white uppercase mb-8 leading-tight">O palco da sua próxima história</h2>
+            <p className="text-gray-400 text-lg leading-relaxed mb-8 font-light font-normal">Localizada no coração do Morumbis, a Arena Henko redefine hospitalidade. Gastronomia, conforto e a melhor vista do espetáculo em um ambiente planejado para o seu prazer.</p>
             <div className="grid grid-cols-3 gap-8 pt-8 border-t border-neutral-800 text-white font-bold">
               <div><h4 className="text-3xl font-black">5+</h4><p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Anos</p></div>
               <div><h4 className="text-3xl font-black">100+</h4><p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Eventos</p></div>
@@ -407,18 +412,17 @@ const App = () => {
              <div className="bg-neutral-900/50 p-8 rounded-[32px] border border-neutral-800 text-left hover:border-red-900/50 transition-all group">
                 <Star className="text-red-600 w-6 h-6 mb-4 group-hover:scale-110 transition-transform font-bold" />
                 <h4 className="text-xl font-bold uppercase mb-2 text-white">Hospitalidade Elite</h4>
-                <p className="text-gray-400 text-sm leading-relaxed font-light">Serviço de catering premium assinado por chefs e atendimento especializado durante todo o evento.</p>
+                <p className="text-gray-400 text-sm leading-relaxed font-normal">Serviço de catering premium assinado por chefs e atendimento especializado durante todo o evento.</p>
              </div>
              <div className="bg-neutral-900/50 p-8 rounded-[32px] border border-neutral-800 text-left hover:border-red-900/50 transition-all group text-white font-black">
-                <Shield className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform text-red-600 font-bold" />
+                <Shield className="text-red-600 w-8 h-8 mb-4 group-hover:scale-110 transition-transform font-bold" />
                 <h4 className="text-xl font-bold uppercase mb-2 text-white font-bold">Privacidade Total</h4>
-                <p className="text-gray-400 text-sm leading-relaxed font-light">Ambiente seguro e reservado para networking de alto valor entre convidados e parceiros.</p>
+                <p className="text-gray-400 text-sm leading-relaxed font-normal">Ambiente seguro e reservado para networking de alto valor entre convidados e parceiros.</p>
              </div>
           </div>
         </div>
       </section>
 
-      {/* Serviços */}
       <section id="servicos" className="py-32 bg-neutral-900/30 px-4 text-white text-center">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-4xl md:text-6xl font-bold uppercase mb-20 tracking-tighter text-white">A Experiência Completa</h2>
@@ -430,7 +434,7 @@ const App = () => {
                 <div className="relative z-20 h-full p-10 flex flex-col justify-end">
                   <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md font-bold">{s.icon}</div>
                   <h3 className="text-2xl font-bold uppercase mb-3 leading-none text-white">{s.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{s.desc}</p>
+                  <p className="text-gray-400 text-sm leading-relaxed font-normal">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -438,14 +442,13 @@ const App = () => {
         </div>
       </section>
 
-      {/* Calendário */}
       <section id="calendario" className="py-32 px-4 text-white text-center bg-neutral-950">
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
-            <h2 className="text-5xl font-bold uppercase tracking-tighter text-white font-black font-black">Temporada <span className="text-red-600 font-black">2026</span></h2>
+            <h2 className="text-5xl font-bold uppercase tracking-tighter text-white font-black">Temporada <span className="text-red-600 font-black">2026</span></h2>
             <div className="w-24 h-1 bg-red-600 mx-auto rounded-full mt-6 shadow-[0_0_15px_rgba(220,38,38,0.5)]"></div>
           </div>
-          <div className="flex flex-wrap gap-2 mb-12 justify-center text-white">
+          <div className="flex flex-wrap gap-2 mb-12 justify-center text-white font-bold">
             {SPORT_DATA.map(s => (
               <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105 font-black' : 'bg-neutral-900 text-gray-500 hover:text-gray-300'}`}>{s.name}</button>
             ))}
@@ -455,7 +458,7 @@ const App = () => {
               <div className="grid lg:grid-cols-5 gap-12 items-center text-center">
                 <div className="lg:col-span-2 flex flex-col items-center">
                   <div className="w-40 h-40 lg:w-56 lg:h-56 mb-6 bg-neutral-950 rounded-[30px] p-8 flex items-center justify-center border border-neutral-800 shadow-inner group transition-all hover:border-red-600/30 overflow-hidden relative text-white">
-                    <ImageWithFallback key={selectedSport.id} src={selectedSport.image} className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 p-2 ${selectedSport.id === 3 ? 'brightness-0 invert' : ''}`} alt="Champ" fallback={<Trophy className="w-16 h-16 text-red-600" />} />
+                    <ImageWithFallback key={selectedSport.id} src={selectedSport.image} className={`max-w-full max-h-full object-contain transition-transform duration-700 group-hover:scale-110 p-2 ${selectedSport.id === 3 ? 'brightness-0 invert' : ''}`} alt="Champ" fallback={<Trophy className="w-16 h-16 text-red-600 font-black" />} />
                   </div>
                   <h3 className="text-3xl lg:text-4xl font-black uppercase leading-none text-white font-bold">{selectedSport.name}</h3>
                   <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.5em] mt-3">{selectedSport.subtitle}</p>
@@ -472,8 +475,8 @@ const App = () => {
                               <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block font-black">{m.home}</span>
                               <ImageWithFallback src={m.homeLogo} className="w-6 h-6 object-contain font-black" alt="H" />
                               <span className="text-[10px] font-bold opacity-20">VS</span>
-                              <ImageWithFallback src={m.awayLogo} className="w-6 h-6 object-contain font-black" alt="A" />
-                              <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block font-black">{m.away}</span>
+                              <ImageWithFallback src={m.awayLogo} className="w-6 h-6 object-contain" alt="A" />
+                              <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block">{m.away}</span>
                             </div>
                             {m.scarcity && (
                               <div className="ml-2 hidden sm:flex items-center gap-1 bg-red-600/10 border border-red-600/30 px-2 py-1 rounded-full animate-pulse text-red-500 uppercase font-black font-bold font-black font-black"><Zap className="w-3 h-3 fill-red-500 font-black" /><span className="text-[8px] tracking-widest font-black uppercase font-black">{m.scarcity}</span></div>
@@ -500,7 +503,6 @@ const App = () => {
         </div>
       </section>
 
-      {/* Shows */}
       <section className="py-32 bg-neutral-900/30 px-4 text-white text-center text-white font-black">
          <div className="max-w-7xl mx-auto">
             <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em] text-red-500 font-bold font-black font-black">Shows & Entretenimento</h3>
@@ -519,10 +521,9 @@ const App = () => {
          </div>
       </section>
 
-      {/* Parceiros Master */}
       <section id="parceiros" className="py-32 px-8 bg-neutral-950 border-y border-neutral-900 text-white text-center font-bold uppercase tracking-widest font-black">
          <div className="max-w-7xl mx-auto text-center text-white font-black font-black">
-            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16 text-gray-500 font-bold uppercase tracking-[0.4em] font-black font-black">Marcas de Elite Connosco</h3>
+            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16 text-gray-500 font-bold uppercase tracking-[0.4em] font-black">Marcas de Elite Connosco</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center text-white font-black">
                {PARTNERS_DATA.map((p, i) => (
                   <div key={i} className={`bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center transition-all group hover:border-red-600/30 ${p.extraSize ? 'p-4' : 'p-8'} font-black`}>
@@ -533,7 +534,6 @@ const App = () => {
          </div>
       </section>
 
-      {/* Reviews */}
       <section className="py-32 px-4 bg-neutral-900/10 text-center text-white text-center text-white font-bold uppercase tracking-widest font-black">
          <div className="max-w-7xl mx-auto text-white font-bold font-black">
             <h3 className="text-4xl font-black uppercase mb-16 tracking-tighter text-white uppercase font-bold text-white font-black">A Melhor Avaliação</h3>
@@ -552,14 +552,13 @@ const App = () => {
          </div>
       </section>
 
-      {/* Contato Original */}
       <section id="contato" className="py-40 bg-neutral-950 px-6 relative overflow-hidden text-white border-t border-neutral-900 text-center font-bold font-black font-black">
         <div className="max-w-4xl mx-auto relative z-10 text-white font-bold font-bold font-bold font-black font-black">
           <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter text-white font-black text-white font-bold font-black font-black">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8 font-black text-red-600 font-bold font-black font-black">Experiência.</span></h2>
           <div className="grid md:grid-cols-3 gap-8 mb-20 text-white font-bold font-bold font-bold font-black font-black font-black font-black">
-             <a href="https://instagram.com/arenahenko" target="_blank" rel="noreferrer" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all font-bold font-black font-black font-black"><Instagram className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold font-black font-black font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-black font-black font-black font-black">Instagram</span></a>
-             <a href="https://wa.me/5511940741355" target="_blank" rel="noreferrer" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold font-black font-black font-black font-black"><Phone className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold font-black font-black font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-black font-black font-black font-black">WhatsApp</span></a>
-             <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold font-black font-black font-black font-black"><Mail className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold font-black font-black font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-black font-black font-black font-black">E-mail</span></a>
+             <a href="https://instagram.com/arenahenko" target="_blank" rel="noreferrer" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all font-bold font-black font-black font-black"><Instagram className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-black font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-black font-black font-black">Instagram</span></a>
+             <a href="https://wa.me/5511940741355" target="_blank" rel="noreferrer" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold font-black font-black font-black font-black"><Phone className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-black font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-black font-black font-black">WhatsApp</span></a>
+             <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold font-black font-black font-black font-black"><Mail className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-black font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-black font-black font-black">E-mail</span></a>
           </div>
         </div>
       </section>
@@ -570,7 +569,7 @@ const App = () => {
     <div className="pt-32 pb-20 px-4 min-h-screen bg-neutral-950 animate-fadeIn text-center text-white font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
       <div className="max-w-7xl mx-auto text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black font-black font-black uppercase tracking-widest uppercase font-black font-black font-black font-black font-black">
         <button onClick={() => handleNavClick('home', '#')} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors uppercase text-[10px] font-bold tracking-widest mb-10 mx-auto border border-neutral-800 px-10 py-5 rounded-full bg-neutral-900/50 shadow-xl hover:bg-neutral-800 text-gray-400 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase font-black font-black font-black"><ArrowLeft className="w-4 h-4 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase" /> Voltar para o Site</button>
-        <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-10 text-white text-center font-bold uppercase font-bold uppercase tracking-widest uppercase font-bold font-bold font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase">Galeria da <span className="text-red-600 underline decoration-red-600/20 underline-offset-8 text-red-600 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase">Torcida</span></h2>
+        <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-10 text-white text-center font-bold uppercase font-bold uppercase tracking-widest uppercase font-bold font-bold font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase">Galeria da <span className="text-red-600 underline decoration-red-600/20 underline-offset-8 text-red-600 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black font-black font-black">Torcida</span></h2>
         <div className="flex flex-wrap justify-center gap-2 mb-16 text-white text-center font-bold uppercase tracking-widest uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black font-black font-black">
             <button onClick={() => setGalleryFilter('Todos')} className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${galleryFilter === 'Todos' ? 'bg-red-600 text-white shadow-lg font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black font-black font-black' : 'bg-neutral-900 text-gray-500 hover:text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black font-black font-black'}`}>Todos</button>
             {availableAlbums.filter(a => a !== 'Geral').map(album => (
@@ -592,7 +591,7 @@ const App = () => {
               </div>
             </div>
           )) : (
-            <div className="col-span-full py-40 border-2 border-dashed border-neutral-800 rounded-[5rem] flex flex-col items-center justify-center text-gray-600 bg-neutral-900/20 font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase font-black font-black font-black">
+            <div className="col-span-full py-40 border-2 border-dashed border-neutral-800 rounded-[5rem] flex flex-col items-center justify-center text-gray-600 bg-neutral-900/20 font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase font-black">
                <Camera className="w-20 h-20 mb-6 opacity-10 text-white font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase font-black font-black font-black" />
                <p className="text-2xl font-bold uppercase tracking-widest text-white font-black font-black font-black font-black font-black font-black font-black font-black uppercase tracking-widest uppercase font-black font-black font-black">Álbum em Branco...</p>
             </div>
