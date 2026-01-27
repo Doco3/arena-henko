@@ -88,11 +88,11 @@ const PARTNERS_DATA = [
   { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', extra: true }, 
   { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png', extra: false },
   { name: 'Kicaldo', logoUrl: 'https://i.imgur.com/6ZVogLo.png', extra: false },
-  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', extra: true }, 
+  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', extra: true, invert: true }, // Invertido para visibilidade
   { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png', extra: false },
   { name: 'Cap-Lab', logoUrl: 'https://i.imgur.com/LDGTXoZ.png', extra: false },
   { name: 'Estado Luso', logoUrl: 'https://i.imgur.com/rS7PHb3.png', extra: false },
-  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extra: true }, 
+  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extra: true, invert: true }, // Invertido para visibilidade
   { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png', extra: false },
   { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png', extra: false },
 ];
@@ -102,7 +102,7 @@ const REVIEWS_DATA = [
   { name: "João Paulo S.", text: "Conforto e segurança total para levar minha família. Passam muita credibilidade em tudo o que fazem.", role: "Empresário", initial: "J" },
   { name: "Felipe Almeida", text: "O buffet é sensacional e a vista é a melhor possível. Atendimento nota 10 de toda a equipe!", role: "Google Review", initial: "F" },
   { name: "Ricardo Santos", text: "Atendimento diferenciado. Vale cada centavo pela hospitalidade e tranquilidade.", role: "Convidado VIP", initial: "R" },
-  { name: "Letícia Rossi", text: "Ambiente familiar e muito seguro. Meus filhos adoraram o espaço. É o melhor investimento.", role: "Google Review", initial: "L" },
+  { name: "Letícia Rossi", text: "Ambiente familiar e muito seguro. Meus filhos adoraram o espaco. É o melhor investimento.", role: "Google Review", initial: "L" },
 ];
 
 // --- 3. UTILITÁRIOS ---
@@ -217,7 +217,7 @@ const App = () => {
           </div>
           <div className="hidden md:flex items-center gap-10 font-black uppercase text-[10px] tracking-widest">
             {NAV_LINKS.map(link => (
-              <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300">{link.name}</a>
+              <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300 font-black">{link.name}</a>
             ))}
             <button onClick={() => document.getElementById('login-modal').classList.remove('hidden')} className="hover:text-red-600 transition-all p-2 bg-white/5 rounded-full">
                <LockKeyhole className="w-5 h-5" />
@@ -248,7 +248,7 @@ const App = () => {
           </h1>
           <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg font-light">Hospitalidade Premium & Experiências</p>
           
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12 font-black">
             {nextMatch && (
               <div onClick={() => window.open(getWaLink(`Interesse no jogo ${nextMatch.home} x ${nextMatch.away}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left relative group shadow-2xl">
                 <div className="absolute top-4 right-4 bg-red-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg animate-pulse z-20">
@@ -258,7 +258,7 @@ const App = () => {
                   <img src={nextMatch.homeLogo} alt="Next" className="object-contain" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1 font-black uppercase"><Zap className="w-3 h-3 fill-red-500" /> Próximo Jogo</p>
+                  <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1 font-black uppercase tracking-widest"><Zap className="w-3 h-3 fill-red-500" /> Próximo Jogo</p>
                   <h3 className="text-base font-black uppercase leading-none truncate text-white">{nextMatch.home} x {nextMatch.away}</h3>
                   <div className="flex items-center gap-2 mt-2 text-gray-500 text-[10px] font-mono">
                     <Clock className="w-3 h-3 text-red-500" />
@@ -272,13 +272,13 @@ const App = () => {
                 <Music className="w-7 h-7" />
               </div>
               <div className="flex-1">
-                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black uppercase">Próximo Evento</p>
+                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black uppercase tracking-widest">Próximo Evento</p>
                 <h3 className="text-base font-black uppercase leading-none text-white">{nextEvent.name}</h3>
                 <p className="text-red-600 text-[9px] mt-2 font-mono uppercase tracking-widest">{nextEvent.date}</p>
               </div>
             </div>
           </div>
-          <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl">Explorar Agenda Completa</a>
+          <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl font-black">Explorar Agenda Completa</a>
         </div>
       </section>
 
@@ -303,14 +303,14 @@ const App = () => {
             </div>
           </div>
           <div className="grid gap-4">
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group">
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group font-black">
                 {/* Ícone Reduzido ao Vermelho conforme solicitado */}
-                <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
-                <div><h4 className="text-sm font-black uppercase italic text-white">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal">Somos credenciados e oficiais no Morumbis. Fuja de fraudes.</p></div>
+                <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform font-black" />
+                <div><h4 className="text-sm font-black uppercase italic text-white font-black">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal font-black">Somos credenciados e oficiais no Morumbis. Fuja de fraudes.</p></div>
              </div>
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group">
-                <Award className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
-                <div><h4 className="text-sm font-black uppercase italic text-white">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal">Buffet premium liberado e bebidas de primeira classe.</p></div>
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group font-black">
+                <Award className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform font-black" />
+                <div><h4 className="text-sm font-black uppercase italic text-white font-black">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal font-black">Buffet premium liberado e bebidas de primeira classe.</p></div>
              </div>
           </div>
         </div>
@@ -318,17 +318,17 @@ const App = () => {
 
       {/* Serviços */}
       <section id="servicos" className="py-24 px-6 bg-black text-center font-black">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto font-black">
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black">Full Experience</h2>
           <div className="grid md:grid-cols-3 gap-10 font-black">
             {SERVICES_DATA.map((s, i) => (
-              <div key={i} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
-                <div className="absolute inset-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={s.title} /></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              <div key={i} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl font-black">
+                <div className="absolute inset-0 font-black"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110 font-black" alt={s.title} /></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent font-black" />
                 <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left font-black">
-                  <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl">{s.icon}</div>
-                  <h3 className="text-2xl font-black uppercase mb-2 text-white italic leading-none">{s.title}</h3>
-                  <p className="text-gray-300 text-sm font-normal leading-tight">{s.desc}</p>
+                  <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl font-black">{s.icon}</div>
+                  <h3 className="text-2xl font-black uppercase mb-2 text-white italic leading-none font-black">{s.title}</h3>
+                  <p className="text-gray-300 text-sm font-normal leading-tight font-black">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -339,58 +339,57 @@ const App = () => {
       {/* Agenda (Calendário) com Efeito Smooth */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white">
         <div className="max-w-6xl mx-auto font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic text-white font-black">Agenda <span className="text-red-600">2026</span></h2>
-          <div className="flex flex-wrap gap-2 justify-center mb-12">
+          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic text-white font-black">Agenda <span className="text-red-600 font-black">2026</span></h2>
+          <div className="flex flex-wrap gap-2 justify-center mb-12 font-black">
             {SPORT_DATA.map(s => (
-              <button key={s.id} onClick={() => { setActiveSportId(s.id); setExpandedMatchKey(null); }} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500 hover:text-white border border-white/5'}`}>{s.name}</button>
+              <button key={s.id} onClick={() => { setActiveSportId(s.id); setExpandedMatchKey(null); }} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105 font-black' : 'bg-neutral-900 text-gray-500 hover:text-white border border-white/5 font-black'}`}>{s.name}</button>
             ))}
           </div>
-          {/* Aba com Animação Smooth de entrada baseada na key do campeonato */}
-          <div key={activeSportId} className="bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth">
-             <div className="grid lg:grid-cols-5 gap-12 items-center">
-                <div className="lg:col-span-2 text-center group">
-                    <div className="bg-black w-44 h-44 mx-auto rounded-3xl p-8 border border-neutral-800 flex items-center justify-center mb-6 transition-transform duration-500 hover:scale-110 shadow-2xl overflow-hidden">
+          <div key={activeSportId} className="bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth transition-all duration-500 font-black">
+             <div className="grid lg:grid-cols-5 gap-12 items-center font-black">
+                <div className="lg:col-span-2 text-center group font-black">
+                    <div className="bg-black w-44 h-44 mx-auto rounded-3xl p-8 border border-neutral-800 flex items-center justify-center mb-6 transition-transform duration-500 hover:scale-110 shadow-2xl overflow-hidden font-black">
                         <ImageWithFallback 
                             src={selectedSport.image} 
                             alt="Campeonato" 
-                            className="max-h-full object-contain" 
+                            className="max-h-full object-contain font-black" 
                             style={selectedSport.id === 3 ? { filter: 'brightness(0) invert(1)' } : {}} 
                         />
                     </div>
-                    <h3 className="text-4xl font-black uppercase italic leading-none text-white">{selectedSport.name}</h3>
+                    <h3 className="text-4xl font-black uppercase italic leading-none text-white font-black">{selectedSport.name}</h3>
                     <p className="text-red-600 text-[10px] tracking-[0.4em] mt-3 uppercase font-black">{selectedSport.subtitle}</p>
                 </div>
-                <div className="lg:col-span-3 space-y-10 font-normal text-left font-black text-white">
+                <div className="lg:col-span-3 space-y-10 font-normal text-left font-black text-white font-black">
                     {visibleMatches.length > 0 ? visibleMatches.map((m, i) => (
                       <div key={i} className="relative font-black">
                          {m.scarcity && (
-                             <div className="absolute -top-3 left-6 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg z-10 animate-bounce flex items-center gap-1 uppercase tracking-widest">
-                                <Zap className="w-3 h-3 fill-white" /> {m.scarcity}
+                             <div className="absolute -top-3 left-6 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg z-10 animate-bounce flex items-center gap-1 uppercase tracking-widest font-black">
+                                <Zap className="w-3 h-3 fill-white font-black" /> {m.scarcity}
                              </div>
                          )}
-                         <div className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'}`}>
-                            <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-7 flex items-center justify-between group">
-                                <div className="flex items-center gap-8 font-black text-white">
+                         <div className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl font-black' : 'border-neutral-800 font-black'}`}>
+                            <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-7 flex items-center justify-between group font-black">
+                                <div className="flex items-center gap-8 font-black text-white font-black">
                                     <span className="text-xs text-gray-500 w-10 font-black">{m.date}</span>
-                                    <div className="flex items-center gap-4">
-                                    <span className="uppercase text-sm hidden sm:block font-black text-white">{m.home}</span>
-                                    <img src={m.homeLogo} className="w-8 h-8 object-contain" alt="H" />
-                                    <span className="opacity-30 italic text-xs font-black">VS</span>
-                                    <img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-8 h-8 object-contain" alt="A" />
-                                    <span className="uppercase text-sm hidden sm:block font-black text-white">{m.away}</span>
+                                    <div className="flex items-center gap-4 font-black">
+                                    <span className="uppercase text-sm hidden sm:block font-black text-white font-black">{m.home}</span>
+                                    <img src={m.homeLogo} className="w-8 h-8 object-contain font-black" alt="H" />
+                                    <span className="opacity-30 italic text-xs font-black font-black">VS</span>
+                                    <img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-8 h-8 object-contain font-black" alt="A" />
+                                    <span className="uppercase text-sm hidden sm:block font-black text-white font-black">{m.away}</span>
                                     </div>
                                 </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMatchKey === i ? 'rotate-180 text-red-600' : 'text-gray-700'}`} />
+                                <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMatchKey === i ? 'rotate-180 text-red-600 font-black' : 'text-gray-700 font-black'}`} />
                             </button>
-                            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                                <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 font-black text-white text-left">
+                            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100 font-black' : 'max-h-0 opacity-0 font-black'}`}>
+                                <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 font-black text-white text-left font-black">
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-[9px] text-gray-400 uppercase tracking-widest font-black">
-                                        <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><Clock className="w-3 h-3"/> Horário</span><span className="text-white text-xs font-black">{m.time}</span></div>
-                                        <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><LockKeyhole className="w-3 h-3"/> Abertura</span><span className="text-red-500 text-xs font-black font-black font-black">2h Antes</span></div>
-                                        <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><Wine className="w-3 h-3"/> Open Bar</span><span className="text-white text-[8px] font-black">Premium & Drinks</span></div>
-                                        <div className="flex flex-col gap-1 font-black"><span className="text-gray-600 flex items-center gap-1"><Coffee className="w-3 h-3"/> Open Food</span><span className="text-white text-[8px] font-black">Buffet Completo</span></div>
+                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black"><Clock className="w-3 h-3 font-black"/> Horário</span><span className="text-white text-xs font-black">{m.time}</span></div>
+                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black"><LockKeyhole className="w-3 h-3 font-black"/> Abertura</span><span className="text-red-500 text-xs font-black font-black font-black font-black">2h Antes</span></div>
+                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black"><Wine className="w-3 h-3 font-black"/> Open Bar</span><span className="text-white text-[8px] font-black font-black">Premium & Drinks</span></div>
+                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black"><Coffee className="w-3 h-3 font-black"/> Open Food</span><span className="text-white text-[8px] font-black font-black">Buffet Completo</span></div>
                                     </div>
-                                    <button onClick={() => window.open(getWaLink(`Olá! Quero reservar minha experiência exclusiva para o jogo ${m.home} x ${m.away} na Arena Henko.`))} className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-xl hover:scale-105 transition-all">Reservar Agora</button>
+                                    <button onClick={() => window.open(getWaLink(`Olá! Quero reservar minha experiência exclusiva para o jogo ${m.home} x ${m.away} na Arena Henko.`))} className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-xl hover:scale-105 transition-all font-black">Reservar Agora</button>
                                 </div>
                             </div>
                          </div>
@@ -403,9 +402,9 @@ const App = () => {
       </section>
 
       {/* Próximos Eventos */}
-      <section id="eventos" className="py-24 px-6 bg-black">
+      <section id="eventos" className="py-24 px-6 bg-black font-black">
         <div className="max-w-7xl mx-auto font-black text-white font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white font-black">Próximos <span className="text-red-600">Eventos</span></h2>
+          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white font-black">Próximos <span className="text-red-600 font-black">Eventos</span></h2>
           <div className="grid md:grid-cols-3 gap-12 font-black">
             {SHOWS_DATA.map((show, i) => (
               <div key={i} className="group flex flex-col font-black">
@@ -416,8 +415,8 @@ const App = () => {
                     <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block font-black">{show.date}</span>
                     <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none font-black">{show.name}</h3>
                     <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal font-black">{show.desc}</p>
-                    <button onClick={() => window.open(getWaLink(`Interesse no evento ${show.name}`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-500 transition-colors group/btn font-black uppercase">
-                        Ver Disponibilidade <div className="p-2.5 bg-neutral-900 rounded-full group-hover/btn:bg-red-600 transition-all font-black"><ArrowRight className="w-4 h-4"/></div>
+                    <button onClick={() => window.open(getWaLink(`Interesse no evento ${show.name}`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-500 transition-colors group/btn font-black uppercase font-black">
+                        Ver Disponibilidade <div className="p-2.5 bg-neutral-900 rounded-full group-hover/btn:bg-red-600 transition-all font-black"><ArrowRight className="w-4 h-4 font-black"/></div>
                     </button>
                 </div>
               </div>
@@ -426,14 +425,19 @@ const App = () => {
         </div>
       </section>
 
-      {/* Parceiros - 13 Logos Coloridos (Zoom ajustado e fundo mais claro) */}
+      {/* Parceiros - 13 Logos Coloridos */}
       <section id="parceiros" className="py-24 bg-neutral-800/40 border-y border-neutral-900 px-10 font-black">
          <div className="max-w-7xl mx-auto text-center font-black">
-            <h3 className="text-[10px] text-gray-500 uppercase tracking-[0.6em] mb-20 font-black italic uppercase">Marcas de Elite Conosco</h3>
+            <h3 className="text-[10px] text-gray-500 uppercase tracking-[0.6em] mb-20 font-black italic uppercase font-black">Marcas de Elite Conosco</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-10 items-center font-black text-center">
                {PARTNERS_DATA.map((p, i) => (
-                  <div key={i} className={`h-20 flex items-center justify-center transition-transform duration-500 ${p.extra ? 'hover:scale-150 scale-140' : 'hover:scale-125'} font-black`}>
-                    <img src={p.logoUrl} className="max-h-full max-w-full object-contain" alt={p.name} />
+                  <div key={i} className={`h-20 flex items-center justify-center transition-transform duration-500 ${p.extra ? 'hover:scale-150 scale-140 font-black' : 'hover:scale-125 font-black'} font-black`}>
+                    <img 
+                        src={p.logoUrl} 
+                        className="max-h-full max-w-full object-contain font-black" 
+                        alt={p.name} 
+                        style={p.invert ? { filter: 'brightness(0) invert(1)' } : {}}
+                    />
                   </div>
                ))}
             </div>
@@ -442,56 +446,56 @@ const App = () => {
 
       {/* Contato Final com Texto Reduzido */}
       <section id="contato" className="py-40 bg-black text-center font-black">
-         <div className="max-w-5xl mx-auto font-black text-white">
+         <div className="max-w-5xl mx-auto font-black text-white font-black">
             <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic tracking-tighter leading-none text-white font-black">
-                Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black">HENKO.</span>
+                Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black font-black">HENKO.</span>
             </h2>
-            <div className="grid sm:grid-cols-3 gap-6 font-black text-white uppercase">
-               <a href="https://instagram.com/arenahenko" target="_blank" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white">
-                 <Instagram className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white">Instagram</span>
+            <div className="grid sm:grid-cols-3 gap-6 font-black text-white uppercase font-black">
+               <a href="https://instagram.com/arenahenko" target="_blank" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black">
+                 <Instagram className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black">Instagram</span>
                </a>
-               <a href="https://wa.me/5511940741355" target="_blank" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white">
-                 <Phone className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white">WhatsApp</span>
+               <a href="https://wa.me/5511940741355" target="_blank" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black">
+                 <Phone className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black">WhatsApp</span>
                </a>
-               <a href="mailto:sergio@henkoproducoes.com.br" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white">
-                 <Mail className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white">E-mail</span>
+               <a href="mailto:sergio@henkoproducoes.com.br" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black">
+                 <Mail className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black">E-mail</span>
                </a>
             </div>
          </div>
       </section>
 
       {/* Footer Final */}
-      <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white">
+      <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white font-black">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left font-black">
-          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white font-black">
-            <img src={LOGO_URL} alt="Arena Henko" className="h-14 w-auto object-contain" />
-            <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white">Arena Henko &copy; 2026</p>
+          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white font-black font-black">
+            <img src={LOGO_URL} alt="Arena Henko" className="h-14 w-auto object-contain font-black" />
+            <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white font-black">Arena Henko &copy; 2026</p>
           </div>
-          <div className="flex gap-4 font-black">
-            <a href="https://instagram.com/arenahenko" target="_blank" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black"><Instagram className="w-6 h-6 text-white font-bold" /></a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black"><Mail className="w-6 h-6 text-white font-bold" /></a>
+          <div className="flex gap-4 font-black text-white font-black">
+            <a href="https://instagram.com/arenahenko" target="_blank" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black"><Instagram className="w-6 h-6 text-white font-bold font-black" /></a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black"><Mail className="w-6 h-6 text-white font-bold font-black" /></a>
           </div>
         </div>
       </footer>
 
       {/* Login Admin Modal */}
-      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-white font-black">
-        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm font-black shadow-3xl text-white">
-          <h2 className="text-xl uppercase mb-8 text-center italic">Painel <span className="text-red-600 font-black uppercase italic">Admin</span></h2>
-          <form onSubmit={handleAdminLogin}>
-            <input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black" />
-            <div className="flex gap-4 font-black">
-              <button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black">Voltar</button>
-              <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl shadow-xl font-black text-white">Entrar</button>
+      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-white font-black font-black">
+        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm font-black shadow-3xl text-white font-black">
+          <h2 className="text-xl uppercase mb-8 text-center italic font-black font-black">Painel <span className="text-red-600 font-black uppercase italic font-black">Admin</span></h2>
+          <form onSubmit={handleAdminLogin} className="font-black">
+            <input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black font-black" />
+            <div className="flex gap-4 font-black font-black">
+              <button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black font-black">Voltar</button>
+              <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl shadow-xl font-black text-white font-black">Entrar</button>
             </div>
           </form>
         </div>
       </div>
 
-      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce">{toast}</div>}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce font-black">{toast}</div>}
     </div>
   );
 };
