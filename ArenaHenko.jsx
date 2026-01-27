@@ -20,7 +20,7 @@ if (firebaseConfig) {
 }
 
 // --- CONFIGURAÇÕES DO APP ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // Senha: Henko@2026#
+const ADMIN_HASH = "SGVua29AMjAyNiM="; //
 const LOGO_WM_URL = 'https://i.imgur.com/cSYIvq6.png';
 
 // --- DADOS ESTÁTICOS ---
