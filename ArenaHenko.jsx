@@ -8,7 +8,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot, query, serverTimestamp, deleteDoc, doc } from 'firebase/firestore';
 
-// --- CONFIGURAÇÃO DO FIREBASE (RULE 1 & 3) ---
+// --- CONFIGURAÇÃO DO FIREBASE ---
 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-master-prod';
 
@@ -20,7 +20,7 @@ if (firebaseConfig) {
 }
 
 // --- CONFIGURAÇÕES DO APP ---
-const ADMIN_HASH = "SGVua29AMjAyNiM="; // Senha: Henko@2026#
+const ADMIN_HASH = "SGVua29AMjAyNiM="; 
 const LOGO_WM_URL = 'https://i.imgur.com/cSYIvq6.png';
 
 // --- DADOS ESTÁTICOS ---
@@ -150,15 +150,12 @@ const processImageWithWatermark = (file) => {
 // --- COMPONENTE PRINCIPAL ---
 
 const App = () => {
-  // Navigation
   const [currentView, setCurrentView] = useState('home'); 
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminInputPass, setAdminInputPass] = useState('');
   const [loginError, setLoginError] = useState(''); 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  // Content State
   const [activeSportId, setActiveSportId] = useState(2); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -168,7 +165,7 @@ const App = () => {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [galleryFilter, setGalleryFilter] = useState('Todos');
 
-  // Firebase State
+  // Firebase
   const [user, setUser] = useState(null);
   const [galleryPhotos, setGalleryPhotos] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -181,7 +178,6 @@ const App = () => {
     ...SHOWS_DATA.map(e => e.name)
   ];
 
-  // Helper de Data - CORRIGIDO
   const parseMatchDate = (dateStr, timeStr) => {
     if (!dateStr || !timeStr) return new Date();
     const [day, month] = dateStr.split('/').map(Number);
@@ -195,7 +191,6 @@ const App = () => {
   const selectedSport = SPORT_DATA.find(s => s.id === activeSportId);
   const visibleMatches = selectedSport ? selectedSport.matches.filter(m => parseMatchDate(m.date, m.time) > new Date()) : [];
 
-  // Handlers
   const showToast = (msg) => {
     setToast(msg);
     setTimeout(() => setToast(null), 3000);
@@ -228,7 +223,7 @@ const App = () => {
   const handleDownload = (base64, filename) => {
     const link = document.createElement('a');
     link.href = base64;
-    link.download = filename || 'arena-henko-foto.jpg';
+    link.download = filename || 'arena-henko.jpg';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -260,7 +255,6 @@ const App = () => {
     finally { setIsUploading(false); if (fileInputRef.current) fileInputRef.current.value = ''; }
   };
 
-  // Firebase Sync
   useEffect(() => {
     if (!auth) return;
     const initAuth = async () => {
@@ -280,11 +274,10 @@ const App = () => {
       const photos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       photos.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
       setGalleryPhotos(photos);
-    });
+    }, (err) => console.error("Sync Error:", err));
     return () => unsubscribe();
   }, [user]);
 
-  // UI Effects
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener('scroll', handleScroll);
@@ -322,56 +315,58 @@ const App = () => {
 
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
 
-  // --- RENDERS ---
-
   const renderHome = () => (
     <div className="animate-fadeIn">
-      {/* Hero */}
       <section className="relative h-[90vh] flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-20"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
         <div className="relative z-10 px-4 text-white w-full max-w-4xl text-center">
-          <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800 text-white font-black">HENKO</span></h1>
+          <h1 className="text-6xl md:text-9xl font-black mb-6 uppercase leading-none tracking-tighter">ARENA <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-red-800 text-white">HENKO</span></h1>
           <p className="max-w-2xl mx-auto text-xl text-gray-400 font-light mb-10 uppercase tracking-[0.3em]">Hospitalidade Premium & Experiências</p>
-          <a href="#calendario" className="inline-flex px-10 py-5 bg-red-600 text-white rounded-full font-bold text-sm hover:bg-red-700 transition-all items-center gap-2 uppercase tracking-widest shadow-2xl">Explorar Agenda <ArrowRight className="w-5 h-5"/></a>
+          <a href="#calendario" className="inline-flex px-10 py-5 bg-red-600 text-white rounded-full font-black text-sm hover:bg-red-700 transition-all items-center gap-2 uppercase tracking-widest shadow-2xl">Explorar Agenda <ArrowRight className="w-5 h-5"/></a>
           
           <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl mx-auto relative z-20">
               {nextMatch && (
-                <button onClick={() => window.open(getWaLink(`Quero reservar o jogo: ${nextMatch.home} x ${nextMatch.away}`))} className="relative bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 transition-all group text-left w-full overflow-visible font-black">
-                    <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[8px] font-bold px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1 uppercase"><Zap className="w-3 h-3 fill-white" /> ÚLTIMAS VAGAS</div>
-                    <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-[60px] flex items-center justify-center"><ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" /></div>
-                    <div className="flex-1 min-w-0 font-black">
-                        <div className="flex justify-between items-start font-black text-white">
+                <button onClick={() => window.open(getWaLink(`Quero reservar o jogo: ${nextMatch.home} x ${nextMatch.away}`))} className="relative bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 transition-all group text-left w-full overflow-visible">
+                    <div className="absolute -top-3 -right-2 z-30 bg-red-600 text-white text-[8px] font-bold px-3 py-1 rounded-full animate-bounce shadow-lg shadow-red-900/50 flex items-center gap-1 uppercase">
+                       <Zap className="w-3 h-3 fill-white" /> ÚLTIMAS VAGAS
+                    </div>
+                    <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-[60px] flex items-center justify-center">
+                        <ImageWithFallback src={nextMatch.homeLogo} className="w-8 h-8 object-contain" alt="Time" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
                           <div>
                             <p className="text-[9px] text-red-500 uppercase font-bold tracking-widest mb-1 flex items-center gap-1"><Ticket className="w-3 h-3"/> Próximo Jogo</p>
-                            <p className="text-sm font-bold uppercase truncate mb-1">{nextMatch.home} x {nextMatch.away}</p>
+                            <p className="text-sm font-bold text-white uppercase truncate mb-1">{nextMatch.home} x {nextMatch.away}</p>
                           </div>
                           <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-white ml-2 shrink-0 mt-2 transition-colors"/>
                         </div>
-                        <div className="flex items-center gap-2 mt-1 bg-black/40 p-1.5 rounded-lg w-fit border border-neutral-800/50 text-[10px] font-mono text-gray-300 font-bold">
+                        <div className="flex items-center gap-2 mt-1 bg-black/40 p-1.5 rounded-lg w-fit border border-neutral-800/50 text-[10px] font-mono text-gray-300">
                           <Timer className="w-3 h-3 text-red-500 animate-pulse" />
                           <span>{String(timeLeft.days).padStart(2, '0')}d : {String(timeLeft.hours).padStart(2, '0')}h : {String(timeLeft.minutes).padStart(2, '0')}m</span>
                         </div>
                     </div>
                 </button>
               )}
-              <button onClick={() => window.open(getWaLink(`Tenho interesse no show do ${SHOWS_DATA[0].name}`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 transition-all group text-left w-full text-white">
-                   <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-full min-h-[60px] flex items-center justify-center text-white font-bold"><Music className="w-6 h-6 text-white" /></div>
-                   <div className="flex-1 min-w-0 font-black">
-                      <p className="text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-1 flex items-center gap-2"><Star className="w-3 h-3"/> Próximo Show</p>
-                      <p className="text-sm font-bold uppercase truncate">{SHOWS_DATA[0].name}</p>
+              <button onClick={() => window.open(getWaLink(`Interesse shows Arena Henko`))} className="bg-neutral-900/80 backdrop-blur-md border border-neutral-800 p-4 rounded-2xl flex items-center gap-4 hover:border-red-600 transition-all group text-left w-full text-white">
+                   <div className="bg-neutral-800 p-3 rounded-xl group-hover:bg-red-600 transition-colors shrink-0 h-full min-h-[60px] flex items-center justify-center text-white font-bold">
+                      <Music className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                      <p className="text-[9px] text-gray-400 uppercase font-bold tracking-widest mb-1 flex items-center gap-2 font-black"><Star className="w-3 h-3"/> Próximo Show</p>
+                      <p className="text-sm font-bold text-white uppercase truncate font-bold">{SHOWS_DATA[0].name}</p>
                       <p className="text-[10px] text-red-500 font-bold uppercase">{SHOWS_DATA[0].date}</p>
-                   </div>
+                  </div>
                    <ArrowRight className="w-4 h-4 text-gray-600 group-hover:text-white ml-2 shrink-0 transition-colors"/>
               </button>
           </div>
         </div>
       </section>
 
-      {/* Sobre */}
       <section id="sobre" className="py-32 px-4 border-b border-neutral-900 text-center text-white bg-neutral-950">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-20 items-center text-left">
-          <div className="text-white font-black">
-            <span className="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block">EXCLUSIVIDADE</span>
+          <div className="text-white">
+            <span className="text-red-600 font-bold text-[10px] uppercase tracking-[0.4em] mb-4 block font-bold">EXCLUSIVIDADE</span>
             <h2 className="text-5xl font-black text-white uppercase mb-8 leading-tight">O Palco da sua <br/>Próxima História</h2>
             <p className="text-gray-400 text-lg leading-relaxed mb-8 font-light">Localizada no coração do Morumbis, a Arena Henko redefine hospitalidade. Gastronomia, conforto e a melhor vista do espetáculo.</p>
             <div className="grid grid-cols-3 gap-8 pt-8 border-t border-neutral-800 text-white font-bold">
@@ -381,7 +376,7 @@ const App = () => {
             </div>
           </div>
           <div className="grid gap-4">
-             <div className="bg-neutral-900/50 p-8 rounded-[32px] border border-neutral-800 text-left hover:border-red-900/50 transition-all group font-black">
+             <div className="bg-neutral-900/50 p-8 rounded-[32px] border border-neutral-800 text-left hover:border-red-900/50 transition-all group">
                 <Star className="text-red-600 w-6 h-6 mb-4 group-hover:scale-110 transition-transform text-red-600 font-bold" />
                 <h4 className="text-xl font-bold uppercase mb-2 text-white">Hospitalidade Elite</h4>
                 <p className="text-gray-500 text-sm leading-relaxed font-light">Serviço de catering premium assinado por chefs e atendimento especializado.</p>
@@ -395,31 +390,25 @@ const App = () => {
         </div>
       </section>
 
-      {/* Serviços */}
       <section id="servicos" className="py-32 bg-neutral-900/30 px-4 text-white text-center">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 tracking-tighter text-white font-black">A Experiência Completa</h2>
-          <div className="grid md:grid-cols-3 gap-8 text-left font-black">
-            {SERVICES_DATA.map((s, i) => {
-              const cardId = `service-card-${i}`;
-              const isVisible = visibleItems[cardId];
-              return (
-                <div key={i} id={cardId} className={`group relative h-[480px] rounded-[40px] overflow-hidden border border-neutral-800 hover:border-red-600/50 animate-on-scroll transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`} style={{ transitionDelay: `${i * 150}ms` }}>
-                  <div className="absolute inset-0 z-0 font-black"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={s.title} /></div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent z-10 font-black"></div>
-                  <div className="relative z-20 h-full p-10 flex flex-col justify-end font-black">
-                    <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md font-bold font-black">{s.icon}</div>
-                    <h3 className="text-2xl font-bold uppercase mb-3 leading-none text-white font-black">{s.title}</h3>
-                    <p className="text-gray-400 text-sm leading-relaxed font-light font-bold font-black">{s.desc}</p>
-                  </div>
+        <div className="max-w-7xl mx-auto text-white">
+          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 tracking-tighter text-white">A Experiência Completa</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {SERVICES_DATA.map((s, i) => (
+              <div key={i} className="group relative h-[480px] rounded-[40px] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-1000">
+                <div className="absolute inset-0 z-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={s.title} /></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-transparent z-10"></div>
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
+                  <div className="bg-red-900/40 p-4 rounded-3xl w-fit mb-6 text-red-500 backdrop-blur-md font-bold">{s.icon}</div>
+                  <h3 className="text-2xl font-bold uppercase mb-3 leading-none text-white">{s.title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed font-light">{s.desc}</p>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Calendário */}
       <section id="calendario" className="py-32 px-4 text-white text-center bg-neutral-950">
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
@@ -443,36 +432,36 @@ const App = () => {
                 </div>
                 <div className="lg:col-span-3 w-full text-white font-black">
                   <h4 className="text-red-500 text-[11px] font-bold uppercase tracking-[0.4em] mb-6 flex items-center gap-3 justify-center lg:justify-start text-red-500 font-black"><Clock className="w-4 h-4"/> Agenda Morumbis</h4>
-                  <div className="space-y-3 font-black">
+                  <div className="space-y-3">
                     {visibleMatches.length > 0 ? visibleMatches.map((m, i) => (
-                      <div key={i} className="bg-neutral-950/50 border border-neutral-800 rounded-[24px] overflow-hidden hover:border-red-600/30 transition-all relative text-white text-left font-bold font-black">
-                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-5 flex items-center justify-between text-white text-left font-black">
-                          <div className="flex items-center gap-4 lg:gap-6 font-black">
+                      <div key={i} className="bg-neutral-950/50 border border-neutral-800 rounded-[24px] overflow-hidden hover:border-red-600/30 transition-all relative text-white text-left font-bold">
+                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-5 flex items-center justify-between text-white text-left">
+                          <div className="flex items-center gap-4 lg:gap-6">
                             <span className="text-[11px] font-bold text-gray-600 w-10">{m.date}</span>
-                            <div className="flex items-center gap-3 font-black">
-                              <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block font-black">{m.home}</span>
-                              <ImageWithFallback src={m.homeLogo} className="w-6 h-6 object-contain font-black" alt="H" />
-                              <span className="text-[10px] font-bold opacity-20 font-black">VS</span>
-                              <ImageWithFallback src={m.awayLogo} className="w-6 h-6 object-contain font-black" alt="A" />
-                              <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block font-black">{m.away}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block">{m.home}</span>
+                              <ImageWithFallback src={m.homeLogo} className="w-6 h-6 object-contain" alt="H" />
+                              <span className="text-[10px] font-bold opacity-20">VS</span>
+                              <ImageWithFallback src={m.awayLogo} className="w-6 h-6 object-contain" alt="A" />
+                              <span className="text-[11px] lg:text-[12px] font-bold uppercase hidden sm:block">{m.away}</span>
                             </div>
                             {m.scarcity && (
-                              <div className="ml-2 hidden sm:flex items-center gap-1 bg-red-600/10 border border-red-600/30 px-2 py-1 rounded-full animate-pulse text-red-500 uppercase font-black font-bold font-black font-black"><Zap className="w-3 h-3 fill-red-500" /><span className="text-[8px] tracking-widest font-black">{m.scarcity}</span></div>
+                              <div className="ml-2 hidden sm:flex items-center gap-1 bg-red-600/10 border border-red-600/30 px-2 py-1 rounded-full animate-pulse text-red-500 uppercase font-black font-bold"><Zap className="w-3 h-3 fill-red-500" /><span className="text-[8px] tracking-widest">{m.scarcity}</span></div>
                             )}
                           </div>
                           <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedMatchKey === i ? 'rotate-180 text-red-500' : ''}`} />
                         </button>
                         {expandedMatchKey === i && (
-                          <div className="p-6 border-t border-neutral-800 bg-neutral-900/30 text-center animate-fade-in text-white font-black">
-                            <div className="grid grid-cols-2 gap-4 mb-6 border-y border-neutral-800 py-4 text-center font-bold font-black">
-                              <div><p className="text-[9px] text-gray-500 uppercase mb-1 text-gray-400 uppercase tracking-widest font-bold font-black">Hora do Jogo</p><p className="text-lg font-bold text-white uppercase">{m.time}</p></div>
+                          <div className="p-6 border-t border-neutral-800 bg-neutral-900/30 text-center animate-fade-in text-white">
+                            <div className="grid grid-cols-2 gap-4 mb-6 border-y border-neutral-800 py-4 text-center font-bold">
+                              <div><p className="text-[9px] text-gray-500 uppercase mb-1 text-gray-400 uppercase tracking-widest font-bold">Hora do Jogo</p><p className="text-lg font-bold text-white uppercase">{m.time}</p></div>
                               <div><p className="text-[9px] text-gray-500 uppercase mb-1 text-gray-400 uppercase tracking-widest font-bold">Lounge Arena</p><p className="text-lg font-bold text-white uppercase font-bold">2h antes</p></div>
                             </div>
                             <button onClick={() => window.open(getWaLink(`Reserva jogo: ${m.home} x ${m.away}`))} className="w-full bg-red-600 py-3 rounded-xl font-black uppercase text-[10px] tracking-widest text-white font-bold shadow-xl hover:scale-[1.02] transition-all">Reservar Agora</button>
                           </div>
                         )}
                       </div>
-                    )) : <div className="p-8 border border-dashed border-neutral-800 rounded-[24px] text-center opacity-30 text-[11px] font-bold uppercase text-white font-black">Sem jogos agendados</div>}
+                    )) : <div className="p-8 border border-dashed border-neutral-800 rounded-[24px] text-center opacity-30 text-[11px] font-black uppercase text-white">Sem jogos agendados</div>}
                   </div>
                 </div>
               </div>
@@ -481,13 +470,12 @@ const App = () => {
         </div>
       </section>
 
-      {/* Shows */}
       <section className="py-32 bg-neutral-900/30 px-4 text-white text-center text-white">
          <div className="max-w-7xl mx-auto">
-            <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em] text-red-500 font-black font-black">Shows & Entretenimento</h3>
-            <div className="grid md:grid-cols-3 gap-8 text-white text-center font-black">
+            <h3 className="text-3xl font-black text-red-500 mb-16 uppercase tracking-[0.2em] text-red-500 font-black">Shows & Entretenimento</h3>
+            <div className="grid md:grid-cols-3 gap-8 text-white text-center">
                {SHOWS_DATA.map((e, i) => (
-                  <div key={i} className="flex flex-col items-center group cursor-pointer text-white font-black" onClick={() => window.open(getWaLink(`Tenho interesse no show do ${e.name} na Arena Henko`))}>
+                  <div key={i} className="flex flex-col items-center group cursor-pointer text-white" onClick={() => window.open(getWaLink(`Tenho interesse no show do ${e.name} na Arena Henko`))}>
                      <div className="relative rounded-[48px] overflow-hidden aspect-[4/5] border border-neutral-800 shadow-2xl w-full mb-8 transition-all duration-700 group-hover:scale-[1.03] group-hover:border-red-600/50">
                         <img src={e.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:brightness-110 font-bold" alt={e.name} />
                      </div>
@@ -500,11 +488,10 @@ const App = () => {
          </div>
       </section>
 
-      {/* Parceiros Master */}
       <section id="parceiros" className="py-32 px-8 bg-neutral-950 border-y border-neutral-900 text-white text-center font-bold uppercase tracking-widest">
-         <div className="max-w-7xl mx-auto text-center text-white font-bold font-black">
-            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16 text-gray-500 font-bold uppercase tracking-[0.4em] font-black">Marcas de Elite Connosco</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center text-white font-bold font-black">
+         <div className="max-w-7xl mx-auto text-center text-white font-bold">
+            <h3 className="text-[10px] text-gray-600 font-black uppercase tracking-[0.6em] mb-16 text-gray-500 font-bold uppercase tracking-[0.4em]">Marcas de Elite Connosco</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-12 items-center text-white font-bold">
                {PARTNERS_DATA.map((p, i) => (
                   <div key={i} className={`bg-neutral-900/50 border border-neutral-800 rounded-[32px] h-32 flex items-center justify-center transition-all group hover:border-red-600/30 ${p.extraSize ? 'p-4' : 'p-8'} font-bold`}>
                     <img src={p.logoUrl} className={`h-full w-full object-contain transition-all duration-500 group-hover:scale-110 ${p.extraSize ? 'scale-110' : ''} font-bold`} alt={p.name} />
@@ -514,18 +501,17 @@ const App = () => {
          </div>
       </section>
 
-      {/* Reviews */}
       <section className="py-32 px-4 bg-neutral-900/10 text-center text-white text-center text-white font-bold uppercase tracking-widest">
-         <div className="max-w-7xl mx-auto text-white font-bold font-black">
-            <h3 className="text-4xl font-black uppercase mb-16 tracking-tighter text-white uppercase font-bold text-white font-black">A Melhor Avaliação</h3>
-            <div className="grid md:grid-cols-3 gap-8 text-left text-white font-bold font-black">
+         <div className="max-w-7xl mx-auto text-white font-bold">
+            <h3 className="text-4xl font-black uppercase mb-16 tracking-tighter text-white uppercase font-bold text-white">A Melhor Avaliação</h3>
+            <div className="grid md:grid-cols-3 gap-8 text-left text-white font-bold">
                {REVIEWS_DATA.map((r, i) => (
-                  <div key={i} className="bg-neutral-900/50 p-10 rounded-[56px] border border-neutral-800 relative group hover:border-red-600/30 transition-all text-white font-bold font-black">
-                     <Quote className="w-12 h-12 text-red-600/10 absolute top-8 right-8 group-hover:text-red-600/20 transition-colors font-bold font-black" />
-                     <p className="text-gray-300 text-sm italic mb-10 leading-relaxed font-light text-gray-300 font-bold font-bold font-bold font-bold font-bold font-black">"{r.text}"</p>
-                     <div className="flex items-center gap-4 text-white font-bold font-black">
-                        <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center font-black text-red-500 uppercase text-red-500 font-bold font-bold font-bold font-black">{r.initial}</div>
-                        <div><p className="text-white text-xs font-bold uppercase tracking-wider font-bold font-black">{r.name}</p><p className="text-gray-600 text-[10px] font-bold uppercase font-bold font-black">{r.role}</p></div>
+                  <div key={i} className="bg-neutral-900/50 p-10 rounded-[56px] border border-neutral-800 relative group hover:border-red-600/30 transition-all text-white font-bold">
+                     <Quote className="w-12 h-12 text-red-600/10 absolute top-8 right-8 group-hover:text-red-600/20 transition-colors font-bold" />
+                     <p className="text-gray-300 text-sm italic mb-10 leading-relaxed font-light text-gray-300 font-bold font-bold font-bold font-bold font-bold">"{r.text}"</p>
+                     <div className="flex items-center gap-4 text-white font-bold">
+                        <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center font-black text-red-500 uppercase text-red-500 font-bold font-bold font-bold">{r.initial}</div>
+                        <div><p className="text-white text-xs font-bold uppercase tracking-wider font-bold">{r.name}</p><p className="text-gray-600 text-[10px] font-bold uppercase font-bold">{r.role}</p></div>
                      </div>
                   </div>
                ))}
@@ -533,59 +519,56 @@ const App = () => {
          </div>
       </section>
 
-      {/* Contato Original */}
-      <section id="contato" className="py-40 bg-neutral-950 px-6 relative overflow-hidden text-white border-t border-neutral-900 text-center font-bold font-black">
-        <div className="max-w-4xl mx-auto relative z-10 text-white font-bold font-bold font-bold font-black">
-          <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter text-white font-black text-white font-bold font-black">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8 font-black text-red-600 font-bold font-black">Experiência.</span></h2>
-          <div className="grid md:grid-cols-3 gap-8 mb-20 text-white font-bold font-bold font-bold font-black">
-             <a href="https://instagram.com/arenahenko" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all font-bold font-black"><Instagram className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-bold font-black">Instagram</span></a>
-             <a href="https://wa.me/5511940741355" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold font-black"><Phone className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-bold font-black">WhatsApp</span></a>
-             <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold font-black"><Mail className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold font-black" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-bold font-black">E-mail</span></a>
+      <section id="contato" className="py-40 bg-neutral-950 px-6 relative overflow-hidden text-white border-t border-neutral-900 text-center font-bold">
+        <div className="max-w-4xl mx-auto relative z-10 text-white font-bold font-bold font-bold">
+          <h2 className="text-5xl md:text-8xl font-black mb-16 uppercase tracking-tighter text-white font-black text-white font-bold">Reserve sua <br/><span className="text-red-600 underline decoration-red-600/30 underline-offset-8 font-black text-red-600 font-bold">Experiência.</span></h2>
+          <div className="grid md:grid-cols-3 gap-8 mb-20 text-white font-bold font-bold font-bold">
+             <a href="https://instagram.com/arenahenko" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all font-bold"><Instagram className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-bold">Instagram</span></a>
+             <a href="https://wa.me/5511940741355" target="_blank" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold"><Phone className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-bold">WhatsApp</span></a>
+             <a href="mailto:sergio@henkoproducoes.com.br" className="flex flex-col items-center p-10 bg-neutral-900/50 rounded-3xl border border-neutral-800 hover:border-red-600 group shadow-xl transition-all text-white font-bold font-bold font-bold"><Mail className="w-10 h-10 text-red-600 mb-6 group-hover:scale-110 transition-transform text-red-600 font-bold font-bold" /><span className="font-bold text-[11px] uppercase tracking-[0.2em] font-bold">E-mail</span></a>
           </div>
         </div>
       </section>
 
-      <footer className="py-24 border-t border-neutral-900 opacity-50 text-white text-center relative text-white font-bold font-bold font-bold font-bold font-bold font-bold font-black">
-        <div className="absolute bottom-6 right-6 opacity-20 hover:opacity-100 transition-opacity cursor-pointer p-4 group text-white font-bold font-bold font-bold font-bold font-bold font-black">
-           <LockKeyhole className="w-6 h-6 text-gray-500 group-hover:text-red-600 text-white text-white text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" />
+      <footer className="py-24 border-t border-neutral-900 opacity-50 text-white text-center relative text-white font-bold font-bold font-bold font-bold font-bold font-bold">
+        <div className="absolute bottom-6 right-6 opacity-20 hover:opacity-100 transition-opacity cursor-pointer p-4 group text-white font-bold font-bold font-bold font-bold font-bold">
+           <LockKeyhole className="w-6 h-6 text-gray-500 group-hover:text-red-600 text-white text-white text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase" />
         </div>
-        <img src="https://i.imgur.com/cSYIvq6.png" className="h-10 mx-auto mb-10 grayscale opacity-30 text-white text-center text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" alt="Footer Logo" />
-        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Hospitalidade Arena Henko © 2026</p>
+        <img src="https://i.imgur.com/cSYIvq6.png" className="h-10 mx-auto mb-10 grayscale opacity-30 text-white text-center text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase" alt="Footer Logo" />
+        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase">Hospitalidade Arena Henko © 2026</p>
       </footer>
     </div>
   );
 
   const renderGallery = () => (
-    <div className="pt-32 pb-20 px-4 min-h-screen bg-neutral-950 animate-fadeIn text-center text-white font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-      <div className="max-w-7xl mx-auto text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-        <button onClick={() => handleNavClick('home', '#')} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors uppercase text-[10px] font-bold tracking-widest mb-10 mx-auto border border-neutral-800 px-10 py-5 rounded-full bg-neutral-900/50 shadow-xl hover:bg-neutral-800 text-gray-400 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"><ArrowLeft className="w-4 h-4 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /> Voltar para o Site</button>
-        <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-10 text-white text-center font-bold uppercase font-bold uppercase tracking-widest uppercase font-bold font-bold font-black">Galeria da <span className="text-red-600 underline decoration-red-600/20 underline-offset-8 text-red-600 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Torcida</span></h2>
-        
-        <div className="flex flex-wrap justify-center gap-2 mb-16 text-white text-center font-bold uppercase tracking-widest uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-            <button onClick={() => setGalleryFilter('Todos')} className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${galleryFilter === 'Todos' ? 'bg-red-600 text-white shadow-lg font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black' : 'bg-neutral-900 text-gray-500 hover:text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black'}`}>Todos</button>
+    <div className="pt-32 pb-20 px-4 min-h-screen bg-neutral-950 animate-fadeIn text-center text-white font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase">
+      <div className="max-w-7xl mx-auto text-white font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase">
+        <button onClick={() => handleNavClick('home', '#')} className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors uppercase text-[10px] font-bold tracking-widest mb-10 mx-auto border border-neutral-800 px-10 py-5 rounded-full bg-neutral-900/50 shadow-xl hover:bg-neutral-800 text-gray-400 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase"><ArrowLeft className="w-4 h-4 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase" /> Voltar para o Site</button>
+        <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-10 text-white text-center font-bold uppercase font-bold uppercase tracking-widest uppercase font-bold font-bold">Galeria da <span className="text-red-600 underline decoration-red-600/20 underline-offset-8 text-red-600 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase">Torcida</span></h2>
+        <div className="flex flex-wrap justify-center gap-2 mb-16 text-white text-center font-bold uppercase tracking-widest uppercase">
+            <button onClick={() => setGalleryFilter('Todos')} className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${galleryFilter === 'Todos' ? 'bg-red-600 text-white shadow-lg font-bold' : 'bg-neutral-900 text-gray-500 hover:text-white'}`}>Todos</button>
             {availableAlbums.filter(a => a !== 'Geral').map(album => (
-              <button key={album} onClick={() => setGalleryFilter(album)} className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${galleryFilter === album ? 'bg-red-600 text-white shadow-lg font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black' : 'bg-neutral-900 text-gray-500 hover:text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black'}`}>{album}</button>
+              <button key={album} onClick={() => setGalleryFilter(album)} className={`px-6 py-3 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${galleryFilter === album ? 'bg-red-600 text-white shadow-lg font-bold' : 'bg-neutral-900 text-gray-500 hover:text-white'}`}>{album}</button>
             ))}
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 text-white text-center font-bold uppercase tracking-widest uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 text-white text-center font-bold uppercase tracking-widest uppercase">
           {galleryPhotos.filter(p => galleryFilter === 'Todos' || p.album === galleryFilter).length > 0 ? galleryPhotos.filter(p => galleryFilter === 'Todos' || p.album === galleryFilter).map((photo) => (
-            <div key={photo.id} className="aspect-[4/5] relative group overflow-hidden rounded-[56px] border border-neutral-800 bg-neutral-900 shadow-2xl transition-all hover:border-red-600/50 hover:-translate-y-3 text-white text-center font-bold uppercase tracking-widest uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-              <img src={photo.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 font-bold font-bold uppercase tracking-widest uppercase font-black" alt="Moment" />
-              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 opacity-80 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"></div>
-              <div className="absolute top-4 right-4 z-20 text-white text-center font-bold font-bold font-bold text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                <button onClick={() => handleDownload(photo.image, `arena-henko-${photo.id}.jpg`)} className="bg-red-600 text-white p-3 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95 text-white font-bold text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"><Download className="w-5 h-5 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /></button>
+            <div key={photo.id} className="aspect-[4/5] relative group overflow-hidden rounded-[56px] border border-neutral-800 bg-neutral-900 shadow-2xl transition-all hover:border-red-600/50 hover:-translate-y-3">
+              <img src={photo.image} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" alt="Moment" />
+              <div className="absolute inset-0 bg-gradient-to-t from-neutral-950 opacity-80"></div>
+              <div className="absolute top-4 right-4 z-20">
+                <button onClick={() => handleDownload(photo.image, `arena-henko-${photo.id}.jpg`)} className="bg-red-600 text-white p-3 rounded-full shadow-2xl hover:scale-110 transition-transform active:scale-95"><Download className="w-5 h-5" /></button>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 p-10 text-left text-white text-left font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                <span className="bg-red-600 text-white text-[8px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest mb-3 inline-block border border-red-500/30 backdrop-blur-sm text-white font-bold uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">{photo.album || 'Geral'}</span>
-                <p className="text-white text-lg font-bold uppercase tracking-tight text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Arena Henko Master</p>
-                <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-widest text-gray-500 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">{new Date(photo.timestamp).toLocaleDateString()}</p>
+              <div className="absolute bottom-0 left-0 right-0 p-10 text-left text-white">
+                <span className="bg-red-600 text-white text-[8px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest mb-3 inline-block border border-red-500/30 backdrop-blur-sm">{photo.album || 'Geral'}</span>
+                <p className="text-white text-lg font-bold uppercase tracking-tight font-bold">Arena Henko Master</p>
+                <p className="text-gray-500 text-[10px] font-bold mt-1 uppercase tracking-widest">{new Date(photo.timestamp).toLocaleDateString()}</p>
               </div>
             </div>
           )) : (
-            <div className="col-span-full py-40 border-2 border-dashed border-neutral-800 rounded-[5rem] flex flex-col items-center justify-center text-gray-600 bg-neutral-900/20 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-               <Camera className="w-20 h-20 mb-6 opacity-10 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" />
-               <p className="text-2xl font-bold uppercase tracking-widest text-gray-700 text-white font-bold uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Álbum em Branco...</p>
+            <div className="col-span-full py-40 border-2 border-dashed border-neutral-800 rounded-[5rem] flex flex-col items-center justify-center text-gray-600 bg-neutral-900/20">
+               <Camera className="w-20 h-20 mb-6 opacity-10 text-white" />
+               <p className="text-2xl font-bold uppercase tracking-widest">Álbum em Branco...</p>
             </div>
           )}
         </div>
@@ -594,51 +577,50 @@ const App = () => {
   );
 
   const renderAdmin = () => (
-    <div className="pt-32 pb-20 px-4 min-h-screen flex flex-col items-center bg-neutral-950 animate-fadeIn text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+    <div className="pt-32 pb-20 px-4 min-h-screen flex flex-col items-center bg-neutral-950 animate-fadeIn text-white text-center font-bold">
        {!isAdminLoggedIn ? (
-         <div className="bg-neutral-900 p-16 rounded-[60px] border border-neutral-800 max-w-md w-full text-center mt-20 shadow-3xl text-white font-bold text-center text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-            <LockKeyhole className="w-20 h-20 text-red-600 mx-auto mb-10 animate-pulse text-red-600 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" />
-            <h2 className="text-3xl font-bold uppercase mb-4 tracking-tighter text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Acesso Master</h2>
-            <form onSubmit={handleAdminLogin} className="flex flex-col gap-6 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-               <input type="password" placeholder="SENHA" className="bg-neutral-950 border border-neutral-800 rounded-2xl px-6 py-6 text-white text-center font-bold outline-none focus:border-red-600 text-2xl tracking-widest transition-all placeholder:text-gray-800 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} />
-               <button type="submit" className="bg-red-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-red-700 text-white font-bold uppercase transition-all font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Entrar</button>
-               {loginError && <p className="text-red-500 text-xs font-bold mt-2 text-red-500 animate-pulse font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">{loginError}</p>}
+         <div className="bg-neutral-900 p-16 rounded-[60px] border border-neutral-800 max-w-md w-full text-center mt-20 shadow-3xl text-white font-bold">
+            <LockKeyhole className="w-20 h-20 text-red-600 mx-auto mb-10 animate-pulse text-red-600" />
+            <h2 className="text-3xl font-bold uppercase mb-4 tracking-tighter text-white">Acesso Master</h2>
+            <form onSubmit={handleAdminLogin} className="flex flex-col gap-6 text-white text-center">
+               <input type="password" placeholder="SENHA" className="bg-neutral-950 border border-neutral-800 rounded-2xl px-6 py-6 text-white text-center font-bold outline-none focus:border-red-600 text-2xl tracking-widest transition-all placeholder:text-gray-800" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} />
+               <button type="submit" className="bg-red-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl hover:bg-red-700">Entrar</button>
+               {loginError && <p className="text-red-500 text-xs font-bold mt-2 animate-pulse">{loginError}</p>}
             </form>
          </div>
        ) : (
-         <div className="w-full max-w-7xl px-4 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-            <div className="flex flex-col md:flex-row justify-between items-center mb-20 gap-8 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                <button onClick={() => setIsAdminLoggedIn(false)} className="bg-neutral-800 text-gray-400 px-10 py-4 rounded-full font-bold uppercase text-[10px] hover:text-white transition-all shadow-xl text-gray-400 font-bold transition-all font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Sair</button>
-                <h2 className="text-4xl font-bold uppercase tracking-tighter text-white text-center font-bold uppercase uppercase font-bold uppercase tracking-widest uppercase font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Gestão de Álbuns</h2>
-                
-                <div className="flex flex-col sm:flex-row gap-4 items-center bg-neutral-900 p-6 rounded-[32px] border border-neutral-800 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                  <div className="flex flex-col gap-2 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                    <label className="text-[9px] font-bold uppercase text-gray-500 tracking-widest text-left ml-2 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Escolher Destino:</label>
-                    <select value={selectedAlbum} onChange={(e) => setSelectedAlbum(e.target.value)} className="bg-neutral-950 border border-neutral-800 text-white text-xs font-bold py-3 px-4 rounded-xl outline-none focus:border-red-600 transition-all cursor-pointer font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+         <div className="w-full max-w-7xl px-4 text-white text-center font-bold">
+            <div className="flex flex-col md:flex-row justify-between items-center mb-20 gap-8">
+                <button onClick={() => setIsAdminLoggedIn(false)} className="bg-neutral-800 text-gray-400 px-10 py-4 rounded-full font-bold uppercase text-[10px] hover:text-white transition-all shadow-xl">Sair</button>
+                <h2 className="text-4xl font-bold uppercase tracking-tighter text-white text-center">Gestão de Álbuns</h2>
+                <div className="flex flex-col sm:flex-row gap-4 items-center bg-neutral-900 p-6 rounded-[32px] border border-neutral-800">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-bold uppercase text-gray-500 tracking-widest text-left ml-2">Escolher Destino:</label>
+                    <select value={selectedAlbum} onChange={(e) => setSelectedAlbum(e.target.value)} className="bg-neutral-950 border border-neutral-800 text-white text-xs font-bold py-3 px-4 rounded-xl outline-none focus:border-red-600 transition-all cursor-pointer">
                       {availableAlbums.map(a => <option key={a} value={a}>{a}</option>)}
                     </select>
                   </div>
-                  <div className="relative text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+                  <div className="relative">
                     <input type="file" accept="image/*" className="hidden" ref={fileInputRef} onChange={handleFileUpload} />
-                    <button onClick={() => fileInputRef.current.click()} disabled={isUploading} className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition-all flex items-center gap-3 text-white font-bold uppercase transition-all mt-4 sm:mt-0 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"/> : <Upload className="w-4 h-4 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"/>} Enviar Foto
+                    <button onClick={() => fileInputRef.current.click()} disabled={isUploading} className="bg-red-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-2xl hover:scale-105 transition-all flex items-center gap-3">
+                      {isUploading ? <Loader2 className="w-4 h-4 animate-spin"/> : <Upload className="w-4 h-4"/>} Enviar Foto
                     </button>
                   </div>
                 </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {galleryPhotos.map((photo) => (
-                <div key={photo.id} className="relative aspect-square rounded-[48px] overflow-hidden group border border-neutral-800 bg-neutral-900 shadow-xl transition-all hover:border-red-600/50 text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-                   <img src={photo.image} className="w-full h-full object-cover opacity-50 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" alt="Admin" />
-                   <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded-lg text-[8px] font-bold text-white uppercase tracking-tighter truncate max-w-[80%] font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">{photo.album || 'Geral'}</div>
-                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+                <div key={photo.id} className="relative aspect-square rounded-[48px] overflow-hidden group border border-neutral-800 bg-neutral-900 shadow-xl transition-all hover:border-red-600/50">
+                   <img src={photo.image} className="w-full h-full object-cover opacity-50" alt="Admin" />
+                   <div className="absolute top-2 left-2 bg-black/60 px-2 py-1 rounded-lg text-[8px] font-bold text-white uppercase tracking-tighter truncate max-w-[80%]">{photo.album || 'Geral'}</div>
+                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
                       {deleteConfirmId === photo.id ? (
-                        <div className="flex gap-2 font-bold font-black">
-                           <button onClick={() => handleDeletePhoto(photo.id)} className="bg-red-600 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"><Trash2 className="w-6 h-6 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /></button>
-                           <button onClick={() => setDeleteConfirmId(null)} className="bg-neutral-800 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"><X className="w-6 h-6 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /></button>
+                        <div className="flex gap-2 font-bold">
+                           <button onClick={() => handleDeletePhoto(photo.id)} className="bg-red-600 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl"><Trash2 className="w-6 h-6" /></button>
+                           <button onClick={() => setDeleteConfirmId(null)} className="bg-neutral-800 text-white p-4 rounded-full border-2 border-white hover:scale-110 transition-all shadow-2xl"><X className="w-6 h-6" /></button>
                         </div>
                       ) : (
-                        <button onClick={() => setDeleteConfirmId(photo.id)} className="bg-red-600 text-white p-6 rounded-full border-4 border-neutral-950 shadow-2xl hover:scale-110 text-white font-bold text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"><Trash2 className="w-6 h-6 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /></button>
+                        <button onClick={() => setDeleteConfirmId(photo.id)} className="bg-red-600 text-white p-6 rounded-full border-4 border-neutral-950 shadow-2xl hover:scale-110"><Trash2 className="w-6 h-6" /></button>
                       )}
                    </div>
                 </div>
@@ -650,7 +632,7 @@ const App = () => {
   );
 
   return (
-    <div className="font-sans text-gray-100 bg-neutral-950 min-h-screen selection:bg-red-600 selection:text-white overflow-x-hidden text-center text-white text-center font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+    <div className="font-sans text-gray-100 bg-neutral-950 min-h-screen selection:bg-red-600 selection:text-white overflow-x-hidden text-center text-white font-bold uppercase tracking-widest">
       <style>{`
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -659,39 +641,37 @@ const App = () => {
       `}</style>
 
       {toast && (
-        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[2000] animate-fadeInUp text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-           <div className="bg-red-600 text-white px-8 py-4 rounded-full font-black uppercase text-xs shadow-[0_0_40px_rgba(220,38,38,0.5)] text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-              <CheckCircle className="w-4 h-4 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /> {toast}
+        <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[2000] animate-fadeInUp text-center font-bold">
+           <div className="bg-red-600 text-white px-8 py-4 rounded-full font-black uppercase text-xs shadow-[0_0_40px_rgba(220,38,38,0.5)] flex items-center gap-3">
+              <CheckCircle className="w-4 h-4" /> {toast}
            </div>
         </div>
       )}
 
-      {/* MENU Master */}
-      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800' : 'bg-transparent'} h-20 flex justify-between items-center px-8 text-white text-center text-white text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black`}>
-        <button onClick={() => handleNavClick('home', '#')} className="hover:scale-105 transition-transform flex items-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-          <img src="https://i.imgur.com/cSYIvq6.png" className="h-8 w-auto font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" alt="Logo" />
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-neutral-950/95 backdrop-blur-md border-b border-neutral-800' : 'bg-transparent'} h-20 flex justify-between items-center px-8 text-white`}>
+        <button onClick={() => handleNavClick('home', '#')} className="hover:scale-105 transition-transform flex items-center">
+          <img src="https://i.imgur.com/cSYIvq6.png" className="h-8 w-auto" alt="Logo" />
         </button>
 
-        <div className="hidden md:flex space-x-10 items-center text-white text-center font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
+        <div className="hidden md:flex space-x-10 items-center font-bold">
           {NAV_LINKS.map(n => (
-            <button key={n.name} onClick={() => handleNavClick(n.view, n.href)} className={`text-[10px] font-bold uppercase tracking-widest transition-colors hover:text-red-500 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black ${currentView === n.view ? 'text-red-600 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black' : 'text-gray-300 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black'}`}>{n.name}</button>
+            <button key={n.name} onClick={() => handleNavClick(n.view, n.href)} className={`text-[10px] font-bold uppercase tracking-widest transition-colors hover:text-red-500 ${currentView === n.view ? 'text-red-600' : 'text-gray-300'}`}>{n.name}</button>
           ))}
-          <button onClick={() => handleNavClick('home', '#contato')} className="bg-red-600 text-white px-8 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-red-900/40 text-white font-bold cursor-pointer transition-all font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Reservar</button>
+          <button onClick={() => handleNavClick('home', '#contato')} className="bg-red-600 text-white px-8 py-2 rounded-full font-black text-[10px] uppercase tracking-widest hover:scale-105 shadow-xl shadow-red-900/40 cursor-pointer">Reservar</button>
         </div>
 
-        <button onClick={() => setIsMenuOpen(true)} className="md:hidden text-white p-2 font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-          <MenuIcon className="w-6 h-6 text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" />
+        <button onClick={() => setIsMenuOpen(true)} className="md:hidden text-white p-2">
+          <MenuIcon className="w-6 h-6" />
         </button>
       </nav>
 
-      {/* Menu Mobile */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[1000] bg-neutral-950/98 backdrop-blur-3xl flex flex-col items-center justify-center space-y-10 md:hidden animate-fadeIn text-white text-center text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-          <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white p-3 border border-neutral-800 rounded-full text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black"><X className="w-10 h-10 text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" /></button>
+        <div className="fixed inset-0 z-[1000] bg-neutral-950/98 backdrop-blur-3xl flex flex-col items-center justify-center space-y-10 md:hidden animate-fadeIn">
+          <button onClick={() => setIsMenuOpen(false)} className="absolute top-8 right-8 text-white p-3 border border-neutral-800 rounded-full"><X className="w-10 h-10" /></button>
           {NAV_LINKS.map(n => (
-            <button key={n.name} onClick={() => handleNavClick(n.view, n.href)} className="text-4xl font-black uppercase hover:text-red-500 tracking-tighter text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">{n.name}</button>
+            <button key={n.name} onClick={() => handleNavClick(n.view, n.href)} className="text-4xl font-black uppercase hover:text-red-500 tracking-tighter">{n.name}</button>
           ))}
-          <button onClick={() => handleNavClick('home', '#contato')} className="bg-red-600 text-white px-16 py-6 rounded-full font-black text-sm uppercase tracking-widest shadow-2xl text-white font-bold transition-all font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Reservar Agora</button>
+          <button onClick={() => handleNavClick('home', '#contato')} className="bg-red-600 text-white px-16 py-6 rounded-full font-black text-sm uppercase tracking-widest shadow-2xl">Reservar Agora</button>
         </div>
       )}
 
@@ -701,12 +681,12 @@ const App = () => {
         {currentView === 'admin' && renderAdmin()}
       </main>
 
-      <footer className="py-24 border-t border-neutral-900 opacity-50 text-white text-center relative text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-        <div className="absolute bottom-6 right-6 opacity-20 hover:opacity-100 transition-opacity cursor-pointer p-4 group text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">
-           <LockKeyhole className="w-6 h-6 text-gray-500 group-hover:text-red-600 text-white text-white text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" />
+      <footer className="py-24 border-t border-neutral-900 opacity-50 text-white text-center relative font-bold uppercase tracking-widest">
+        <div className="absolute bottom-6 right-6 opacity-20 hover:opacity-100 transition-opacity cursor-pointer p-4 group" onClick={() => handleNavClick('admin')}>
+           <LockKeyhole className="w-6 h-6 text-gray-500 group-hover:text-red-600" />
         </div>
-        <img src="https://i.imgur.com/cSYIvq6.png" className="h-10 mx-auto mb-10 grayscale opacity-30 text-white text-center text-white text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black" alt="Footer Logo" />
-        <p className="text-[11px] font-bold uppercase tracking-[0.5em] text-white font-bold font-bold font-bold font-bold font-bold font-bold font-bold font-bold uppercase tracking-widest uppercase font-black">Hospitalidade Arena Henko © 2026</p>
+        <img src="https://i.imgur.com/cSYIvq6.png" className="h-10 mx-auto mb-10 grayscale opacity-30" alt="Footer Logo" />
+        <p className="text-[11px] font-bold uppercase tracking-[0.5em]">Hospitalidade Arena Henko © 2026</p>
       </footer>
     </div>
   );
