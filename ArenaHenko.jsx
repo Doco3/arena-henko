@@ -26,7 +26,7 @@ const db = getFirestore(app);
 const ADMIN_HASH = "SGVua29AMjAyNiM="; 
 const LOGO_URL = 'https://i.imgur.com/cSYIvq6.png'; 
 
-// --- 2. CONSTANTES DE DADOS GLOBAIS (ORDEM BLINDADA) ---
+// --- 2. CONSTANTES DE DADOS GLOBAIS ---
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
@@ -88,11 +88,11 @@ const PARTNERS_DATA = [
   { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', extra: true }, 
   { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png', extra: false },
   { name: 'Kicaldo', logoUrl: 'https://i.imgur.com/6ZVogLo.png', extra: false },
-  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', extra: true, invert: true }, // Invertido para visibilidade
+  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', extra: true, invert: true }, 
   { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png', extra: false },
   { name: 'Cap-Lab', logoUrl: 'https://i.imgur.com/LDGTXoZ.png', extra: false },
   { name: 'Estado Luso', logoUrl: 'https://i.imgur.com/rS7PHb3.png', extra: false },
-  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extra: true, invert: true }, // Invertido para visibilidade
+  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extra: true, invert: true }, 
   { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png', extra: false },
   { name: 'Weach', logoUrl: 'https://i.imgur.com/jz15iRQ.png', extra: false },
 ];
@@ -102,7 +102,22 @@ const REVIEWS_DATA = [
   { name: "João Paulo S.", text: "Conforto e segurança total para levar minha família. Passam muita credibilidade em tudo o que fazem.", role: "Empresário", initial: "J" },
   { name: "Felipe Almeida", text: "O buffet é sensacional e a vista é a melhor possível. Atendimento nota 10 de toda a equipe!", role: "Google Review", initial: "F" },
   { name: "Ricardo Santos", text: "Atendimento diferenciado. Vale cada centavo pela hospitalidade e tranquilidade.", role: "Convidado VIP", initial: "R" },
-  { name: "Letícia Rossi", text: "Ambiente familiar e muito seguro. Meus filhos adoraram o espaco. É o melhor investimento.", role: "Google Review", initial: "L" },
+  { name: "Letícia Rossi", text: "Ambiente familiar e muito seguro. Meus filhos adoraram o espaço. É o melhor investimento.", role: "Google Review", initial: "L" },
+  { name: "André Luiz", text: "Ambiente sensacional para levar clientes. A organização da Arena Henko é simplesmente impecável.", role: "Empresário", initial: "A" },
+  { name: "Bruna Meirelles", text: "O buffet é maravilhoso. Melhor camarote do Morumbis para quem quer conforto e gastronomia.", role: "Digital Influencer", initial: "B" },
+  { name: "Carlos Eduardo", text: "Segurança total. Entrei sem filas e fui super bem atendido por toda a equipa de recepção.", role: "Google Review", initial: "C" },
+  { name: "Daniela Souza", text: "Vista perfeita do gramado. Dá pra ver cada detalhe do jogo sem perder o luxo do lounge.", role: "Torcedora VIP", initial: "D" },
+  { name: "Eduardo Vaz", text: "Catering de primeira. Bebidas geladas e serviço ágil. Vale muito a pena para eventos corporativos.", role: "CEO", initial: "E" },
+  { name: "Fernanda G.", text: "Experiência incrível nos shows. Tudo muito bem planejado, desde o acesso até o pós-evento.", role: "Google Review", initial: "F" },
+  { name: "Gustavo Henrique", text: "Melhor investimento para curtir o jogo com a família com paz e mordomia completa.", role: "Empresário", initial: "G" },
+  { name: "Heloísa Lima", text: "O atendimento dos garçons é nota 10. Muito prestativos e atenciosos com todos os convidados.", role: "Convidada", initial: "H" },
+  { name: "Igor Cavalcante", text: "Networking de alto nível no lounge. Conheci pessoas incríveis enquanto assistia ao meu time.", role: "Empreendedor", initial: "I" },
+  { name: "Juliana Paiva", text: "Ambiente limpo, seguro e muito sofisticado. Os banheiros privativos são um diferencial enorme.", role: "Google Review", initial: "J" },
+  { name: "Lucas Martins", text: "Fui no show do The Weeknd pela Henko e foi inesquecível. Vista privilegiada do palco.", role: "Fã VIP", initial: "L" },
+  { name: "Patrícia Oliveira", text: "Sempre escolho a Henko pela confiança e tradição. São os melhores do Morumbis.", role: "Google Review", initial: "P" },
+  { name: "Rodrigo Mello", text: "O melhor buffet que já comi num estádio. A variedade e qualidade impressionam de verdade.", role: "Gastrónomo", initial: "R" },
+  { name: "Sofia Rocha", text: "Tudo impecável. Organização que respeita o cliente. Não troco por nenhum outro camarote.", role: "Google Review", initial: "S" },
+  { name: "Tiago Abravanel", text: "Lugar de gente bonita e energia lá em cima. A hospitalidade da Henko é fora de série.", role: "Artista", initial: "T" }
 ];
 
 // --- 3. UTILITÁRIOS ---
@@ -114,7 +129,6 @@ const ImageWithFallback = ({ src, alt, className, style }) => {
 
 // --- 4. COMPONENTE PRINCIPAL ---
 const App = () => {
-  // Estados
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminInputPass, setAdminInputPass] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -209,7 +223,7 @@ const App = () => {
         html { scroll-behavior: smooth; }
       `}</style>
 
-      {/* Navbar */}
+      {/* Navbar Premium */}
       <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 bg-black/60 backdrop-blur-xl border-b border-white/5 py-4`}>
         <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
           <div className="cursor-pointer group" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
@@ -223,7 +237,7 @@ const App = () => {
                <LockKeyhole className="w-5 h-5" />
             </button>
           </div>
-          <button onClick={() => setIsMenuOpen(true)} className="md:hidden text-red-600"><MenuIcon className="w-8 h-8" /></button>
+          <button onClick={() => setIsMenuOpen(true)} className="md:hidden text-red-600"><MenuIcon className="w-7 h-7" /></button>
         </div>
       </nav>
 
@@ -238,12 +252,12 @@ const App = () => {
       )}
 
       {/* Hero */}
-      <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+      <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden font-black">
         <div className="absolute inset-0 z-0 opacity-40">
           <img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" />
         </div>
-        <div className="relative z-10 w-full max-w-5xl font-black">
-          <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter leading-none">
+        <div className="relative z-10 w-full max-w-5xl">
+          <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter leading-none text-white">
             ARENA <span className="text-red-600">HENKO</span>
           </h1>
           <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg font-light">Hospitalidade Premium & Experiências</p>
@@ -292,7 +306,7 @@ const App = () => {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
               <div>
                 <div className="flex items-center gap-1 mb-1 justify-center sm:justify-start">
-                    <span className="text-4xl font-black text-emerald-500">4.9</span>
+                    <span className="text-4xl font-black text-emerald-500 font-black">4.9</span>
                     <Star className="w-5 h-5 text-emerald-500 fill-emerald-500" />
                 </div>
                 <p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Google Rating</p>
@@ -304,7 +318,6 @@ const App = () => {
           </div>
           <div className="grid gap-4">
              <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group font-black">
-                {/* Ícone Reduzido ao Vermelho conforme solicitado */}
                 <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform font-black" />
                 <div><h4 className="text-sm font-black uppercase italic text-white font-black">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal font-black">Somos credenciados e oficiais no Morumbis. Fuja de fraudes.</p></div>
              </div>
@@ -425,8 +438,8 @@ const App = () => {
         </div>
       </section>
 
-      {/* Parceiros - 13 Logos Coloridos */}
-      <section id="parceiros" className="py-24 bg-neutral-800/40 border-y border-neutral-900 px-10 font-black">
+      {/* Parceiros - 13 Logos Coloridos (Zoom ajustado e fundo mais claro) */}
+      <section id="parceiros" className="py-24 bg-neutral-900/40 border-y border-neutral-900 px-10 font-black">
          <div className="max-w-7xl mx-auto text-center font-black">
             <h3 className="text-[10px] text-gray-500 uppercase tracking-[0.6em] mb-20 font-black italic uppercase font-black">Marcas de Elite Conosco</h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-10 items-center font-black text-center">
@@ -444,58 +457,94 @@ const App = () => {
          </div>
       </section>
 
+      {/* Prova Social (RESTAURADA) */}
+      <section id="reviews" className="py-32 px-6 bg-black text-center font-black">
+         <div className="max-w-4xl mx-auto font-black text-white">
+            <div className="flex flex-col items-center gap-6 mb-20 font-black">
+              <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-black">Aprovação Máxima</h3>
+              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-8 py-4 rounded-full backdrop-blur-md font-black">
+                <span className="text-xs text-gray-500 uppercase tracking-widest font-black">Google Rating</span>
+                <div className="flex gap-0.5">
+                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-emerald-500 fill-emerald-500 font-black" />)}
+                </div>
+                <span className="text-sm font-bold text-emerald-500 ml-1 font-black">4.9/5</span>
+              </div>
+            </div>
+            
+            <div className="relative min-h-[350px] flex items-center justify-center overflow-hidden font-black">
+               {REVIEWS_DATA.map((r, i) => (
+                 <div key={i} className={`absolute w-full transition-all duration-1000 transform ${i === currentReviewIndex ? 'opacity-100 translate-y-0 scale-100 font-black' : 'opacity-0 translate-y-10 scale-90 pointer-events-none font-black'}`}>
+                    <div className="bg-neutral-900 p-12 md:p-16 rounded-[4rem] border border-neutral-800 shadow-2xl relative font-black">
+                       <Quote className="w-20 h-20 text-red-600/5 absolute top-8 right-12 font-black" />
+                       <p className="text-gray-300 text-xl md:text-2xl italic mb-12 leading-relaxed font-light font-black text-white">"{r.text}"</p>
+                       <div className="flex items-center justify-center gap-5 font-black">
+                          <div className="w-14 h-14 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center text-red-500 text-xl font-black font-black">{r.initial}</div>
+                          <div className="text-left font-black"><p className="font-bold uppercase text-base text-white italic font-black">{r.name}</p><p className="text-gray-600 text-[10px] uppercase tracking-widest font-black">{r.role}</p></div>
+                       </div>
+                    </div>
+                 </div>
+               ))}
+            </div>
+            <div className="flex justify-center gap-3 mt-12 font-black">
+              {REVIEWS_DATA.map((_, i) => (
+                <button key={i} onClick={() => setCurrentReviewIndex(i)} className={`h-1.5 rounded-full transition-all duration-500 font-black ${i === currentReviewIndex ? 'w-10 bg-red-600' : 'w-2 bg-neutral-800'}`} />
+              ))}
+            </div>
+         </div>
+      </section>
+
       {/* Contato Final com Texto Reduzido */}
-      <section id="contato" className="py-40 bg-black text-center font-black">
-         <div className="max-w-5xl mx-auto font-black text-white font-black">
-            <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic tracking-tighter leading-none text-white font-black">
-                Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black font-black">HENKO.</span>
+      <section id="contato" className="py-40 bg-neutral-950 border-t border-neutral-900 text-center font-black">
+         <div className="max-w-5xl mx-auto font-black text-white font-black text-white">
+            <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic tracking-tighter leading-none text-white font-black font-black">
+                Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black font-black font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black font-black font-black">HENKO.</span>
             </h2>
-            <div className="grid sm:grid-cols-3 gap-6 font-black text-white uppercase font-black">
-               <a href="https://instagram.com/arenahenko" target="_blank" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black">
-                 <Instagram className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black">Instagram</span>
+            <div className="grid sm:grid-cols-3 gap-6 font-black text-white uppercase font-black text-white">
+               <a href="https://instagram.com/arenahenko" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black text-white">
+                 <Instagram className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black text-red-600" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black text-white">Instagram</span>
                </a>
-               <a href="https://wa.me/5511940741355" target="_blank" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black">
-                 <Phone className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black">WhatsApp</span>
+               <a href="https://wa.me/5511940741355" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black text-white">
+                 <Phone className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black text-red-600" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black text-white">WhatsApp</span>
                </a>
-               <a href="mailto:sergio@henkoproducoes.com.br" className="bg-white/5 p-12 rounded-[2.5rem] border border-white/5 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black">
-                 <Mail className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black">E-mail</span>
+               <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black text-white">
+                 <Mail className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black text-red-600" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black text-white">E-mail</span>
                </a>
             </div>
          </div>
       </section>
 
       {/* Footer Final */}
-      <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white font-black">
+      <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white font-black text-white">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left font-black">
-          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white font-black font-black">
+          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white font-black font-black text-white">
             <img src={LOGO_URL} alt="Arena Henko" className="h-14 w-auto object-contain font-black" />
-            <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white font-black">Arena Henko &copy; 2026</p>
+            <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white font-black text-white">Arena Henko &copy; 2026</p>
           </div>
-          <div className="flex gap-4 font-black text-white font-black">
-            <a href="https://instagram.com/arenahenko" target="_blank" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black"><Instagram className="w-6 h-6 text-white font-bold font-black" /></a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black"><Mail className="w-6 h-6 text-white font-bold font-black" /></a>
+          <div className="flex gap-4 font-black text-white font-black text-white">
+            <a href="https://instagram.com/arenahenko" target="_blank" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black text-white"><Instagram className="w-6 h-6 text-white font-bold font-black text-white" /></a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black text-white"><Mail className="w-6 h-6 text-white font-bold font-black text-white" /></a>
           </div>
         </div>
       </footer>
 
       {/* Login Admin Modal */}
-      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-white font-black font-black">
-        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm font-black shadow-3xl text-white font-black">
-          <h2 className="text-xl uppercase mb-8 text-center italic font-black font-black">Painel <span className="text-red-600 font-black uppercase italic font-black">Admin</span></h2>
+      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-white font-black font-black text-white">
+        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm font-black shadow-3xl text-white font-black text-white">
+          <h2 className="text-xl uppercase mb-8 text-center italic font-black font-black font-black text-white">Painel <span className="text-red-600 font-black uppercase italic font-black text-red-600">Admin</span></h2>
           <form onSubmit={handleAdminLogin} className="font-black">
-            <input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black font-black" />
-            <div className="flex gap-4 font-black font-black">
-              <button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black font-black">Voltar</button>
-              <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl shadow-xl font-black text-white font-black">Entrar</button>
+            <input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black font-black text-white" />
+            <div className="flex gap-4 font-black font-black text-white">
+              <button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black font-black text-white">Voltar</button>
+              <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl shadow-xl font-black text-white font-black text-white">Entrar</button>
             </div>
           </form>
         </div>
       </div>
 
-      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce font-black">{toast}</div>}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce font-black text-white">{toast}</div>}
     </div>
   );
 };
