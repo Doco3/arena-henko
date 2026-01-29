@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Menu as MenuIcon, X, Instagram, Mail, Phone, Calendar, Award, Users, Tv, Music, MapPin, 
   CheckCircle, ArrowRight, Lock, Edit2, Save, LogOut, Clock, CalendarDays, Shield, 
-  ChevronDown, Info, Beer, Trophy, Star, Activity, MessageCircle, History, TrendingUp, MapPinned, Ticket, Zap, Timer, Quote, ChevronLeft, ChevronRight, Download, Trash2, Camera, Upload, Loader2, LockKeyhole, ArrowLeft, Filter, Coffee, Wine, ShieldCheck, Headphones
+  ChevronDown, Info, Beer, Trophy, Star, Activity, MessageCircle, History, TrendingUp, MapPinned, Ticket, Zap, Timer, Quote, ChevronLeft, ChevronRight, Download, Trash2, Camera, Upload, Loader2, LockKeyhole, ArrowLeft, Filter, Coffee, Wine, ShieldCheck, Headphones, MousePointerClick, Smartphone, UserCheck
 } from 'lucide-react';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
@@ -26,7 +26,7 @@ const db = getFirestore(app);
 const ADMIN_HASH = "SGVua29AMjAyNiM="; 
 const LOGO_URL = 'https://i.imgur.com/cSYIvq6.png'; 
 
-// --- 2. CONSTANTES DE DADOS GLOBAIS (ORDEM BLINDADA) ---
+// --- 2. CONSTANTES DE DADOS GLOBAIS ---
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
@@ -39,7 +39,7 @@ const TEAM_LOGOS = {
 
 const NAV_LINKS = [
   { name: 'Sobre', href: '#sobre' },
-  { name: 'Reviews', href: '#reviews' },
+  { name: 'Depoimentos', href: '#reviews' },
   { name: 'Agenda', href: '#calendario' },
   { name: 'Eventos', href: '#eventos' },
   { name: 'Experiência', href: '#servicos' },
@@ -47,12 +47,12 @@ const NAV_LINKS = [
 ];
 
 const SERVICES_DATA = [
-    { title: 'Lounge de Hospitalidade', icon: <Users />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
-    { title: 'Recepção VIP', icon: <Award />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
-    { title: 'Ambiente Premium', icon: <Beer />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
-    { title: 'Networking', icon: <CheckCircle />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
-    { title: 'Vista Privilegiada', icon: <MapPin />, desc: 'Acesso exclusivo e visão privilegiada do campo/palco no Morumbis.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
-    { title: 'Branding & Mídia', icon: <Tv />, desc: 'Ativações de marca em Ring LED e relatórios de visibilidade premium.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
+    { title: 'Lounge de Hospitalidade', icon: <Users className="w-6 h-6" />, desc: 'Ponto exclusivo para networking, briefings e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
+    { title: 'Recepção VIP', icon: <Award className="w-6 h-6" />, desc: 'Atendimento premium e acesso rápido e diferenciado desde a chegada.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
+    { title: 'Ambiente Premium', icon: <Beer className="w-6 h-6" />, desc: 'Open bar, Open Food com culinária sofisticada e entretenimento ao vivo.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
+    { title: 'Networking', icon: <CheckCircle className="w-6 h-6" />, desc: 'O ambiente ideal para expandir a sua rede de contactos profissionais.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
+    { title: 'Vista Privilegiada', icon: <MapPin className="w-6 h-6" />, desc: 'Acesso exclusivo e visão privilegiada do campo/palco no Morumbis.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
+    { title: 'Branding & Mídia', icon: <Tv className="w-6 h-6" />, desc: 'Ativações de marca em Ring LED e relatórios de visibilidade premium.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
 ];
 
 const SPORT_DATA = [
@@ -121,10 +121,10 @@ const REVIEWS_DATA = [
 ];
 
 const FAQ_DATA = [
-    { q: "Como recebo o meu bilhete?", a: "Após a confirmação da reserva com o nosso consultor, o seu bilhete oficial é enviado diretamente via e-mail ou WhatsApp, com total segurança e validade nos portões do Morumbis." },
-    { q: "Vocês são o canal oficial?", a: "Sim. A Arena Henko é uma operação própria e credenciada dentro do Estádio do Morumbi. Ao comprar connosco, está a tratar diretamente com o camarote, sem intermediários." },
-    { q: "Onde fica localizado o camarote?", a: "Estamos localizados no Setor Lounge Oeste, oferecendo uma visão centralizada e privilegiada do campo e do palco." },
-    { q: "O que está incluído no valor?", a: "A nossa experiência Full Experience inclui Buffet Gourmet completo (Open Food), Open Bar Premium (Cerveja, Drinks e não alcoólicos), casas de banho privativas, ambiente climatizado e entretenimento ao vivo." },
+    { q: "Como recebo o meu bilhete?", a: "Após a confirmação da reserva com o nosso consultor oficial, o seu bilhete digital é enviado diretamente via e-mail ou WhatsApp (App SPFC). Ele possui QR Code dinâmico com total segurança e validade nos portões do Morumbis." },
+    { q: "Vocês são o canal oficial?", a: "Sim. A Arena Henko é uma operação própria e credenciada dentro do Estádio do Morumbi. Ao comprar connosco, está a tratar diretamente com o camarote, eliminando intermediários e riscos de ingressos falsos." },
+    { q: "Onde fica localizado o camarote?", a: "Estamos localizados no Setor Lounge Oeste (antigo setor térreo), oferecendo uma visão centralizada e no nível do campo, proporcionando a experiência mais próxima dos jogadores e do palco." },
+    { q: "O que está incluído no valor?", a: "A nossa experiência Full Experience inclui Buffet Gourmet completo (Open Food), Open Bar Premium (Cerveja, Drinks e não alcoólicos), casas de banho privativas exclusivas, ambiente climatizado e entretenimento ao vivo." },
 ];
 
 // --- 3. UTILITÁRIOS ---
@@ -136,11 +136,9 @@ const ImageWithFallback = ({ src, alt, className, style }) => {
 
 // --- 4. COMPONENTE PRINCIPAL ---
 const App = () => {
-  // Estados
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminInputPass, setAdminInputPass] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [activeSportId, setActiveSportId] = useState(1); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
   const [expandedFaqKey, setExpandedFaqKey] = useState(null);
@@ -149,29 +147,40 @@ const App = () => {
   const [user, setUser] = useState(null);
   const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0 });
 
-  // Lógica de Dados
-  const selectedSport = SPORT_DATA.find(s => s.id === activeSportId) || SPORT_DATA[0];
-  const visibleMatches = selectedSport.matches || [];
-  
-  const getNextMatch = () => {
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const nextMatch = useMemo(() => {
     try {
-        const all = SPORT_DATA.flatMap(s => (s.matches || []).map(m => ({
-            ...m,
-            pDate: new Date(2026, parseInt(m.date.split('/')[1]) - 1, parseInt(m.date.split('/')[0]))
-        })));
-        const future = all.filter(m => m.pDate >= new Date(2026, 0, 27));
+        const all = SPORT_DATA.flatMap(s => (s.matches || []).map(m => {
+            const [d, mo] = m.date.split('/');
+            return { ...m, pDate: new Date(2026, parseInt(mo) - 1, parseInt(d)) };
+        }));
+        const future = all.filter(m => m.pDate >= today);
         return future.sort((a,b) => a.pDate - b.pDate)[0] || null;
     } catch(e) { return null; }
-  };
+  }, [today]);
 
-  const nextMatch = getNextMatch();
-  const nextEvent = SHOWS_DATA[0];
+  const selectedSport = useMemo(() => SPORT_DATA.find(s => s.id === activeSportId) || SPORT_DATA[0], [activeSportId]);
 
-  // Efeitos
+  const visibleMatches = useMemo(() => {
+      return (selectedSport.matches || []).filter(m => {
+          const [d, mo] = m.date.split('/');
+          const pDate = new Date(2026, parseInt(mo) - 1, parseInt(d));
+          return pDate >= today;
+      });
+  }, [selectedSport, today]);
+
   useEffect(() => {
+    if (!nextMatch) return;
     const updateCountdown = () => {
         const now = new Date();
-        const target = new Date(2026, 0, 28, 21, 30); 
+        const [d, mo] = nextMatch.date.split('/');
+        const [h, mi] = nextMatch.time.replace('h', ':').split(':');
+        const target = new Date(2026, parseInt(mo) - 1, parseInt(d), parseInt(h), parseInt(mi) || 0);
         const diff = target - now;
         if(diff > 0) {
             setTimeLeft({
@@ -184,7 +193,7 @@ const App = () => {
     updateCountdown();
     const timer = setInterval(updateCountdown, 60000);
     return () => clearInterval(timer);
-  }, []);
+  }, [nextMatch]);
 
   useEffect(() => {
     signInAnonymously(auth).catch(() => {});
@@ -197,12 +206,6 @@ const App = () => {
   useEffect(() => {
     const itv = setInterval(() => setCurrentReviewIndex(p => (p + 1) % REVIEWS_DATA.length), 5000);
     return () => clearInterval(itv);
-  }, []);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const handleAdminLogin = (e) => {
@@ -221,19 +224,11 @@ const App = () => {
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
 
   return (
-    <div className="font-sans text-white bg-black animate-fadeIn overflow-x-hidden scroll-smooth">
+    <div className="font-sans text-white bg-black animate-fadeIn overflow-x-hidden scroll-smooth font-black">
       <style>{`
-        @keyframes customFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes customFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-smooth { animation: customFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        
-        @keyframes pulse-emerald {
-          0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-          70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
+        @keyframes pulse-emerald { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .animate-pulse-wa { animation: pulse-emerald 2s infinite; }
         html { scroll-behavior: smooth; }
       `}</style>
@@ -241,122 +236,73 @@ const App = () => {
       {/* Botão Flutuante do WhatsApp */}
       <div className="fixed bottom-6 right-6 z-[250] flex flex-col items-end gap-3 group">
           <div className="bg-black/80 backdrop-blur-md border border-emerald-500/30 px-4 py-2 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0 shadow-2xl pointer-events-none">
-              <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Dúvidas? Fale connosco!</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Dúvidas? Fale com um Consultor</p>
           </div>
-          <button 
-            onClick={() => window.open(getWaLink("Olá! Gostaria de informações oficiais sobre a Arena Henko."))}
-            className="w-16 h-16 bg-emerald-500 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all active:scale-95 animate-pulse-wa relative"
-          >
+          <button onClick={() => window.open(getWaLink("Olá! Gostaria de falar com um consultor oficial da Arena Henko."))} className="w-16 h-16 bg-emerald-500 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-all active:scale-95 animate-pulse-wa relative">
               <MessageCircle className="w-8 h-8 text-white fill-white" />
-              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 rounded-full border-2 border-black flex items-center justify-center animate-bounce">
-                  <div className="w-1.5 h-1.5 bg-white rounded-full"></div>
-              </div>
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 rounded-full border-2 border-black flex items-center justify-center animate-bounce"><div className="w-1.5 h-1.5 bg-white rounded-full"></div></div>
           </button>
       </div>
 
-      {/* Navbar Premium */}
-      <nav className={`fixed top-0 w-full z-[100] transition-all duration-500 bg-black/60 backdrop-blur-xl border-b border-white/5 py-4`}>
+      <nav className="fixed top-0 w-full z-[100] bg-black/60 backdrop-blur-xl border-b border-white/5 py-4">
         <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
-          <div className="cursor-pointer group" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
-              <img src={LOGO_URL} alt="Arena Henko" className="w-14 h-14 object-contain group-hover:scale-110 transition-all duration-500" />
-          </div>
+          <div className="cursor-pointer group" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}><img src={LOGO_URL} alt="Arena Henko" className="w-14 h-14 object-contain group-hover:scale-110 transition-all duration-500" /></div>
           <div className="hidden md:flex items-center gap-10 font-black uppercase text-[10px] tracking-widest text-white">
-            {NAV_LINKS.map(link => (
-              <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300">{link.name}</a>
-            ))}
-            <button onClick={() => document.getElementById('login-modal').classList.remove('hidden')} className="hover:text-red-600 transition-all p-2 bg-white/5 rounded-full">
-               <LockKeyhole className="w-5 h-5" />
-            </button>
+            {NAV_LINKS.map(link => <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300">{link.name}</a>)}
+            <button onClick={() => document.getElementById('login-modal').classList.remove('hidden')} className="hover:text-red-600 p-2 bg-white/5 rounded-full"><LockKeyhole className="w-5 h-5" /></button>
           </div>
           <button onClick={() => setIsMenuOpen(true)} className="md:hidden text-red-600"><MenuIcon className="w-8 h-8" /></button>
         </div>
       </nav>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-3xl p-10 animate-fadeIn font-black text-center flex flex-col gap-10 justify-center">
           <button onClick={() => setIsMenuOpen(false)} className="absolute top-10 right-10 p-4 bg-neutral-900 rounded-full shadow-2xl"><X className="w-8 h-8 text-white font-bold" /></button>
-          {NAV_LINKS.map(link => (
-            <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-4xl uppercase hover:text-red-600 italic transition-all font-black leading-none">{link.name}</a>
-          ))}
+          {NAV_LINKS.map(link => <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-4xl uppercase hover:text-red-600 italic transition-all font-black leading-none">{link.name}</a>)}
         </div>
       )}
 
       {/* Hero */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden font-black">
-        <div className="absolute inset-0 z-0 opacity-40">
-          <img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" />
-        </div>
+        <div className="absolute inset-0 z-0 opacity-40"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
         <div className="relative z-10 w-full max-w-5xl">
-          <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter leading-none text-white font-black">
-            ARENA <span className="text-red-600">HENKO</span>
-          </h1>
+          <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter leading-none text-white">ARENA <span className="text-red-600">HENKO</span></h1>
           <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg font-light">Hospitalidade Premium & Experiências</p>
-          
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12 font-black">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
             {nextMatch && (
               <div onClick={() => window.open(getWaLink(`Interesse no jogo ${nextMatch.home} x ${nextMatch.away}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left relative group shadow-2xl">
-                <div className="absolute top-4 right-4 bg-red-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg animate-pulse z-20">
-                    {nextMatch.scarcity || "Alta Procura"}
-                </div>
-                <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-2 flex items-center justify-center shadow-xl border border-white/5 font-black">
-                  <img src={nextMatch.homeLogo} alt="Next" className="object-contain" />
-                </div>
-                <div className="flex-1 font-black">
-                  <p className="text-red-500 text-[10px] font-black uppercase tracking-widest mb-1 flex items-center gap-1 font-black uppercase tracking-widest"><Zap className="w-3 h-3 fill-red-500" /> Próximo Jogo</p>
-                  <h3 className="text-base font-black uppercase leading-none truncate text-white">{nextMatch.home} x {nextMatch.away}</h3>
-                  <div className="flex items-center gap-2 mt-2 text-gray-500 text-[10px] font-mono font-black">
-                    <Clock className="w-3 h-3 text-red-500" />
-                    <span>{timeLeft.d}d {timeLeft.h}h {timeLeft.m}m</span>
-                  </div>
+                <div className="absolute top-4 right-4 bg-red-600 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-full shadow-lg animate-pulse z-20">{nextMatch.scarcity || "Alta Procura"}</div>
+                <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-2 flex items-center justify-center border border-white/5"><img src={nextMatch.homeLogo} alt="Next" className="object-contain" /></div>
+                <div className="flex-1"><p className="text-red-500 text-[10px] uppercase tracking-widest mb-1"><Zap className="w-3 h-3 inline mr-1 fill-red-500" /> Próximo Jogo</p><h3 className="text-base font-black uppercase leading-none truncate text-white">{nextMatch.home} x {nextMatch.away}</h3>
+                  <div className="flex items-center gap-2 mt-2 text-gray-500 text-[10px] font-mono"><Clock className="w-3 h-3 text-red-500" /><span>{timeLeft.d}d {timeLeft.h}h {timeLeft.m}m</span></div>
                 </div>
               </div>
             )}
-            <div onClick={() => window.open(getWaLink(`Interesse no evento ${nextEvent.name}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl">
-              <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5">
-                <Music className="w-7 h-7" />
-              </div>
-              <div className="flex-1">
-                <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black uppercase tracking-widest">Próximo Evento</p>
-                <h3 className="text-base font-black uppercase leading-none text-white">{nextEvent.name}</h3>
-                <p className="text-red-600 text-[9px] mt-2 font-mono uppercase tracking-widest">{nextEvent.date}</p>
-              </div>
+            <div onClick={() => window.open(getWaLink(`Interesse no evento ${SHOWS_DATA[0].name}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl">
+              <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5"><Music className="w-7 h-7" /></div>
+              <div className="flex-1 text-white"><p className="text-gray-400 text-[10px] uppercase tracking-widest mb-1">Próximo Evento</p><h3 className="text-base font-black uppercase leading-none">{SHOWS_DATA[0].name}</h3><p className="text-red-600 text-[9px] mt-2 font-mono uppercase tracking-widest">{SHOWS_DATA[0].date}</p></div>
             </div>
           </div>
-          <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl font-black">Explorar Agenda Completa</a>
+          <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl">Ver Agenda Completa</a>
         </div>
       </section>
 
-      {/* Trust Bar (Confiança Imediata) */}
       <section className="bg-neutral-900/50 border-y border-white/5 py-8">
         <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest">
-                <ShieldCheck className="w-6 h-6" /> Canal de Vendas Oficial
-            </div>
-            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest">
-                <CheckCircle className="w-6 h-6" /> Acesso 100% Garantido
-            </div>
-            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest">
-                <Headphones className="w-6 h-6" /> Suporte VIP Personalizado
-            </div>
+            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest"><ShieldCheck className="w-6 h-6" /> Canal de Vendas Oficial</div>
+            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest"><CheckCircle className="w-6 h-6" /> Acesso 100% Garantido</div>
+            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest"><Headphones className="w-6 h-6" /> Suporte VIP Credenciado</div>
         </div>
       </section>
 
-      {/* Sobre Blindado */}
       <section id="sobre" className="py-24 px-6 bg-neutral-950 font-black">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <div className="text-center sm:text-left text-white">
-            <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block font-black">A Arena</span>
-            <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight font-black">Onde a emoção <br/>encontra o luxo.</h2>
-            <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação oficial, eliminando qualquer risco de fraude para si e para a sua família.</p>
+            <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block">A Arena</span>
+            <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight">A sua escolha segura.</h2>
+            <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">A Arena Henko é uma operação oficial dentro do Morumbis. Nossa missão é oferecer hospitalidade máxima com total transparência, eliminando riscos de fraude.</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-              <div>
-                <div className="flex items-center gap-1 mb-1 justify-center sm:justify-start">
-                    <span className="text-4xl font-black text-emerald-500">4.9</span>
-                    <Star className="w-5 h-5 text-emerald-500 fill-emerald-500" />
-                </div>
-                <p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Google Rating</p>
-              </div>
+              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Google Rating</p></div>
               <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Reviews</p></div>
               <div><h4 className="text-4xl font-black text-white">5+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Anos</p></div>
               <div><h4 className="text-4xl font-black text-white">100+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Eventos</p></div>
@@ -365,134 +311,102 @@ const App = () => {
           <div className="grid gap-4">
              <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-emerald-900/50 transition-all group">
                 <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
-                <div><h4 className="text-sm font-black uppercase italic text-white font-black">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal font-black">Tratativa direta com o camarote. Sem intermediários ou riscos.</p></div>
+                <div><h4 className="text-sm font-black uppercase italic text-white">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal">Tratativa direta com o camarote. Sem intermediários ou riscos.</p></div>
              </div>
              <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group">
                 <Award className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
-                <div><h4 className="text-sm font-black uppercase italic text-white font-black">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal font-black">Buffet premium liberado e bebidas de primeira classe.</p></div>
+                <div><h4 className="text-sm font-black uppercase italic text-white">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal">Buffet premium liberado e bebidas de primeira classe.</p></div>
              </div>
           </div>
         </div>
       </section>
 
-      {/* Prova Social (Subida no Layout) */}
-      <section id="reviews" className="py-24 px-6 bg-black text-center font-black border-y border-white/5">
-         <div className="max-w-4xl mx-auto font-black text-white">
-            <div className="flex flex-col items-center gap-6 mb-16 font-black">
-              <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-black">Experiência Comprovada</h3>
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-8 py-4 rounded-full backdrop-blur-md font-black">
-                <span className="text-xs text-gray-500 uppercase tracking-widest font-black">Nota no Google</span>
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-emerald-500 fill-emerald-500 font-black" />)}
-                </div>
+      <section id="reviews" className="py-24 px-6 bg-black text-center font-black border-y border-white/5 text-white">
+         <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col items-center gap-6 mb-16">
+              <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic">Experiência Comprovada</h3>
+              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-8 py-4 rounded-full backdrop-blur-md">
+                <span className="text-xs text-gray-500 uppercase tracking-widest">Nota no Google</span>
+                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-emerald-500 fill-emerald-500" />)}</div>
                 <span className="text-sm font-bold text-emerald-500 ml-1 font-black">4.9/5</span>
               </div>
             </div>
-            
-            <div className="relative min-h-[350px] flex items-center justify-center overflow-hidden font-black">
+            <div className="relative min-h-[350px] flex items-center justify-center overflow-hidden">
                {REVIEWS_DATA.map((r, i) => (
-                 <div key={i} className={`absolute w-full transition-all duration-1000 transform ${i === currentReviewIndex ? 'opacity-100 translate-y-0 scale-100 font-black' : 'opacity-0 translate-y-10 scale-90 pointer-events-none font-black'}`}>
-                    <div className="bg-neutral-900 p-10 md:p-14 rounded-[3.5rem] border border-neutral-800 shadow-2xl relative font-black">
-                       <Quote className="w-16 h-16 text-red-600/5 absolute top-6 right-10 font-black" />
-                       <p className="text-gray-300 text-lg md:text-xl italic mb-10 leading-relaxed font-light font-black text-white text-center font-black">"{r.text}"</p>
-                       <div className="flex items-center justify-center gap-5 font-black">
-                          <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center text-red-500 text-lg font-black font-black font-black">{r.initial}</div>
-                          <div className="text-left font-black"><p className="font-bold uppercase text-sm text-white italic font-black">{r.name}</p><p className="text-gray-600 text-[10px] uppercase tracking-widest font-black">{r.role}</p></div>
+                 <div key={i} className={`absolute w-full transition-all duration-1000 transform ${i === currentReviewIndex ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-10 scale-90 pointer-events-none'}`}>
+                    <div className="bg-neutral-900 p-10 md:p-14 rounded-[3.5rem] border border-neutral-800 shadow-2xl relative">
+                       <Quote className="w-16 h-16 text-red-600/5 absolute top-6 right-10" />
+                       <p className="text-gray-300 text-lg md:text-xl italic mb-10 leading-relaxed font-light text-white text-center">"{r.text}"</p>
+                       <div className="flex items-center justify-center gap-5">
+                          <div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center text-red-500 text-lg font-black">{r.initial}</div>
+                          <div className="text-left"><p className="font-bold uppercase text-sm text-white italic">{r.name}</p><p className="text-gray-600 text-[10px] uppercase tracking-widest">{r.role}</p></div>
                        </div>
                     </div>
                  </div>
                ))}
             </div>
-            <div className="flex justify-center gap-3 mt-8 font-black">
-              {REVIEWS_DATA.map((_, i) => (
-                <button key={i} onClick={() => setCurrentReviewIndex(i)} className={`h-1 rounded-full transition-all duration-500 font-black ${i === currentReviewIndex ? 'w-10 bg-red-600' : 'w-2 bg-neutral-800'}`} />
-              ))}
+            <div className="flex justify-center gap-3 mt-8">
+              {REVIEWS_DATA.map((_, i) => <button key={i} onClick={() => setCurrentReviewIndex(i)} className={`h-1 rounded-full transition-all duration-500 ${i === currentReviewIndex ? 'w-10 bg-red-600' : 'w-2 bg-neutral-800'}`} />)}
             </div>
          </div>
       </section>
 
-      {/* Agenda (Calendário) */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white">
-        <div className="max-w-6xl mx-auto font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic text-white font-black">Agenda <span className="text-red-600 font-black font-black">2026</span></h2>
-          <div className="flex flex-wrap gap-2 justify-center mb-12 font-black">
-            {SPORT_DATA.map(s => (
-              <button key={s.id} onClick={() => { setActiveSportId(s.id); setExpandedMatchKey(null); }} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105 font-black' : 'bg-neutral-900 text-gray-500 hover:text-white border border-white/5 font-black'}`}>{s.name}</button>
-            ))}
+        <div className="max-w-6xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic text-white">Agenda <span className="text-red-600">2026</span></h2>
+          <div className="flex flex-wrap gap-2 justify-center mb-12">
+            {SPORT_DATA.map(s => <button key={s.id} onClick={() => { setActiveSportId(s.id); setExpandedMatchKey(null); }} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl scale-105' : 'bg-neutral-900 text-gray-500 hover:text-white border border-white/5'}`}>{s.name}</button>)}
           </div>
           <div key={activeSportId} className="bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth transition-all duration-500 font-black">
-             <div className="grid lg:grid-cols-5 gap-12 items-center font-black">
-                <div className="lg:col-span-2 text-center group font-black">
-                    <div className="bg-black w-44 h-44 mx-auto rounded-3xl p-8 border border-neutral-800 flex items-center justify-center mb-6 transition-transform duration-500 hover:scale-110 shadow-2xl overflow-hidden font-black">
-                        <ImageWithFallback 
-                            src={selectedSport.image} 
-                            alt="Campeonato" 
-                            className="max-h-full object-contain font-black" 
-                            style={selectedSport.id === 3 ? { filter: 'brightness(0) invert(1)' } : {}} 
-                        />
+             <div className="grid lg:grid-cols-5 gap-12 items-center">
+                <div className="lg:col-span-2 text-center group">
+                    <div className="bg-black w-44 h-44 mx-auto rounded-3xl p-8 border border-neutral-800 flex items-center justify-center mb-6 transition-transform duration-500 hover:scale-110 shadow-2xl overflow-hidden">
+                        <ImageWithFallback src={selectedSport.image} alt="Campeonato" className="max-h-full object-contain" style={selectedSport.id === 3 ? { filter: 'brightness(0) invert(1)' } : {}} />
                     </div>
-                    <h3 className="text-4xl font-black uppercase italic leading-none text-white font-black">{selectedSport.name}</h3>
+                    <h3 className="text-4xl font-black uppercase italic leading-none text-white">{selectedSport.name}</h3>
                     <p className="text-red-600 text-[10px] tracking-[0.4em] mt-3 uppercase font-black">{selectedSport.subtitle}</p>
                 </div>
-                <div className="lg:col-span-3 space-y-10 font-normal text-left font-black text-white font-black">
+                <div className="lg:col-span-3 space-y-10 font-normal text-left font-black text-white">
                     {visibleMatches.length > 0 ? visibleMatches.map((m, i) => (
-                      <div key={i} className="relative font-black">
-                         {m.scarcity && (
-                             <div className="absolute -top-3 left-6 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg z-10 animate-bounce flex items-center gap-1 uppercase tracking-widest font-black font-black">
-                                <Zap className="w-3 h-3 fill-white font-black font-black" /> {m.scarcity}
-                             </div>
-                         )}
-                         <div className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl font-black' : 'border-neutral-800 font-black'}`}>
-                            <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-7 flex items-center justify-between group font-black">
-                                <div className="flex items-center gap-8 font-black text-white font-black">
-                                    <span className="text-xs text-gray-500 w-10 font-black font-black font-black">{m.date}</span>
-                                    <div className="flex items-center gap-4 font-black">
-                                    <span className="uppercase text-sm hidden sm:block font-black font-black text-white font-black">{m.home}</span>
-                                    <img src={m.homeLogo} className="w-8 h-8 object-contain font-black" alt="H" />
-                                    <span className="opacity-30 italic text-xs font-black font-black font-black font-black">VS</span>
-                                    <img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-8 h-8 object-contain font-black" alt="A" />
-                                    <span className="uppercase text-sm hidden sm:block font-black font-black text-white font-black">{m.away}</span>
-                                    </div>
-                                </div>
-                                <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMatchKey === i ? 'rotate-180 text-red-600 font-black' : 'text-gray-700 font-black'}`} />
+                      <div key={i} className="relative">
+                         {m.scarcity && <div className="absolute -top-3 left-6 bg-red-600 text-white text-[8px] font-black px-3 py-1 rounded-full shadow-lg z-10 animate-bounce flex items-center gap-1 uppercase tracking-widest"><Zap className="w-3 h-3 fill-white" /> {m.scarcity}</div>}
+                         <div className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'}`}>
+                            <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-7 flex items-center justify-between group font-black text-white">
+                                <div className="flex items-center gap-8 font-black text-white uppercase"><span className="text-xs text-gray-500 w-10 font-black">{m.date}</span><div className="flex items-center gap-4"><span className="uppercase text-sm hidden sm:block font-black text-white">{m.home}</span><img src={m.homeLogo} className="w-8 h-8 object-contain" alt="H" /><span className="opacity-30 italic text-xs font-black">VS</span><img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-8 h-8 object-contain" alt="A" /><span className="uppercase text-sm hidden sm:block font-black text-white">{m.away}</span></div></div>
+                                <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expandedMatchKey === i ? 'rotate-180 text-red-600' : 'text-gray-700'}`} />
                             </button>
-                            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100 font-black' : 'max-h-0 opacity-0 font-black'}`}>
-                                <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 font-black text-white text-left font-black">
+                            <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                                <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 font-black text-white text-left">
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-[9px] text-gray-400 uppercase tracking-widest font-black">
-                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black font-black font-black"><Clock className="w-3 h-3 font-black font-black"/> Horário</span><span className="text-white text-xs font-black font-black">{m.time}</span></div>
-                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black font-black font-black font-black"><LockKeyhole className="w-3 h-3 font-black font-black"/> Abertura</span><span className="text-red-500 text-xs font-black font-black font-black font-black font-black font-black">2h Antes</span></div>
-                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black font-black font-black font-black"><Wine className="w-3 h-3 font-black font-black"/> Open Bar</span><span className="text-white text-[8px] font-black font-black font-black font-black">Premium & Drinks</span></div>
-                                        <div className="flex flex-col gap-1 font-black font-black"><span className="text-gray-600 flex items-center gap-1 font-black font-black font-black font-black font-black"><Coffee className="w-3 h-3 font-black font-black"/> Open Food</span><span className="text-white text-[8px] font-black font-black font-black font-black">Buffet Completo</span></div>
+                                        <div className="flex flex-col gap-1 font-black"><Clock className="w-3 h-3 font-black inline mr-1" /><span className="text-white text-xs font-black"> Horário: {m.time}</span></div>
+                                        <div className="flex flex-col gap-1 font-black"><LockKeyhole className="w-3 h-3 font-black inline mr-1" /><span className="text-red-500 text-xs font-black">Abertura: 2h Antes</span></div>
+                                        <div className="flex flex-col gap-1 font-black"><Wine className="w-3 h-3 font-black inline mr-1" /><span className="text-white text-[8px] font-black">Premium & Drinks</span></div>
+                                        <div className="flex flex-col gap-1 font-black"><Coffee className="w-3 h-3 font-black inline mr-1" /><span className="text-white text-[8px] font-black">Buffet Completo</span></div>
                                     </div>
-                                    <button onClick={() => window.open(getWaLink(`Olá! Sou de SP e quero garantir meu ingresso oficial para ${m.home} x ${m.away}.`))} className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-xl hover:scale-105 transition-all font-black">Reservar Acesso Oficial</button>
+                                    <button onClick={() => window.open(getWaLink(`Olá! Quero garantir meu acesso oficial para o jogo ${m.home} x ${m.away}.`))} className="w-full bg-red-600 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest text-white shadow-xl hover:scale-105 transition-all">Garantir Acesso Oficial</button>
                                 </div>
                             </div>
                          </div>
                       </div>
-                    )) : <p className="text-center text-gray-700 uppercase text-[10px] py-16 font-black tracking-widest italic text-white font-black font-black">Novas datas em breve.</p>}
+                    )) : <p className="text-center text-gray-700 uppercase text-[10px] py-16 font-black tracking-widest italic text-white">Novas datas em breve.</p>}
                 </div>
              </div>
           </div>
         </div>
       </section>
 
-      {/* EVENTOS (RESTAURADOS) */}
       <section id="eventos" className="py-24 px-6 bg-black font-black">
-        <div className="max-w-7xl mx-auto font-black text-white font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white font-black">Mega <span className="text-red-600 font-black font-black font-black">Eventos</span></h2>
+        <div className="max-w-7xl mx-auto font-black text-white">
+          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white">Mega <span className="text-red-600 font-black">Eventos</span></h2>
           <div className="grid md:grid-cols-3 gap-12 font-black">
             {SHOWS_DATA.map((show, i) => (
               <div key={i} className="group flex flex-col font-black">
-                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900 font-black">
-                    <img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110 font-black" alt={show.name} />
-                </div>
-                <div className="px-2 text-left font-black">
-                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block font-black font-black">{show.date}</span>
-                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none font-black font-black">{show.name}</h3>
-                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal font-black font-black">{show.desc}</p>
-                    <button onClick={() => window.open(getWaLink(`Interesse no evento ${show.name}`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn font-black uppercase font-black font-black">
-                        Ver Disponibilidade <div className="p-2.5 bg-neutral-900 rounded-full group-hover/btn:bg-red-600 transition-all font-black font-black"><ArrowRight className="w-4 h-4 font-black font-black"/></div>
-                    </button>
+                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900"><img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={show.name} /></div>
+                <div className="px-2 text-left font-black text-white">
+                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">{show.date}</span>
+                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
+                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal">{show.desc}</p>
+                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn font-black"><ArrowRight className="w-4 h-4" /> Ver Disponibilidade</button>
                 </div>
               </div>
             ))}
@@ -500,19 +414,18 @@ const App = () => {
         </div>
       </section>
 
-      {/* Serviços */}
-      <section id="servicos" className="py-24 px-6 bg-neutral-950 border-t border-white/5 font-black text-center font-black">
-        <div className="max-w-7xl mx-auto font-black font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black font-black">A Experiência</h2>
-          <div className="grid md:grid-cols-3 gap-10 font-black font-black">
+      <section id="servicos" className="py-24 px-6 bg-neutral-950 border-t border-white/5 font-black text-center">
+        <div className="max-w-7xl mx-auto font-black">
+          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black">A Experiência</h2>
+          <div className="grid md:grid-cols-3 gap-10 font-black">
             {SERVICES_DATA.map((s, i) => (
-              <div key={i} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl font-black font-black">
-                <div className="absolute inset-0 font-black font-black"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110 font-black font-black" alt={s.title} /></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent font-black font-black font-black" />
-                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left font-black font-black">
-                  <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl font-black font-black font-black font-black font-black">{s.icon}</div>
-                  <h3 className="text-2xl font-black uppercase mb-2 text-white italic leading-none font-black font-black font-black">{s.title}</h3>
-                  <p className="text-gray-300 text-sm font-normal leading-tight font-black font-black font-black">{s.desc}</p>
+              <div key={i} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl font-black">
+                <div className="absolute inset-0 font-black"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={s.title} /></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent font-black" />
+                <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left font-black">
+                  <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl font-black">{s.icon}</div>
+                  <h3 className="text-2xl font-black uppercase mb-2 text-white italic leading-none font-black">{s.title}</h3>
+                  <p className="text-gray-300 text-sm font-normal leading-tight font-black">{s.desc}</p>
                 </div>
               </div>
             ))}
@@ -520,100 +433,73 @@ const App = () => {
         </div>
       </section>
 
-      {/* Parceiros */}
       <section id="parceiros" className="py-24 bg-neutral-900/40 border-y border-neutral-900 px-10 font-black">
          <div className="max-w-7xl mx-auto text-center font-black">
-            <h3 className="text-[10px] text-gray-500 uppercase tracking-[0.6em] mb-20 font-black italic uppercase font-black font-black">Marcas de Elite Connosco</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-10 items-center font-black text-center font-black">
+            <h3 className="text-[10px] text-gray-500 uppercase tracking-[0.6em] mb-20 font-black italic uppercase">Nossos Parceiros Oficiais</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-10 items-center font-black text-center">
                {PARTNERS_DATA.map((p, i) => (
-                  <div key={i} className={`h-20 flex items-center justify-center transition-transform duration-500 ${p.extra ? 'hover:scale-150 scale-140 font-black' : 'hover:scale-125 font-black'} font-black`}>
-                    <img 
-                        src={p.logoUrl} 
-                        className="max-h-full max-w-full object-contain font-black font-black font-black" 
-                        alt={p.name} 
-                        style={p.invert ? { filter: 'brightness(0) invert(1)' } : {}}
-                    />
+                  <div key={i} className={`h-20 flex items-center justify-center transition-transform duration-500 ${p.extra ? 'hover:scale-150 scale-140' : 'hover:scale-125'} font-black`}>
+                    <img src={p.logoUrl} className="max-h-full max-w-full object-contain" alt={p.name} style={p.invert ? { filter: 'brightness(0) invert(1)' } : {}} />
                   </div>
                ))}
             </div>
          </div>
       </section>
 
-      {/* FAQ DE SEGURANÇA */}
       <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white">
         <div className="max-w-3xl mx-auto text-center font-black">
-            <h2 className="text-4xl md:text-5xl font-black uppercase mb-16 italic text-white font-black font-black font-black font-black">Dúvidas <span className="text-red-600 font-black font-black font-black font-black">Frequentes</span></h2>
-            <div className="space-y-4 font-black font-black">
+            <h2 className="text-4xl md:text-5xl font-black uppercase mb-16 italic text-white font-black">Dúvidas <span className="text-red-600 font-black">Frequentes</span></h2>
+            <div className="space-y-4 font-black">
                 {FAQ_DATA.map((item, i) => (
-                    <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden text-left transition-all font-black font-black">
-                        <button 
-                            onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)}
-                            className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest text-white group font-black font-black font-black"
-                        >
-                            {item.q}
-                            <ChevronDown className={`w-4 h-4 transition-transform ${expandedFaqKey === i ? 'rotate-180 text-red-600 font-black' : 'text-gray-600 font-black font-black'}`} />
+                    <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden text-left transition-all">
+                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest text-white group font-black">
+                            {item.q}<ChevronDown className={`w-4 h-4 transition-transform ${expandedFaqKey === i ? 'rotate-180 text-red-600' : 'text-gray-600'}`} />
                         </button>
-                        <div className={`transition-all duration-300 overflow-hidden ${expandedFaqKey === i ? 'max-h-40 opacity-100 font-black' : 'max-h-0 opacity-0 font-black'}`}>
-                            <p className="px-6 pb-6 text-gray-400 text-xs font-normal leading-relaxed font-black font-black font-black">{item.a}</p>
-                        </div>
+                        <div className={`transition-all duration-300 overflow-hidden ${expandedFaqKey === i ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}><p className="px-6 pb-6 text-gray-400 text-xs font-normal leading-relaxed font-black">{item.a}</p></div>
                     </div>
                 ))}
             </div>
         </div>
       </section>
 
-      {/* Contato Final com Texto Reduzido */}
       <section id="contato" className="py-40 bg-neutral-950 border-t border-neutral-900 text-center font-black">
-         <div className="max-w-5xl mx-auto font-black text-white font-black font-black">
-            <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic tracking-tighter leading-none text-white font-black font-black font-black font-black font-black">
-                Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black font-black font-black font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black font-black font-black font-black">HENKO.</span>
-            </h2>
-            <div className="grid sm:grid-cols-3 gap-6 font-black text-white uppercase font-black font-black font-black font-black">
-               <a href="https://instagram.com/arenahenko" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black text-white font-black font-black">
-                 <Instagram className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black text-red-600 font-black font-black font-black" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black text-white font-black font-black font-black">Instagram</span>
+         <div className="max-w-5xl mx-auto font-black text-white">
+            <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic tracking-tighter leading-none text-white">Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black">HENKO.</span></h2>
+            <div className="grid sm:grid-cols-3 gap-6 font-black text-white uppercase">
+               <a href="https://instagram.com/arenahenko" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white">
+                 <Instagram className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white">Instagram</span>
                </a>
-               <a href="https://wa.me/5511940741355" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black text-white font-black font-black">
-                 <Phone className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black text-red-600 font-black font-black font-black" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black text-white font-black font-black font-black">WhatsApp</span>
+               <a href="https://wa.me/5511940741355" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white">
+                 <Phone className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white">WhatsApp</span>
                </a>
-               <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white font-black text-white font-black font-black">
-                 <Mail className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold font-black text-red-600 font-black font-black font-black" />
-                 <span className="text-[11px] uppercase tracking-widest font-black text-white font-black text-white font-black font-black font-black font-black">E-mail</span>
+               <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 group shadow-2xl text-white">
+                 <Mail className="w-12 h-12 text-red-600 group-hover:scale-110 transition-transform font-bold" />
+                 <span className="text-[11px] uppercase tracking-widest font-black text-white">E-mail</span>
                </a>
             </div>
          </div>
       </section>
 
-      {/* Footer Final */}
-      <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white font-black font-black">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left font-black font-black">
-          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white font-black font-black text-white font-black font-black">
-            <img src={LOGO_URL} alt="Arena Henko" className="h-14 w-auto object-contain font-black font-black font-black" />
-            <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white font-black text-white font-black font-black">Arena Henko &copy; 2026</p>
+      <footer className="bg-neutral-950 py-24 px-10 border-t border-neutral-900 font-black text-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left font-black">
+          <div className="flex flex-col items-center md:items-start gap-5 font-black text-white"><img src={LOGO_URL} alt="Arena Henko" className="h-14 w-auto object-contain font-black" />
+            <p className="text-gray-700 text-[9px] uppercase tracking-[0.5em] font-black italic text-white font-black">Arena Henko &copy; 2026</p>
           </div>
-          <div className="flex gap-4 font-black text-white font-black text-white font-black font-black">
-            <a href="https://instagram.com/arenahenko" target="_blank" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black text-white font-black font-black"><Instagram className="w-6 h-6 text-white font-bold font-black text-white font-black font-black" /></a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black font-black text-white font-black font-black"><Mail className="w-6 h-6 text-white font-bold font-black text-white font-black font-black" /></a>
-          </div>
+          <div className="flex gap-4 font-black text-white"><a href="https://instagram.com/arenahenko" target="_blank" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black"><Instagram className="w-6 h-6 text-white font-bold" /></a><a href="mailto:sergio@henkoproducoes.com.br" className="bg-neutral-900 p-4 rounded-2xl hover:bg-red-600 shadow-xl transition-all font-black"><Mail className="w-6 h-6 text-white font-bold" /></a></div>
         </div>
       </footer>
 
-      {/* Login Admin Modal */}
-      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-white font-black font-black text-white font-black font-black">
-        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm font-black shadow-3xl text-white font-black text-white font-black font-black">
-          <h2 className="text-xl uppercase mb-8 text-center italic font-black font-black font-black text-white font-black">Painel <span className="text-red-600 font-black uppercase italic font-black text-red-600 font-black">Admin</span></h2>
-          <form onSubmit={handleAdminLogin} className="font-black font-black">
-            <input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black font-black text-white font-black font-black" />
-            <div className="flex gap-4 font-black font-black text-white font-black font-black">
-              <button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black font-black text-white font-black font-black">Voltar</button>
-              <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl shadow-xl font-black text-white font-black text-white font-black font-black">Entrar</button>
-            </div>
+      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 text-white font-black">
+        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm font-black shadow-3xl text-white">
+          <h2 className="text-xl uppercase mb-8 text-center italic font-black">Painel <span className="text-red-600 font-black">Admin</span></h2>
+          <form onSubmit={handleAdminLogin} className="font-black"><input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black" />
+            <div className="flex gap-4 font-black"><button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black">Voltar</button><button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl shadow-xl font-black text-white">Entrar</button></div>
           </form>
         </div>
       </div>
-
-      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce font-black text-white font-black font-black">{toast}</div>}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce font-black">{toast}</div>}
     </div>
   );
 };
