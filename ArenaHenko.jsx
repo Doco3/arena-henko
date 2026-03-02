@@ -6,27 +6,30 @@ import {
   Beer, Zap, Play
 } from 'lucide-react';
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // --- CONFIGURAÇÃO DO FIREBASE ---
-const firebaseConfig = {
-  apiKey: "AIzaSyDwLDVpSFe7aA2IX7Vhn736GETRvvjAorI",
-  authDomain: "arena-henko.firebaseapp.com",
-  projectId: "arena-henko",
-  storageBucket: "arena-henko.firebasestorage.app",
-  messagingSenderId: "34887593341",
-  appId: "1:34887593341:web:d6d68012cc9b8389797014"
-};
+const firebaseConfig = typeof __firebase_config !== 'undefined' 
+  ? JSON.parse(__firebase_config) 
+  : {
+      apiKey: "AIzaSyDwLDVpSFe7aA2IX7Vhn736GETRvvjAorI",
+      authDomain: "arena-henko.firebaseapp.com",
+      projectId: "arena-henko",
+      storageBucket: "arena-henko.firebasestorage.app",
+      messagingSenderId: "34887593341",
+      appId: "1:34887593341:web:d6d68012cc9b8389797014"
+    };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
 const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko';
 
 const ADMIN_HASH = "SGVua29AMjAyNiM="; 
 const LOGO_URL = 'https://i.imgur.com/cSYIvq6.png'; 
 
-// --- DADOS GLOBAIS ---
+// --- DADOS ESTÁTICOS ---
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
   SANTOS: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Santos_logo.svg/1045px-Santos_logo.svg.png",
@@ -75,7 +78,6 @@ const SPORT_DATA = [
 ];
 
 const SHOWS_DATA = [
-  { name: 'AC/DC', date: '24 e 28/02/2026', image: 'https://i.imgur.com/XawIqwq.jpg', desc: 'O maior espetáculo de rock do planeta chega ao Morumbis.' },
   { name: 'The Weeknd', date: '30/04/2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Uma experiência visual e sonora imersiva com a melhor vista.' },
   { name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
 ];
@@ -107,16 +109,18 @@ const FAQ_DATA = [
     { q: "O que está incluído no valor?", a: "Full Experience inclui Buffet Gourmet, Open Bar Premium, banheiros privativos e climatização." },
 ];
 
-// --- 3. UTILITÁRIOS ---
+// --- UTILITÁRIOS ---
 function ImageWithFallback({ src, alt, className, style }) {
   const [error, setError] = useState(false);
   if (error) return <div className={`${className} bg-neutral-800 flex items-center justify-center rounded-xl`}><Shield className="w-6 h-6 text-gray-600" /></div>;
   return <img src={src} alt={alt} className={className} style={style} onError={() => setError(true)} />;
 }
 
-// --- 4. COMPONENTE PRINCIPAL ---
+// --- COMPONENTE PRINCIPAL ---
 const App = () => {
+  const [user, setUser] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [activeSportId, setActiveSportId] = useState(1); 
   const [expandedMatchKey, setExpandedMatchKey] = useState(null);
   const [expandedFaqKey, setExpandedFaqKey] = useState(null);
@@ -134,9 +138,10 @@ const App = () => {
   const nextMatch = useMemo(() => {
     try {
         const all = SPORT_DATA.flatMap(s => (s.matches || []).map(m => {
+            if (!m.date || !m.date.includes('/')) return null;
             const [d, mo] = m.date.split('/');
             return { ...m, pDate: new Date(2026, parseInt(mo) - 1, parseInt(d)) };
-        }));
+        })).filter(Boolean);
         const future = all.filter(m => m.pDate >= today);
         return future.sort((a,b) => a.pDate - b.pDate)[0] || null;
     } catch(e) { return null; }
@@ -146,6 +151,7 @@ const App = () => {
 
   const visibleMatches = useMemo(() => {
       return (selectedSport.matches || []).filter(m => {
+          if (!m.date || !m.date.includes('/')) return false;
           const [d, mo] = m.date.split('/');
           const pDate = new Date(2026, parseInt(mo) - 1, parseInt(d));
           return pDate >= today;
@@ -154,6 +160,7 @@ const App = () => {
 
   const nextEvent = SHOWS_DATA[0];
 
+  // Efeito para Countdown
   useEffect(() => {
     if (!nextMatch) return;
     const updateCountdown = () => {
@@ -174,13 +181,31 @@ const App = () => {
     return () => clearInterval(timer);
   }, [nextMatch]);
 
+  // Efeito para Inicialização (Auth e Favicon)
   useEffect(() => {
-    signInAnonymously(auth).catch(() => {});
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.warn("Auth status: Guest mode enabled.");
+      }
+    };
+    initAuth();
+    
+    const unsubscribe = onAuthStateChanged(auth, setUser);
+
     const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
     link.type = 'image/x-icon'; link.rel = 'shortcut icon'; link.href = LOGO_URL;
-    document.getElementsByTagName('head')[0].appendChild(link);
+    if (!link.parentNode) document.getElementsByTagName('head')[0].appendChild(link);
+
+    return () => unsubscribe();
   }, []);
 
+  // Efeito para Reviews Carousel
   useEffect(() => {
     const itv = setInterval(() => setCurrentReviewIndex(p => (p + 1) % REVIEWS_DATA.length), 5000);
     return () => clearInterval(itv);
@@ -191,7 +216,7 @@ const App = () => {
     if (btoa(adminInputPass) === ADMIN_HASH) {
       setToast("Acesso Liberado");
       setTimeout(() => setToast(null), 3000);
-      document.getElementById('login-modal').classList.add('hidden');
+      setIsLoginModalOpen(false);
     } else {
       setToast("Senha incorreta");
       setTimeout(() => setToast(null), 3000);
@@ -216,15 +241,21 @@ const App = () => {
           </button>
       </div>
 
+      {/* Navigation */}
       <nav className="fixed top-0 w-full z-[100] bg-black/60 backdrop-blur-xl border-b border-white/5 py-4 px-8 flex justify-between items-center">
-        <div className="cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}><img src={LOGO_URL} alt="Logo" className="w-12 h-12 object-contain" /></div>
+        <div className="cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
+          <img src={LOGO_URL} alt="Logo" className="w-12 h-12 object-contain" />
+        </div>
         <div className="hidden md:flex items-center gap-10 font-black uppercase text-[10px] tracking-widest text-white">
             {NAV_LINKS.map(link => <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300">{link.name}</a>)}
-            <button onClick={() => document.getElementById('login-modal').classList.remove('hidden')} className="p-2 bg-white/5 rounded-full hover:text-red-600 transition-colors"><LockKeyhole className="w-5 h-5" /></button>
+            <button onClick={() => setIsLoginModalOpen(true)} className="p-2 bg-white/5 rounded-full hover:text-red-600 transition-colors">
+              <LockKeyhole className="w-5 h-5" />
+            </button>
         </div>
         <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-red-600 font-bold"><MenuIcon /></button>
       </nav>
 
+      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-3xl p-10 animate-fadeIn text-center flex flex-col gap-10 justify-center">
           <button onClick={() => setIsMenuOpen(false)} className="absolute top-10 right-10 p-4 bg-neutral-900 rounded-full text-white"><X /></button>
@@ -247,7 +278,7 @@ const App = () => {
             ) : (
                 <div className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 text-left"><div className="w-14 h-14 bg-neutral-900 rounded-2xl p-4 flex items-center justify-center border border-white/5"><Calendar className="w-6 h-6 text-gray-600" /></div><div className="flex-1"><p className="text-gray-500 text-[10px] uppercase">Temporada 2026</p><h3 className="text-base font-black uppercase text-white">Novas Datas em Breve</h3></div></div>
             )}
-            <div onClick={() => window.open(getWaLink(`Interesse no show do AC/DC`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl">
+            <div onClick={() => window.open(getWaLink(`Interesse oficial no show do ${nextEvent.name}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl">
               <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5"><Music className="w-7 h-7" /></div>
               <div className="flex-1 text-white font-black"><p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1">Próximo Evento</p><h3 className="text-base font-black uppercase leading-none">{nextEvent.name}</h3><p className="text-red-600 text-[9px] font-mono mt-1">{nextEvent.date}</p></div>
             </div>
@@ -258,33 +289,35 @@ const App = () => {
 
       {/* Trust Bar */}
       <section className="bg-neutral-900/50 border-y border-white/5 py-8 font-black">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest font-black"><ShieldCheck className="w-6 h-6" /> Canal Oficial</div>
-            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest font-black"><CheckCircle className="w-6 h-6" /> Acesso Garantido</div>
-            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest font-black"><Headphones className="w-6 h-6" /> Suporte VIP Credenciado</div>
+        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest"><ShieldCheck className="w-6 h-6" /> Canal Oficial</div>
+            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest"><CheckCircle className="w-6 h-6" /> Acesso Garantido</div>
+            <div className="flex items-center justify-center gap-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest"><Headphones className="w-6 h-6" /> Suporte VIP Credenciado</div>
         </div>
       </section>
 
-      {/* Sobre (RESTAURADO) */}
+      {/* Sobre */}
       <section id="sobre" className="py-24 px-6 bg-neutral-950 border-y border-neutral-900 font-black text-center sm:text-left">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <div>
-            <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block font-black">A Arena</span>
+            <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block">A Arena</span>
             <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight">Onde a emoção <br/>encontra o luxo.</h2>
             <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação própria e oficial, garantindo sua tranquilidade.</p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-black"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500 font-black" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500">Google Rating</p></div>
-              <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Reviews</p></div>
-              <div><h4 className="text-4xl font-black text-white">5+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Anos</p></div>
-              <div><h4 className="text-4xl font-black text-white">100+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Eventos</p></div>
+              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500">Google Rating</p></div>
+              <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500">Reviews</p></div>
+              <div><h4 className="text-4xl font-black text-white">5+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500">Anos</p></div>
+              <div><h4 className="text-4xl font-black text-white">100+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500">Eventos</p></div>
             </div>
           </div>
           <div className="grid gap-4">
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-emerald-900/50 transition-all group font-black"><Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform font-black" />
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-emerald-900/50 transition-all group">
+                <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
                 <div><h4 className="text-sm font-black uppercase italic text-white">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal">Tratativa direta com o camarote. Sem intermediários ou riscos.</p></div>
              </div>
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group font-black"><Award className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform font-black" />
-                <div><h4 className="text-sm font-black uppercase italic text-white font-black font-black">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal">Buffet premium liberado e bebidas de primeira classe.</p></div>
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl hover:border-red-900/50 transition-all group">
+                <Award className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
+                <div><h4 className="text-sm font-black uppercase italic text-white">Hospitalidade Vip</h4><p className="text-gray-500 text-xs mt-1 font-normal">Buffet premium liberado e bebidas de primeira classe.</p></div>
              </div>
           </div>
         </div>
@@ -292,63 +325,51 @@ const App = () => {
 
       {/* Passo a Passo */}
       <section className="py-24 bg-black border-y border-white/5 px-6 font-black text-center">
-         <div className="max-w-6xl mx-auto font-black">
+          <div className="max-w-6xl mx-auto">
             <h3 className="text-4xl font-black uppercase italic text-white mb-16">Como Garantir seu Acesso</h3>
             <div className="grid md:grid-cols-3 gap-8">
                 <div className="bg-neutral-900/30 p-8 rounded-3xl border border-white/5"><MousePointerClick className="w-8 h-8 mx-auto mb-6 text-emerald-500" /><h4 className="text-xs uppercase tracking-widest mb-4">1. Reserve</h4><p className="text-gray-500 text-xs font-normal">Fale com o consultor oficial via WhatsApp.</p></div>
                 <div className="bg-neutral-900/30 p-8 rounded-3xl border border-white/5"><Smartphone className="w-8 h-8 mx-auto mb-6 text-emerald-500" /><h4 className="text-xs uppercase tracking-widest mb-4">2. Receba</h4><p className="text-gray-500 text-xs font-normal">Bilhete via App oficial SPFC.</p></div>
                 <div className="bg-neutral-900/30 p-8 rounded-3xl border border-white/5"><UserCheck className="w-8 h-8 mx-auto mb-6 text-emerald-500" /><h4 className="text-xs uppercase tracking-widest mb-4">3. Aproveite</h4><p className="text-gray-500 text-xs font-normal">Recepção VIP pela nossa equipe.</p></div>
             </div>
-         </div>
-      </section>
-
-      {/* Reviews */}
-      <section id="reviews" className="py-24 px-6 bg-black text-center border-y border-white/5 text-white">
-         <div className="max-w-4xl mx-auto font-black">
-            <div className="flex flex-col items-center gap-6 mb-16 font-black">
-              <h3 className="text-4xl md:text-5xl font-black uppercase tracking-tighter italic font-black font-black">Experiência Comprovada</h3>
-              <div className="flex items-center gap-3 bg-white/5 border border-white/10 px-8 py-4 rounded-full backdrop-blur-md">
-                <span className="text-xs text-gray-500 uppercase tracking-widest font-black">Nota no Google</span>
-                <div className="flex gap-0.5">{[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-emerald-500 fill-emerald-500 font-black" />)}</div>
-                <span className="text-sm font-bold text-emerald-500 ml-1">4.9/5</span>
-              </div>
-            </div>
-            <div className="relative min-h-[300px] flex items-center justify-center overflow-hidden">
-               {REVIEWS_DATA.slice(0, 5).map((r, i) => (
-                 <div key={i} className={`absolute w-full transition-all duration-1000 transform ${i === currentReviewIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
-                    <div className="bg-neutral-900 p-10 md:p-14 rounded-[3.5rem] border border-neutral-800 shadow-2xl relative font-black">
-                       <Quote className="w-16 h-16 text-red-600/5 absolute top-6 right-10" /><p className="text-gray-300 text-lg md:text-xl italic mb-10 leading-relaxed font-light font-black">"{r.text}"</p>
-                       <div className="flex items-center justify-center gap-5"><div className="w-12 h-12 bg-red-600/20 border border-red-600/30 rounded-full flex items-center justify-center text-red-500 text-lg font-black">{r.initial}</div><div className="text-left font-black"><p className="font-bold uppercase text-sm text-white italic">{r.name}</p><p className="text-gray-600 text-[10px] uppercase tracking-widest">{r.role}</p></div></div>
-                    </div>
-                 </div>
-               ))}
-            </div>
-            <div className="flex justify-center gap-3 mt-8">
-              {[0,1,2,3,4].map((i) => <button key={i} onClick={() => setCurrentReviewIndex(i)} className={`h-1 rounded-full transition-all duration-500 ${i === currentReviewIndex ? 'w-10 bg-red-600' : 'w-2 bg-neutral-800'}`} />)}
-            </div>
-         </div>
+          </div>
       </section>
 
       {/* Agenda */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white">
-        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic font-black text-white">Agenda <span className="text-red-600 font-black">2026</span></h2>
+        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic text-white">Agenda <span className="text-red-600">2026</span></h2>
         <div className="flex flex-wrap gap-2 justify-center mb-12">
-            {SPORT_DATA.map(s => <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl' : 'bg-neutral-900 text-gray-500'}`}>{s.name}</button>)}
+            {SPORT_DATA.map(s => (
+              <button 
+                key={s.id} 
+                onClick={() => setActiveSportId(s.id)} 
+                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase transition-all ${activeSportId === s.id ? 'bg-red-600 text-white shadow-xl' : 'bg-neutral-900 text-gray-500'}`}
+              >
+                {s.name}
+              </button>
+            ))}
         </div>
         <div key={activeSportId} className="max-w-6xl mx-auto bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth">
-            <div className="grid lg:grid-cols-5 gap-12 items-center font-black">
+            <div className="grid lg:grid-cols-5 gap-12 items-center">
                 <div className="lg:col-span-2 text-center group">
-                    <div className="bg-black w-32 h-32 mx-auto rounded-3xl p-6 border border-neutral-800 flex items-center justify-center mb-6 overflow-hidden font-black"><ImageWithFallback src={selectedSport.image} alt="Campeonato" className="max-h-full object-contain" style={selectedSport.id === 3 ? { filter: 'brightness(0) invert(1)' } : {}} /></div>
-                    <h3 className="text-4xl font-black uppercase italic text-white font-black">{selectedSport.name}</h3>
+                    <div className="bg-black w-32 h-32 mx-auto rounded-3xl p-6 border border-neutral-800 flex items-center justify-center mb-6 overflow-hidden">
+                      <ImageWithFallback 
+                        src={selectedSport.image} 
+                        alt="Campeonato" 
+                        className="max-h-full object-contain" 
+                        style={selectedSport.id === 3 ? { filter: 'brightness(0) invert(1)' } : {}} 
+                      />
+                    </div>
+                    <h3 className="text-4xl font-black uppercase italic text-white">{selectedSport.name}</h3>
                 </div>
                 <div className="lg:col-span-3 space-y-4">
                     {visibleMatches.length > 0 ? visibleMatches.map((m, i) => (
-                    <div key={i} className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'}`}>
+                    <div key={m.id} className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'}`}>
                         <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black text-white uppercase text-xs">
-                           <span>{m.date}</span> <div className="flex items-center gap-4"><img src={m.homeLogo} className="w-6 h-6" /> <span className="opacity-30 italic">VS</span> <img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-6 h-6" /></div> <ChevronDown className={`w-4 h-4 transition-transform ${expandedMatchKey === i ? 'rotate-180' : ''}`} />
+                           <span>{m.date}</span> <div className="flex items-center gap-4"><img src={m.homeLogo} className="w-6 h-6 object-contain" alt="" /> <span className="opacity-30 italic">VS</span> <img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-6 h-6 object-contain" alt="" /></div> <ChevronDown className={`w-4 h-4 transition-transform ${expandedMatchKey === i ? 'rotate-180' : ''}`} />
                         </button>
-                        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100 font-black' : 'max-h-0 opacity-0'}`}>
-                            <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 font-black text-white text-left font-black">
+                        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${expandedMatchKey === i ? 'max-h-[350px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                             <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 text-white text-left">
                                 <div className="grid grid-cols-2 gap-6 mb-8 text-[9px] uppercase tracking-widest font-black">
                                     <div className="flex items-center gap-2"><Clock className="w-3 h-3 text-red-600" /> {m.time}</div>
                                     <div className="flex items-center gap-2"><Wine className="w-3 h-3 text-red-600" /> Open Bar</div>
@@ -359,7 +380,7 @@ const App = () => {
                             </div>
                         </div>
                     </div>
-                    )) : <p className="text-center text-gray-700 uppercase text-[10px] py-16 font-black">Novas datas em breve.</p>}
+                    )) : <p className="text-center text-gray-700 uppercase text-[10px] py-16">Novas datas em breve.</p>}
                 </div>
             </div>
         </div>
@@ -367,17 +388,21 @@ const App = () => {
 
       {/* Mega Eventos */}
       <section id="eventos" className="py-24 px-6 bg-black font-black">
-        <div className="max-w-7xl mx-auto font-black font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white font-black">Mega <span className="text-red-600">Eventos</span></h2>
-          <div className="grid md:grid-cols-3 gap-12 font-black">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white">Mega <span className="text-red-600">Eventos</span></h2>
+          <div className="grid md:grid-cols-2 gap-12">
             {SHOWS_DATA.map((show, i) => (
-              <div key={i} className="group flex flex-col font-black">
-                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900 font-black"><img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110 font-black" alt={show.name} /></div>
-                <div className="px-2 text-left font-black">
-                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block font-black">{show.date}</span>
-                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none font-black">{show.name}</h3>
-                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal">{show.desc}</p>
-                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn font-black uppercase font-black"><ArrowRight className="w-4 h-4" /> Ver Disponibilidade</button>
+              <div key={i} className="group flex flex-col">
+                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900">
+                  <img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={show.name} />
+                </div>
+                <div className="px-2 text-left">
+                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">{show.date}</span>
+                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
+                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed">{show.desc}</p>
+                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn">
+                      <ArrowRight className="w-4 h-4" /> Ver Disponibilidade
+                    </button>
                 </div>
               </div>
             ))}
@@ -387,15 +412,15 @@ const App = () => {
 
       {/* Experiência */}
       <section id="servicos" className="py-24 px-6 bg-neutral-950 border-t border-white/5 font-black text-center">
-        <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black">A Experiência</h2>
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10 font-black">
+        <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white">A Experiência</h2>
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
           {SERVICES_DATA.map((s, i) => (
-            <div key={i} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl font-black">
-              <div className="absolute inset-0 font-black font-black"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={s.title} /></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent font-black" />
-              <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left font-black">
-                <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl font-black">{s.icon}</div>
-                <h3 className="text-2xl font-black uppercase mb-2 text-white italic font-black font-black">{s.title}</h3>
+            <div key={i} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
+              <div className="absolute inset-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={s.title} /></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left">
+                <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl">{s.icon}</div>
+                <h3 className="text-2xl font-black uppercase mb-2 text-white italic">{s.title}</h3>
                 <p className="text-gray-300 text-sm font-normal leading-tight">{s.desc}</p>
               </div>
             </div>
@@ -403,26 +428,14 @@ const App = () => {
         </div>
       </section>
 
-      {/* Parceiros */}
-      <section id="parceiros" className="py-24 bg-neutral-900/40 border-y border-neutral-900 px-10 font-black text-center font-black font-black">
-        <h3 className="text-[10px] text-gray-500 uppercase tracking-widest mb-16 italic font-black font-black">Nossos Parceiros Oficiais</h3>
-        <div className="grid grid-cols-2 md:grid-cols-7 gap-10 items-center font-black">
-            {PARTNERS_DATA.map((p, i) => (
-                <div key={i} className={`h-12 flex items-center justify-center transition-all ${p.extra ? 'scale-125 font-black' : ''}`}>
-                    <img src={p.logoUrl} className="max-h-full object-contain" alt={p.name} style={p.invert ? { filter: 'brightness(0) invert(1)' } : {}} />
-                </div>
-            ))}
-        </div>
-      </section>
-
       {/* FAQ */}
-      <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white text-center font-black font-black">
-        <div className="max-w-3xl mx-auto font-black font-black">
-            <h2 className="text-4xl font-black uppercase mb-16 italic font-black font-black">Dúvidas <span className="text-red-600 font-black font-black">Frequentes</span></h2>
-            <div className="space-y-4 font-black font-black font-black">
+      <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white text-center">
+        <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl font-black uppercase mb-16 italic">Dúvidas <span className="text-red-600">Frequentes</span></h2>
+            <div className="space-y-4">
                 {FAQ_DATA.map((item, i) => (
                     <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden text-left transition-all">
-                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest text-white font-black group">
+                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest text-white group">
                             {item.q}<ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedFaqKey === i ? 'rotate-180' : ''}`} />
                         </button>
                         {expandedFaqKey === i && <p className="px-6 pb-6 text-gray-400 text-xs font-light leading-relaxed animate-smooth">{item.a}</p>}
@@ -434,24 +447,37 @@ const App = () => {
 
       {/* Footer */}
       <footer id="contato" className="py-32 bg-neutral-950 border-t border-neutral-900 text-center font-black">
-        <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white font-black font-black font-black font-black">Viva sua <br/><span className="text-white underline decoration-red-600/20 font-black font-black font-black">ARENA</span> <span className="text-red-600 underline decoration-red-600/20 font-black font-black font-black">HENKO.</span></h2>
+        <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white">Viva sua <br/><span className="text-white underline decoration-red-600/20">ARENA</span> <span className="text-red-600 underline decoration-red-600/20">HENKO.</span></h2>
         <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20">
-            <a href="https://instagram.com/arenahenko" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Instagram className="text-red-600 w-10 h-10" /> Instagram</a>
-            <a href="https://wa.me/5511940741355" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Phone className="text-red-600 w-10 h-10" /> WhatsApp</a>
-            <a href="mailto:sergio@henkoproducoes.com.br" target="_blank" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Mail className="text-red-600 w-10 h-10" /> E-mail</a>
+            <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Instagram className="text-red-600 w-10 h-10" /> Instagram</a>
+            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Phone className="text-red-600 w-10 h-10" /> WhatsApp</a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Mail className="text-red-600 w-10 h-10" /> E-mail</a>
         </div>
         <img src={LOGO_URL} className="h-14 mx-auto opacity-30" alt="Logo" />
       </footer>
 
       {/* Login Modal */}
-      <div id="login-modal" className="fixed inset-0 z-[300] hidden bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8">
-        <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm shadow-3xl text-center">
-          <h2 className="text-xl uppercase mb-8 italic text-white">Painel <span className="text-red-600">Admin</span></h2>
-          <form onSubmit={handleAdminLogin}><input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black font-black" />
-            <div className="flex gap-4 font-black"><button type="button" onClick={() => document.getElementById('login-modal').classList.add('hidden')} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black">Voltar</button><button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl font-black text-white font-black font-black font-black font-black font-black font-black font-black">Entrar</button></div>
-          </form>
+      {isLoginModalOpen && (
+        <div className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8">
+          <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm shadow-3xl text-center">
+            <h2 className="text-xl uppercase mb-8 italic text-white">Painel <span className="text-red-600">Admin</span></h2>
+            <form onSubmit={handleAdminLogin}>
+              <input 
+                type="password" 
+                placeholder="Senha" 
+                value={adminInputPass} 
+                onChange={(e) => setAdminInputPass(e.target.value)} 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black" 
+              />
+              <div className="flex gap-4">
+                <button type="button" onClick={() => setIsLoginModalOpen(false)} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black">Voltar</button>
+                <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl font-black text-white">Entrar</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
+
       {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[400] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest shadow-3xl animate-bounce">{toast}</div>}
     </div>
   );
