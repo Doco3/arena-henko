@@ -10,10 +10,11 @@ import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken }
 import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, updateDoc, query, where } from 'firebase/firestore';
 
 // --- CONFIGURAÇÃO DO FIREBASE ---
+// Restauradas as chaves originais para funcionamento no GitHub
 const firebaseConfig = typeof __firebase_config !== 'undefined' 
   ? JSON.parse(__firebase_config) 
   : {
-      apiKey: "", 
+      apiKey: "AIzaSyDwLDVpSFe7aA2IX7Vhn736GETRvvjAorI", 
       authDomain: "arena-henko.firebaseapp.com",
       projectId: "arena-henko",
       storageBucket: "arena-henko.firebasestorage.app",
@@ -26,6 +27,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko';
 
+// Hash para a senha: Henko_Master_2026_Secure!#
 const ADMIN_HASH = "SGVua29fTWFzdGVyXzIwMjZfU2VjdXJlISM="; 
 const LOGO_URL = 'https://i.imgur.com/cSYIvq6.png'; 
 
@@ -64,7 +66,7 @@ const SPORT_DATA = [
     matches: [
       { id: 'br1', date: '28/01', home: 'SPFC', away: 'FLAMENGO', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.FLAMENGO, scarcity: 'Finalizado' },
       { id: 'br2', date: '11/02', home: 'SPFC', away: 'GRÊMIO', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.GREMIO },
-      { id: 'br3', date: '15/02', home: 'SPFC', away: 'CHAPECOENSE', time: '18h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CHAPEPCOENSE }
+      { id: 'br3', date: '15/02', home: 'SPFC', away: 'CHAPECOENSE', time: '18h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CHAPECOENSE }
     ],
   },
   { 
@@ -83,18 +85,6 @@ const SHOWS_DATA = [
   { name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
 ];
 
-const PARTNERS_DATA = [
-  { name: 'Mali Pizzaria', logoUrl: 'https://i.imgur.com/YxcN44a.png' },
-  { name: 'Santa Helena', logoUrl: 'https://i.imgur.com/XjXzNik.png' },
-  { name: 'Tirolez', logoUrl: 'https://i.imgur.com/4NmAzLu.png', extra: true }, 
-  { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', extra: true }, 
-  { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png' },
-  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', extra: true, invert: true }, 
-  { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png' },
-  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', extra: true, invert: true }, 
-  { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png' },
-];
-
 const REVIEWS_DATA = [
   { name: "Mariana Costa", text: "Lugar maravilhoso, comida excelente e atendimento de primeira! O melhor do Morumbis.", role: "Google Review", initial: "M" },
   { name: "João Paulo S.", text: "Conforto e segurança total para levar minha família. Passam muita credibilidade.", role: "Empresário", initial: "J" },
@@ -105,7 +95,7 @@ const REVIEWS_DATA = [
 
 const FAQ_DATA = [
     { q: "Como recebo o meu bilhete?", a: "Após a reserva oficial, o bilhete digital é enviado via e-mail ou WhatsApp (App SPFC) com QR Code dinâmico." },
-    { q: "Vocês são o canal oficial?", a: "Sim. A Arena Henko é uma operação própria e credenciada dentro do Estádio do Morumbi." },
+    { q: "Vocês são o canal oficial?", a: "Sim. A Arena Henko é uma operation própria e credenciada dentro do Estádio do Morumbi." },
     { q: "Onde fica localizado o camarote?", a: "Estamos no Setor Lounge Oeste, oferecendo visão centralizada no nível do campo." },
     { q: "O que está incluído no valor?", a: "Full Experience inclui Buffet Gourmet, Open Bar Premium, banheiros privativos e climatização." },
 ];
@@ -117,7 +107,6 @@ function ImageWithFallback({ src, alt, className, style }) {
   return <img src={src} alt={alt} className={className} style={style} onError={() => setError(true)} />;
 }
 
-// Compressão de imagem via Canvas para garantir que caiba no Firestore
 const compressImage = (base64Str, maxWidth = 1200, maxHeight = 1200) => {
   return new Promise((resolve) => {
     const img = new Image();
@@ -126,7 +115,6 @@ const compressImage = (base64Str, maxWidth = 1200, maxHeight = 1200) => {
       const canvas = document.createElement('canvas');
       let width = img.width;
       let height = img.height;
-
       if (width > height) {
         if (width > maxWidth) {
           height *= maxWidth / width;
@@ -138,12 +126,11 @@ const compressImage = (base64Str, maxWidth = 1200, maxHeight = 1200) => {
           height = maxHeight;
         }
       }
-
       canvas.width = width;
       canvas.height = height;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, width, height);
-      resolve(canvas.toDataURL('image/jpeg', 0.7)); // 0.7 qualidade para compressão eficiente
+      resolve(canvas.toDataURL('image/jpeg', 0.7));
     };
   });
 };
@@ -233,7 +220,7 @@ const App = () => {
           await signInAnonymously(auth);
         }
       } catch (err) {
-        console.warn("Auth mode: Guest");
+        console.warn("Modo visitante ativo.");
       }
     };
     initAuth();
@@ -247,18 +234,24 @@ const App = () => {
     
     // Sincronizar Álbuns
     const albumsRef = collection(db, 'artifacts', appId, 'public', 'data', 'gallery');
-    const unsubscribeAlbums = onSnapshot(albumsRef, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setAlbums(docs);
-      if (docs.length > 0 && !activeAlbumId) setActiveAlbumId(docs[0].id);
-    });
+    const unsubscribeAlbums = onSnapshot(albumsRef, 
+      (snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAlbums(docs);
+        if (docs.length > 0 && !activeAlbumId) setActiveAlbumId(docs[0].id);
+      },
+      (error) => console.error("Erro ao carregar álbuns:", error)
+    );
 
-    // Sincronizar Fotos (Individualmente)
+    // Sincronizar Fotos
     const photosRef = collection(db, 'artifacts', appId, 'public', 'data', 'photos');
-    const unsubscribePhotos = onSnapshot(photosRef, (snapshot) => {
-      const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setAllPhotos(docs);
-    });
+    const unsubscribePhotos = onSnapshot(photosRef, 
+      (snapshot) => {
+        const docs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAllPhotos(docs);
+      },
+      (error) => console.error("Erro ao carregar fotos:", error)
+    );
 
     return () => {
       unsubscribeAlbums();
@@ -303,23 +296,18 @@ const App = () => {
     
     setIsUploading(true);
     try {
-      // Comprimir antes de enviar
       const compressed = await compressImage(newPhotoUrl);
-      
-      // Criar um novo documento para esta foto
       const photosRef = collection(db, 'artifacts', appId, 'public', 'data', 'photos');
       await addDoc(photosRef, { 
         albumId: activeAlbumId, 
         url: compressed, 
         createdAt: Date.now() 
       });
-
       setNewPhotoUrl('');
       setIsAddingPhoto(false);
       setToast("Foto salva com sucesso!");
     } catch (e) {
       setToast("Erro ao guardar a foto");
-      console.error(e);
     } finally {
       setIsUploading(false);
     }
@@ -336,7 +324,7 @@ const App = () => {
   };
 
   const deleteAlbum = async (id) => {
-    if (!window.confirm("Atenção: Excluir a pasta não apagará as fotos individualmente no banco, mas elas deixarão de aparecer. Confirmar?") || !user) return;
+    if (!window.confirm("Atenção: Excluir a pasta não apagará as fotos individualmente no banco. Confirmar?") || !user) return;
     try {
       await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'gallery', id));
       setToast("Pasta excluída");
@@ -418,8 +406,8 @@ const App = () => {
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-neutral-900/50 border-y border-white/5 py-8 font-black">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center uppercase text-[10px] tracking-widest text-emerald-500">
+      <section className="bg-neutral-900/50 border-y border-white/5 py-8 font-black text-emerald-500 text-[10px] tracking-widest uppercase">
+        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
             <div className="flex items-center justify-center gap-4"><ShieldCheck className="w-6 h-6" /> Canal Oficial</div>
             <div className="flex items-center justify-center gap-4"><CheckCircle className="w-6 h-6" /> Acesso Garantido</div>
             <div className="flex items-center justify-center gap-4"><Headphones className="w-6 h-6" /> Suporte VIP Credenciado</div>
@@ -446,26 +434,15 @@ const App = () => {
           <div className="min-h-[400px]">
             {currentAlbum ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {currentPhotos.map((photo, idx) => (
+                {currentPhotos.map((photo) => (
                   <div key={photo.id} className="group relative aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 shadow-xl">
                     <img src={photo.url} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="" />
-                    
-                    {/* Botões de Ação na Foto */}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
-                       <button 
-                         onClick={() => handleDownload(photo.url, currentAlbum?.name)}
-                         className="bg-white/10 backdrop-blur-md p-4 rounded-2xl text-white hover:bg-red-600 hover:scale-110 transition-all shadow-2xl"
-                         title="Baixar Foto"
-                       >
+                       <button onClick={() => handleDownload(photo.url, currentAlbum?.name)} className="bg-white/10 backdrop-blur-md p-4 rounded-2xl text-white hover:bg-red-600 hover:scale-110 transition-all shadow-2xl">
                          <Download className="w-6 h-6" />
                        </button>
-                       
                        {isAdmin && (
-                         <button 
-                           onClick={() => removePhoto(photo.id)} 
-                           className="bg-black/60 backdrop-blur-md p-4 rounded-2xl text-red-500 hover:bg-red-600 hover:text-white hover:scale-110 transition-all shadow-2xl"
-                           title="Remover Foto"
-                         >
+                         <button onClick={() => removePhoto(photo.id)} className="bg-black/60 backdrop-blur-md p-4 rounded-2xl text-red-500 hover:bg-red-600 hover:text-white hover:scale-110 transition-all shadow-2xl">
                            <Trash2 className="w-6 h-6" />
                          </button>
                        )}
@@ -481,80 +458,68 @@ const App = () => {
             ) : (
               <div className="py-20 text-center"><ImageIcon className="w-16 h-16 mx-auto mb-6 text-neutral-800" /><p className="text-gray-600 uppercase text-[10px]">Crie ou selecione uma pasta.</p></div>
             )}
-            {currentAlbum && currentPhotos.length === 0 && !isAdmin && (
-              <div className="py-20 text-center text-gray-600 uppercase text-[10px]">Esta pasta ainda não tem fotos.</div>
-            )}
           </div>
         </div>
       </section>
 
-      {/* Sobre, Agenda, Serviços... */}
+      {/* Sobre */}
       <section id="sobre" className="py-24 px-6 bg-neutral-950 border-y border-neutral-900 font-black text-center sm:text-left">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block">A Arena</span>
             <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight">Onde a emoção <br/>encontra o luxo.</h2>
             <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação própria e oficial.</p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-black"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Google Rating</p></div>
-              <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black">Reviews</p></div>
+            <div className="grid grid-cols-2 gap-8">
+              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500">Google Rating</p></div>
+              <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500">Reviews</p></div>
             </div>
           </div>
-          <div className="grid gap-4 font-black">
+          <div className="grid gap-4">
              <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl group">
                 <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
-                <div><h4 className="text-sm font-black uppercase italic text-white font-black">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal">Tratativa direta com o camarote. Sem intermediários.</p></div>
+                <div><h4 className="text-sm font-black uppercase italic text-white">Operação Oficial</h4><p className="text-gray-500 text-xs mt-1 font-normal">Tratativa direta com o camarote. Sem intermediários.</p></div>
              </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ e Footer */}
+      {/* Footer */}
       <footer id="contato" className="py-32 bg-neutral-950 border-t border-neutral-900 text-center font-black">
         <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white">Viva sua <br/><span className="text-red-600">ARENA HENKO.</span></h2>
-        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-black">
-            <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black"><Instagram className="text-red-600 w-10 h-10" /> Instagram</a>
-            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black"><Phone className="text-red-600 w-10 h-10" /> WhatsApp</a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black"><Mail className="text-red-600 w-10 h-10" /> E-mail</a>
+        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20">
+            <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Instagram className="text-red-600 w-10 h-10" /> Instagram</a>
+            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Phone className="text-red-600 w-10 h-10" /> WhatsApp</a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl"><Mail className="text-red-600 w-10 h-10" /> E-mail</a>
         </div>
         <img src={LOGO_URL} className="h-14 mx-auto opacity-30" alt="" />
       </footer>
 
-      {/* Modais de Gerenciamento */}
+      {/* Modais Gerenciamento */}
       {isAddingAlbum && (
         <div className="fixed inset-0 z-[400] bg-black/95 backdrop-blur-xl flex items-center justify-center p-8">
           <div className="bg-neutral-900 border border-white/5 p-10 rounded-[3rem] w-full max-w-sm text-center">
-            <h3 className="text-xl uppercase italic mb-8">Nome da <span className="text-red-600 font-black">Pasta</span></h3>
+            <h3 className="text-xl uppercase italic mb-8">Nome da <span className="text-red-600">Pasta</span></h3>
             <input type="text" value={newAlbumName} onChange={e => setNewAlbumName(e.target.value)} className="w-full bg-black border border-white/10 rounded-2xl p-5 mb-6 text-center outline-none font-black" placeholder="Ex: Show The Weeknd" />
-            <div className="flex gap-4 font-black"><button onClick={() => setIsAddingAlbum(false)} className="flex-1 py-4 text-[10px] uppercase border border-white/10 rounded-2xl">Voltar</button><button onClick={addAlbum} className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl">Criar</button></div>
+            <div className="flex gap-4"><button onClick={() => setIsAddingAlbum(false)} className="flex-1 py-4 text-[10px] uppercase border border-white/10 rounded-2xl">Voltar</button><button onClick={addAlbum} className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl">Criar</button></div>
           </div>
         </div>
       )}
 
       {isAddingPhoto && (
         <div className="fixed inset-0 z-[400] bg-black/95 backdrop-blur-xl flex items-center justify-center p-8 font-black">
-          <div className="bg-neutral-900 border border-white/5 p-10 rounded-[3rem] w-full max-w-sm text-center font-black">
+          <div className="bg-neutral-900 border border-white/5 p-10 rounded-[3rem] w-full max-w-sm text-center">
             <h3 className="text-xl uppercase italic mb-8">Adicionar <span className="text-red-600">Foto</span></h3>
             {newPhotoUrl && <div className="mb-6 rounded-2xl overflow-hidden aspect-video border border-white/10"><img src={newPhotoUrl} className="w-full h-full object-cover" alt="" /></div>}
-            
             {!newPhotoUrl ? (
-              <label className="block w-full py-10 border-2 border-dashed border-white/10 rounded-3xl cursor-pointer hover:border-red-600 transition-all mb-6 font-black uppercase text-[10px]">
+              <label className="block w-full py-10 border-2 border-dashed border-white/10 rounded-3xl cursor-pointer hover:border-red-600 transition-all mb-6 uppercase text-[10px]">
                 <input type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-                <Plus className="w-10 h-10 mx-auto mb-2 text-gray-500 font-black" />
-                <span className="text-[10px] uppercase text-gray-500 font-black">Escolher Arquivo</span>
+                <Plus className="w-10 h-10 mx-auto mb-2 text-gray-500" /> Escolher Arquivo
               </label>
             ) : (
-              <div className="flex items-center gap-2 justify-center mb-6 text-emerald-500 text-[10px] uppercase font-black"><CheckCircle className="w-4 h-4" /> Foto pronta</div>
+              <div className="flex items-center gap-2 justify-center mb-6 text-emerald-500 text-[10px] uppercase"><CheckCircle className="w-4 h-4" /> Foto pronta</div>
             )}
-
-            {isUploading && (
-              <div className="mb-6 flex flex-col items-center gap-3">
-                <Loader2 className="w-8 h-8 text-red-600 animate-spin" />
-                <span className="text-[10px] uppercase text-red-600 animate-pulse">A comprimir e enviar...</span>
-              </div>
-            )}
-
-            <div className="flex gap-4 font-black"><button onClick={() => { setIsAddingPhoto(false); setNewPhotoUrl(''); }} className="flex-1 py-4 text-[10px] uppercase border border-white/10 rounded-2xl">Voltar</button><button onClick={addPhoto} className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl disabled:opacity-30" disabled={!newPhotoUrl || isUploading}>{isUploading ? 'A enviar...' : 'Salvar'}</button></div>
+            {isUploading && <div className="mb-6 flex flex-col items-center gap-3"><Loader2 className="w-8 h-8 text-red-600 animate-spin" /><span className="text-[10px] uppercase text-red-600 animate-pulse">Enviando...</span></div>}
+            <div className="flex gap-4"><button onClick={() => { setIsAddingPhoto(false); setNewPhotoUrl(''); }} className="flex-1 py-4 text-[10px] uppercase border border-white/10 rounded-2xl font-black">Voltar</button><button onClick={addPhoto} className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl font-black disabled:opacity-30" disabled={!newPhotoUrl || isUploading}>{isUploading ? 'A enviar...' : 'Salvar'}</button></div>
           </div>
         </div>
       )}
@@ -563,15 +528,15 @@ const App = () => {
       {isLoginModalOpen && (
         <div className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8">
           <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm shadow-3xl text-center">
-            <h2 className="text-xl uppercase mb-8 italic text-white font-black">Painel <span className="text-red-600 font-black">Admin</span></h2>
+            <h2 className="text-xl uppercase mb-8 italic text-white font-black">Painel <span className="text-red-600">Admin</span></h2>
             <form onSubmit={handleAdminLogin}>
               <input type="password" placeholder="Senha" value={adminInputPass} onChange={(e) => setAdminInputPass(e.target.value)} className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black" />
-              <div className="flex gap-4 font-black"><button type="button" onClick={() => setIsLoginModalOpen(false)} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl">Voltar</button><button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl text-white">Entrar</button></div>
+              <div className="flex gap-4"><button type="button" onClick={() => setIsLoginModalOpen(false)} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl">Voltar</button><button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl text-white">Entrar</button></div>
             </form>
           </div>
         </div>
       )}
-      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[500] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest animate-bounce flex items-center gap-2"><AlertTriangle className="w-4 h-4" /> {toast}</div>}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[500] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest animate-bounce flex items-center gap-2 font-black"><AlertTriangle className="w-4 h-4" /> {toast}</div>}
     </div>
   );
 };
