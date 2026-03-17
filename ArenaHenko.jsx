@@ -104,7 +104,6 @@ const PARTNERS_DATA = [
   { name: 'Tirolez', logoUrl: 'https://i.imgur.com/4NmAzLu.png', scale: 1.7 }, 
   { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', scale: 2.2 }, 
   { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png', scale: 1.0 },
-  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', invert: true, scale: 1.9 }, 
   { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png', scale: 1.1 },
   { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', invert: true, scale: 1.4 }, 
   { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png', scale: 1.3 },
