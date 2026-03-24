@@ -3,7 +3,8 @@ import {
   Menu as MenuIcon, X, Instagram, Mail, Phone, Calendar, Award, Users, Tv, Music, MapPin, 
   CheckCircle, ArrowRight, Clock, Shield, ChevronDown, Star, MessageCircle, Quote, 
   LockKeyhole, Coffee, Wine, ShieldCheck, Headphones, MousePointerClick, Smartphone, UserCheck,
-  Beer, Zap, Play, Image as ImageIcon, Plus, Trash2, FolderOpen, AlertTriangle, Loader2, Download, Link as LinkIcon, ArrowLeft
+  Beer, Zap, Play, Image as ImageIcon, Plus, Trash2, FolderOpen, AlertTriangle, Loader2, Download, Link as LinkIcon, ArrowLeft,
+  ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
@@ -109,7 +110,7 @@ const SPORT_DATA = [
 
 const SHOWS_DATA = [
   { id: 'show1', name: 'The Weeknd', date: '30/04/2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Uma experiência visual e sonora imersiva com a melhor vista.' },
-  { id: 'show2', name: 'Harry Styles', date: '18/07/2026', image: 'https://i.imgur.com/JbcYLor.jpeg', desc: 'O fenômeno pop chega ao Morumbis com a Love On Tour.' },
+  { id: 'show2', name: 'Harry Styles', date: '18/07/2026', image: 'https://i.imgur.com/JbcYLor.jpeg', desc: 'O fenômeno pop chega ao Morumbis com a turnê Together, together.' },
   { id: 'show3', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
 ];
 
@@ -140,7 +141,7 @@ const PARTNERS_DATA = [
   { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png', scale: 1.3 },
 ];
 
-// --- COMPONENTES AUXILIARES ---
+// --- COMPONENTE AUXILIAR ---
 const ImageWithFallback = ({ src, alt, className, style }) => {
   const [error, setError] = useState(false);
   if (error) return <div className={`${className} bg-neutral-800 flex items-center justify-center rounded-xl`}><Shield className="w-6 h-6 text-gray-600" /></div>;
@@ -163,6 +164,9 @@ const App = () => {
   
   const [activeAlbumId, setActiveAlbumId] = useState(null);
   const [isAlbumOpen, setIsAlbumOpen] = useState(false);
+
+  // Estado para o carrossel de Mega Eventos
+  const [currentShowIdx, setCurrentShowIdx] = useState(0);
 
   const today = useMemo(() => {
     const d = new Date();
@@ -245,6 +249,14 @@ const App = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const nextShow = () => {
+    setCurrentShowIdx((prev) => (prev + 1) % SHOWS_DATA.length);
+  };
+
+  const prevShow = () => {
+    setCurrentShowIdx((prev) => (prev - 1 + SHOWS_DATA.length) % SHOWS_DATA.length);
   };
 
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
@@ -401,22 +413,58 @@ const App = () => {
         </div>
       </section>
 
-      {/* Mega Eventos */}
-      <section id="eventos" className="py-24 px-6 bg-black font-black text-center">
-        <div className="max-w-7xl mx-auto">
+      {/* Mega Eventos - Atualizado para carrossel em 1 linha */}
+      <section id="eventos" className="py-24 px-6 bg-black font-black text-center relative">
+        <div className="max-w-7xl mx-auto overflow-hidden">
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white">Mega <span className="text-red-600 font-black">Eventos</span></h2>
-          <div className="grid md:grid-cols-2 gap-12 font-black">
-            {SHOWS_DATA.map((show, i) => (
-              <div key={show.id} className="group flex flex-col">
-                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900"><img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={show.name} /></div>
-                <div className="px-2 text-left">
-                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">{show.date}</span>
-                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
-                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal">{show.desc}</p>
-                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase trackingest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn"><ArrowRight className="w-4 h-4" /> Ver Disponibilidade</button>
+          
+          <div className="relative group/carousel px-4 md:px-12">
+            {/* Navegação */}
+            <button 
+              onClick={prevShow}
+              className="absolute left-0 top-[40%] -translate-y-1/2 z-30 p-4 bg-neutral-900/80 rounded-full border border-white/5 text-white hover:bg-red-600 transition-all shadow-2xl opacity-0 group-hover/carousel:opacity-100 hidden md:flex"
+            >
+              <ChevronLeft size={32} />
+            </button>
+            <button 
+              onClick={nextShow}
+              className="absolute right-0 top-[40%] -translate-y-1/2 z-30 p-4 bg-neutral-900/80 rounded-full border border-white/5 text-white hover:bg-red-600 transition-all shadow-2xl opacity-0 group-hover/carousel:opacity-100 hidden md:flex"
+            >
+              <ChevronRight size={32} />
+            </button>
+
+            {/* Container do Carrossel */}
+            <div 
+              className="flex transition-transform duration-700 ease-in-out gap-8"
+              style={{ transform: `translateX(-${currentShowIdx * 100}%)` }}
+            >
+              {SHOWS_DATA.map((show) => (
+                <div key={show.id} className="min-w-full flex flex-col items-center md:flex-row md:items-stretch gap-12 animate-fadeIn">
+                  <div className="relative h-[300px] md:h-[420px] w-full md:w-1/2 rounded-[3rem] overflow-hidden border border-neutral-800 shadow-2xl bg-neutral-900">
+                    <img src={show.image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000 scale-105" alt={show.name} />
+                  </div>
+                  <div className="flex-1 text-left flex flex-col justify-center">
+                      <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-4 block">{show.date}</span>
+                      <h3 className="text-4xl md:text-6xl font-black uppercase mb-6 italic text-white leading-none tracking-tighter">{show.name}</h3>
+                      <p className="text-gray-500 text-lg font-normal mb-10 leading-relaxed max-w-xl">{show.desc}</p>
+                      <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="w-fit text-[11px] font-black uppercase tracking-widest flex items-center gap-4 text-white hover:text-red-600 transition-colors group/btn bg-white/5 px-8 py-4 rounded-full border border-white/10 hover:border-red-600/50">
+                        <ArrowRight className="w-5 h-5" /> Ver Disponibilidade
+                      </button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Indicadores */}
+            <div className="flex justify-center gap-3 mt-16">
+              {SHOWS_DATA.map((_, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => setCurrentShowIdx(i)}
+                  className={`h-1.5 transition-all duration-500 rounded-full ${currentShowIdx === i ? 'w-12 bg-red-600 shadow-[0_0_10px_rgba(220,38,38,0.5)]' : 'w-4 bg-neutral-800 hover:bg-neutral-700'}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
