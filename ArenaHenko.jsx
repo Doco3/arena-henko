@@ -52,8 +52,9 @@ const TEAM_LOGOS = {
   FLAMENGO: "https://upload.wikimedia.org/wikipedia/commons/9/93/Flamengo-RJ_%28BRA%29.png",
   GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
   CHAPECOENSE: "https://upload.wikimedia.org/wikipedia/pt/b/bc/Escudo_de_2018_da_Chapecoense.png",
-  // Logo do Palmeiras atualizado
-  PALMEIRAS: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/330px-Palmeiras_logo.svg.png"
+  PALMEIRAS: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/330px-Palmeiras_logo.svg.png",
+  // Logo do Cruzeiro atualizado conforme solicitado
+  CRUZEIRO: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg/3840px-Cruzeiro_Esporte_Clube_%28logo%29.svg.png"
 };
 
 const NAV_LINKS = [
@@ -82,7 +83,8 @@ const SPORT_DATA = [
       { id: 'br1', date: '28/01', home: 'SPFC', away: 'FLAMENGO', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.FLAMENGO },
       { id: 'br2', date: '11/02', home: 'SPFC', away: 'GRÊMIO', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.GREMIO },
       { id: 'br3', date: '15/02', home: 'SPFC', away: 'CHAPECOENSE', time: '18h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CHAPECOENSE },
-      { id: 'br4', date: '21/03', home: 'SPFC', away: 'PALMEIRAS', time: '21h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.PALMEIRAS, scarcity: 'Choque-Rei' }
+      { id: 'br4', date: '21/03', home: 'SPFC', away: 'PALMEIRAS', time: '21h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.PALMEIRAS, scarcity: 'Choque-Rei' },
+      { id: 'br5', date: '04/04', home: 'SPFC', away: 'CRUZEIRO', time: '18h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CRUZEIRO }
     ],
   },
   { 
@@ -137,6 +139,7 @@ const ImageWithFallback = ({ src, alt, className, style }) => {
 
 // --- COMPONENTE PRINCIPAL APP ---
 const App = () => {
+  // Estados de Controle
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -149,6 +152,7 @@ const App = () => {
   const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0 });
   const [adminInputPass, setAdminInputPass] = useState('');
   
+  // Estados da Galeria
   const [activeAlbumId, setActiveAlbumId] = useState(null);
   const [isAlbumOpen, setIsAlbumOpen] = useState(false);
 
@@ -158,6 +162,7 @@ const App = () => {
     return d;
   }, []);
 
+  // Lógica de Próximo Jogo
   const nextMatch = useMemo(() => {
     try {
         const all = SPORT_DATA.flatMap(s => (s.matches || []).map(m => {
@@ -181,12 +186,13 @@ const App = () => {
 
   const nextEvent = SHOWS_DATA[0];
 
+  // Efeitos
   useEffect(() => {
     if (!nextMatch) return;
     const updateCountdown = () => {
         const now = new Date();
         const [d, mo] = nextMatch.date.split('/');
-        const target = new Date(2026, parseInt(mo) - 1, parseInt(d), 21, 0);
+        const target = new Date(2026, parseInt(mo) - 1, parseInt(d), 18, 30);
         const diff = target - now;
         if(diff > 0) {
             setTimeLeft({
@@ -211,6 +217,7 @@ const App = () => {
     return () => clearInterval(itv);
   }, []);
 
+  // Handlers
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (btoa(adminInputPass) === ADMIN_HASH) {
@@ -264,23 +271,23 @@ const App = () => {
                 {isAdmin ? <UserCheck className="w-5 h-5 font-black" /> : <LockKeyhole className="w-5 h-5 font-black" />}
             </button>
         </div>
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-red-600"><MenuIcon /></button>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-red-600 font-black"><MenuIcon /></button>
       </nav>
 
       {isMenuOpen && (
         <div className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-3xl p-10 animate-fadeIn text-center flex flex-col gap-10 justify-center font-black">
           <button onClick={() => setIsMenuOpen(false)} className="absolute top-10 right-10 p-4 bg-neutral-900 rounded-full text-white font-black"><X /></button>
-          {NAV_LINKS.map(link => <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-4xl uppercase hover:text-red-600 italic font-black font-black">{link.name}</a>)}
+          {NAV_LINKS.map(link => <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-4xl uppercase hover:text-red-600 italic font-black font-black font-black">{link.name}</a>)}
         </div>
       )}
 
       {/* Hero */}
       <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden font-black">
-        <div className="absolute inset-0 z-0 opacity-40"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
-        <div className="relative z-10 w-full max-w-5xl">
+        <div className="absolute inset-0 z-0 opacity-40 font-black"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
+        <div className="relative z-10 w-full max-w-5xl font-black">
           <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter text-white font-black">ARENA <span className="text-red-600 font-black">HENKO</span></h1>
           <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg font-light font-black">Hospitalidade Premium & Experiências</p>
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12 font-black">
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12 font-black font-black">
             {nextMatch && (
               <div onClick={() => window.open(getWaLink(`Interesse no jogo ${nextMatch.home} x ${nextMatch.away}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 cursor-pointer text-left shadow-2xl font-black font-black">
                 <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-2 flex items-center justify-center border border-white/5 font-black font-black"><img src={nextMatch.homeLogo} alt="Next" className="object-contain w-full h-full p-2 font-black" /></div>
@@ -288,8 +295,8 @@ const App = () => {
               </div>
             )}
             <div onClick={() => window.open(getWaLink(`Interesse oficial no show do ${nextEvent.name}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl font-black font-black">
-              <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5 font-black font-black"><Music className="w-7 h-7 font-black" /></div>
-              <div className="flex-1 text-white font-black font-black"><p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black font-black">Próximo Evento</p><h3 className="text-base font-black uppercase leading-none font-black">{nextEvent.name}</h3><p className="text-red-600 text-[9px] font-mono mt-1 font-black">{nextEvent.date}</p></div>
+              <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5 font-black font-black font-black"><Music className="w-7 h-7 font-black" /></div>
+              <div className="flex-1 text-white font-black font-black font-black"><p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black">Próximo Evento</p><h3 className="text-base font-black uppercase leading-none font-black font-black">{nextEvent.name}</h3><p className="text-red-600 text-[9px] font-mono mt-1 font-black">{nextEvent.date}</p></div>
             </div>
           </div>
           <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl font-black font-black">Explorar Agenda Completa</a>
@@ -298,7 +305,7 @@ const App = () => {
 
       {/* Trust Bar */}
       <section className="bg-neutral-900/50 border-y border-white/5 py-8 font-black text-emerald-500 text-[10px] tracking-widest uppercase font-black font-black">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center font-black">
+        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center font-black font-black font-black">
             <div className="flex items-center justify-center gap-4 font-black font-black"><ShieldCheck className="w-6 h-6 font-black font-black" /> Canal Oficial</div>
             <div className="flex items-center justify-center gap-4 font-black font-black"><CheckCircle className="w-6 h-6 font-black font-black" /> Acesso Garantido</div>
             <div className="flex items-center justify-center gap-4 font-black font-black"><Headphones className="w-6 h-6 font-black font-black" /> Suporte VIP Credenciado</div>
@@ -313,7 +320,7 @@ const App = () => {
             <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight font-black font-black">Onde a emoção <br/>encontra o luxo.</h2>
             <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed font-normal font-black font-black">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação própria e oficial.</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 font-black font-black">
-              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-black font-black"><span className="text-4xl font-black text-emerald-500 font-black font-black font-black">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500 font-black font-black" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black">Google Rating</p></div>
+              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-black font-black"><span className="text-4xl font-black text-emerald-500 font-black font-black">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500 font-black font-black" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black">Google Rating</p></div>
               <div><h4 className="text-4xl font-black text-white font-black font-black">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black">Reviews</p></div>
               <div><h4 className="text-4xl font-black text-white font-black font-black">5+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black font-black">Anos</p></div>
             </div>
@@ -332,7 +339,7 @@ const App = () => {
 
       {/* Agenda */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white font-black font-black">
-        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic font-black font-black">Agenda <span className="text-red-600 font-black font-black font-black">2026</span></h2>
+        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic font-black font-black">Agenda <span className="text-red-600 font-black font-black">2026</span></h2>
         <div className="flex flex-wrap gap-2 justify-center mb-12 font-black font-black">
             {SPORT_DATA.map(s => (
               <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase transition-all ${activeSportId === s.id ? 'bg-red-600 shadow-xl font-black font-black' : 'bg-neutral-900 text-gray-500 hover:text-white font-black font-black'}`}>{s.name}</button>
@@ -428,7 +435,7 @@ const App = () => {
                     <div className="absolute bottom-10 left-10 text-left font-black font-black font-black font-black">
                        <div className="bg-red-600 px-4 py-1 rounded-full text-[8px] w-fit mb-3 uppercase font-black font-black">Pasta</div>
                        <h3 className="text-2xl italic uppercase font-black font-black font-black">{album.name}</h3>
-                       <p className="text-gray-400 text-[10px] mt-1 uppercase font-black font-black font-black">{album.photos.length} Fotos</p>
+                       <p className="text-gray-400 text-[10px] mt-1 uppercase font-black font-black">{album.photos.length} Fotos</p>
                     </div>
                   </div>
                 ))}
@@ -456,38 +463,14 @@ const App = () => {
         </div>
       </section>
 
-      {/* Parceiros (Blindados e Coloridos) */}
-      <section id="parceiros" className="py-24 bg-neutral-900/40 border-y border-neutral-900 overflow-hidden font-black font-black font-black font-black">
-        <h3 className="text-[10px] text-gray-500 uppercase tracking-widest mb-16 italic text-center font-black font-black font-black">Parceiros Oficiais</h3>
-        <div className="relative flex overflow-hidden font-black font-black font-black font-black">
-          <div className="flex animate-infinite-scroll whitespace-nowrap gap-28 items-center font-black font-black font-black font-black">
-            {[...PARTNERS_DATA, ...PARTNERS_DATA].map((p, i) => (
-                <div key={i} className="flex-shrink-0 flex items-center justify-center w-64 h-24 transition-all duration-500 font-black font-black font-black">
-                    <img 
-                      src={p.logoUrl} 
-                      className="object-contain font-black font-black font-black font-black" 
-                      alt={p.name} 
-                      style={{ 
-                        maxHeight: '70px', 
-                        maxWidth: '220px',
-                        transform: `scale(${p.scale || 1.0})`,
-                        filter: p.invert ? 'brightness(0) invert(1)' : 'none'
-                      }} 
-                    />
-                </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
-      <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white text-center font-black font-black font-black font-black font-black">
+      <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white text-center font-black font-black font-black font-black">
         <div className="max-w-3xl mx-auto font-black font-black font-black font-black font-black">
             <h2 className="text-4xl font-black uppercase mb-16 italic font-black font-black font-black font-black">Dúvidas <span className="text-red-600 font-black font-black font-black font-black">Frequentes</span></h2>
             <div className="space-y-4 font-black font-black font-black font-black font-black">
                 {FAQ_DATA.map((item, i) => (
                     <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden text-left transition-all font-black font-black font-black font-black">
-                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest group font-black font-black font-black font-black">{item.q}<ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedFaqKey === i ? 'rotate-180' : ''} font-black font-black font-black font-black`} /></button>
+                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest group font-black font-black font-black font-black">{item.q}<ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedFaqKey === i ? 'rotate-180' : ''} font-black font-black font-black font-black font-black font-black`} /></button>
                         {expandedFaqKey === i && <p className="px-6 pb-6 text-gray-400 text-xs font-light leading-relaxed animate-smooth font-normal font-black font-black font-black font-black font-black">{item.a}</p>}
                     </div>
                 ))}
@@ -497,13 +480,13 @@ const App = () => {
 
       {/* Footer */}
       <footer id="contato" className="py-32 bg-neutral-950 border-t border-neutral-900 text-center font-black font-black font-black font-black font-black font-black">
-        <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white font-black font-black font-black font-black font-black">Viva sua <br/><span className="text-red-600 font-black font-black font-black font-black font-black font-black">ARENA HENKO.</span></h2>
-        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-black font-black font-black font-black font-black">
+        <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white font-black font-black font-black font-black font-black font-black">Viva sua <br/><span className="text-red-600 font-black font-black font-black font-black font-black font-black">ARENA HENKO.</span></h2>
+        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-black font-black font-black font-black">
             <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black"><Instagram className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> Instagram</a>
-            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black font-black font-black"><Phone className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> WhatsApp</a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black"><Mail className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> E-mail</a>
+            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black"><Phone className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> WhatsApp</a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black"><Mail className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> E-mail</a>
         </div>
-        <img src={LOGO_URL} className="h-14 mx-auto opacity-30 font-black font-black font-black font-black font-black font-black" alt="" />
+        <img src={LOGO_URL} className="h-14 mx-auto opacity-30 font-black font-black font-black font-black" alt="" />
       </footer>
 
       {/* Login Modal */}
