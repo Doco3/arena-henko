@@ -53,8 +53,10 @@ const TEAM_LOGOS = {
   GREMIO: "https://a.espncdn.com/i/teamlogos/soccer/500/6273.png",
   CHAPECOENSE: "https://upload.wikimedia.org/wikipedia/pt/b/bc/Escudo_de_2018_da_Chapecoense.png",
   PALMEIRAS: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Palmeiras_logo.svg/330px-Palmeiras_logo.svg.png",
-  // Logo do Cruzeiro atualizado conforme solicitado
-  CRUZEIRO: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg/3840px-Cruzeiro_Esporte_Clube_%28logo%29.svg.png"
+  CRUZEIRO: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Cruzeiro_Esporte_Clube_%28logo%29.svg/3840px-Cruzeiro_Esporte_Clube_%28logo%29.svg.png",
+  OHIGGINS: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/6072.png",
+  MILLONARIOS: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Millonarios_F%C3%BAtbol_Club_logo.svg/3840px-Millonarios_F%C3%BAtbol_Club_logo.svg.png",
+  BOSTON_RIVER: "https://upload.wikimedia.org/wikipedia/commons/d/da/Escudo_Boston_River_2019.png"
 };
 
 const NAV_LINKS = [
@@ -68,12 +70,12 @@ const NAV_LINKS = [
 ];
 
 const SERVICES_DATA = [
-    { title: 'Lounge de Hospitalidade', icon: <Users className="w-6 h-6" />, desc: 'Ponto exclusivo para networking e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
-    { title: 'Recepção VIP', icon: <Award className="w-6 h-6" />, desc: 'Atendimento premium e acesso rápido e diferenciado.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
-    { title: 'Ambiente Premium', icon: <Beer className="w-6 h-6" />, desc: 'Open bar e Open Food com culinária sofisticada.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
-    { title: 'Networking', icon: <CheckCircle className="w-6 h-6" />, desc: 'O ambiente ideal para expandir sua rede de contatos.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
-    { title: 'Vista Privilegiada', icon: <MapPin className="w-6 h-6" />, desc: 'Acesso exclusivo e visão privilegiada do Morumbis.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
-    { title: 'Branding & Mídia', icon: <Tv className="w-6 h-6" />, desc: 'Ativações de marca em Ring LED e relatórios de visibilidade.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
+    { id: 1, title: 'Lounge de Hospitalidade', icon: <Users className="w-6 h-6" />, desc: 'Ponto exclusivo para networking e relaxamento pré-evento.', imageUrl: 'https://i.imgur.com/Bw5Yw4K.png' },
+    { id: 2, title: 'Recepção VIP', icon: <Award className="w-6 h-6" />, desc: 'Atendimento premium e acesso rápido e diferenciado.', imageUrl: 'https://i.imgur.com/pLUfmBf.png' },
+    { id: 3, title: 'Ambiente Premium', icon: <Beer className="w-6 h-6" />, desc: 'Open bar e Open Food com culinária sofisticada.', imageUrl: 'https://i.imgur.com/Za2zSyx.png' },
+    { id: 4, title: 'Networking', icon: <CheckCircle className="w-6 h-6" />, desc: 'O ambiente ideal para expandir sua rede de contatos.', imageUrl: 'https://i.imgur.com/PrhiB8E.png' },
+    { id: 5, title: 'Vista Privilegiada', icon: <MapPin className="w-6 h-6" />, desc: 'Acesso exclusivo e visão privilegiada do Morumbis.', imageUrl: 'https://i.imgur.com/7R1hOwg.png' },
+    { id: 6, title: 'Branding & Mídia', icon: <Tv className="w-6 h-6" />, desc: 'Ativações de marca em Ring LED e relatórios de visibilidade.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
 ];
 
 const SPORT_DATA = [
@@ -94,25 +96,20 @@ const SPORT_DATA = [
       { id: 'm4', date: '07/02', home: 'SPFC', away: 'PRIMAVERA', time: '20h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.PRIMAVERA },
     ],
   },
-  { id: 3, name: 'Sudamericana', subtitle: 'Conmebol 2026', image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', matches: [] },
+  { 
+    id: 3, name: 'Sudamericana', subtitle: 'Conmebol 2026', image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', 
+    matches: [
+        { id: 'sd1', date: '14/04', home: 'SPFC', away: 'O’HIGGINS', time: '19h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.OHIGGINS },
+        { id: 'sd2', date: '19/05', home: 'SPFC', away: 'MILLONARIOS', time: '21h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.MILLONARIOS },
+        { id: 'sd3', date: '26/05', home: 'SPFC', away: 'BOSTON RIVER', time: '19h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.BOSTON_RIVER }
+    ] 
+  },
   { id: 4, name: 'Copa do Brasil', subtitle: 'CBF 2026', image: 'https://upload.wikimedia.org/wikipedia/pt/9/96/CopaDoBrasil.png', matches: [] }
 ];
 
 const SHOWS_DATA = [
-  { name: 'The Weeknd', date: '30/04/2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Uma experiência visual e sonora imersiva com a melhor vista.' },
-  { name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
-];
-
-const PARTNERS_DATA = [
-  { name: 'Mali Pizzaria', logoUrl: 'https://i.imgur.com/YxcN44a.png', scale: 1.6 },
-  { name: 'Santa Helena', logoUrl: 'https://i.imgur.com/XjXzNik.png', scale: 1.5 },
-  { name: 'Tirolez', logoUrl: 'https://i.imgur.com/4NmAzLu.png', scale: 1.7 }, 
-  { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', scale: 2.2 }, 
-  { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png', scale: 1.0 },
-  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', invert: true, scale: 1.9 }, 
-  { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png', scale: 1.1 },
-  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', invert: true, scale: 1.4 }, 
-  { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png', scale: 1.3 },
+  { id: 'show1', name: 'The Weeknd', date: '30/04/2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Uma experiência visual e sonora imersiva com a melhor vista.' },
+  { id: 'show2', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
 ];
 
 const REVIEWS_DATA = [
@@ -130,6 +127,18 @@ const FAQ_DATA = [
     { q: "O que está incluído no valor?", a: "Full Experience inclui Buffet Gourmet, Open Bar Premium, banheiros privativos e climatização." },
 ];
 
+const PARTNERS_DATA = [
+  { name: 'Mali Pizzaria', logoUrl: 'https://i.imgur.com/YxcN44a.png', scale: 1.6 },
+  { name: 'Santa Helena', logoUrl: 'https://i.imgur.com/XjXzNik.png', scale: 1.5 },
+  { name: 'Tirolez', logoUrl: 'https://i.imgur.com/4NmAzLu.png', scale: 1.7 }, 
+  { name: 'Matsuya', logoUrl: 'https://i.imgur.com/EeCB2GL.png', scale: 2.2 }, 
+  { name: 'Oster', logoUrl: 'https://i.imgur.com/Kqwt8YH.png', scale: 1.0 },
+  { name: 'Churrasboat', logoUrl: 'https://i.imgur.com/CZ9lYO8.png', invert: true, scale: 1.9 }, 
+  { name: 'Henko Produções', logoUrl: 'https://i.imgur.com/qVnwNYs.png', scale: 1.1 },
+  { name: 'Esfiha Imigrantes', logoUrl: 'https://i.imgur.com/VEjZgiI.png', invert: true, scale: 1.4 }, 
+  { name: 'Colonial Padaria', logoUrl: 'https://i.imgur.com/cexxcrW.png', scale: 1.3 },
+];
+
 // --- COMPONENTES AUXILIARES ---
 const ImageWithFallback = ({ src, alt, className, style }) => {
   const [error, setError] = useState(false);
@@ -137,9 +146,8 @@ const ImageWithFallback = ({ src, alt, className, style }) => {
   return <img src={src} alt={alt} className={className} style={style} onError={() => setError(true)} />;
 };
 
-// --- COMPONENTE PRINCIPAL APP ---
+// --- COMPONENTE PRINCIPAL ---
 const App = () => {
-  // Estados de Controle
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -152,7 +160,6 @@ const App = () => {
   const [timeLeft, setTimeLeft] = useState({ d: 0, h: 0, m: 0 });
   const [adminInputPass, setAdminInputPass] = useState('');
   
-  // Estados da Galeria
   const [activeAlbumId, setActiveAlbumId] = useState(null);
   const [isAlbumOpen, setIsAlbumOpen] = useState(false);
 
@@ -162,7 +169,6 @@ const App = () => {
     return d;
   }, []);
 
-  // Lógica de Próximo Jogo
   const nextMatch = useMemo(() => {
     try {
         const all = SPORT_DATA.flatMap(s => (s.matches || []).map(m => {
@@ -174,6 +180,8 @@ const App = () => {
     } catch(e) { return null; }
   }, [today]);
 
+  const nextEvent = SHOWS_DATA[0];
+
   const selectedSport = useMemo(() => SPORT_DATA.find(s => s.id === activeSportId) || SPORT_DATA[0], [activeSportId]);
 
   const visibleMatches = useMemo(() => {
@@ -184,15 +192,14 @@ const App = () => {
       });
   }, [selectedSport, today]);
 
-  const nextEvent = SHOWS_DATA[0];
-
-  // Efeitos
   useEffect(() => {
     if (!nextMatch) return;
     const updateCountdown = () => {
         const now = new Date();
         const [d, mo] = nextMatch.date.split('/');
-        const target = new Date(2026, parseInt(mo) - 1, parseInt(d), 18, 30);
+        const matchHour = parseInt(nextMatch.time.split('h')[0]);
+        const matchMin = parseInt(nextMatch.time.split('h')[1] || 0);
+        const target = new Date(2026, parseInt(mo) - 1, parseInt(d), matchHour, matchMin);
         const diff = target - now;
         if(diff > 0) {
             setTimeLeft({
@@ -217,7 +224,6 @@ const App = () => {
     return () => clearInterval(itv);
   }, []);
 
-  // Handlers
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (btoa(adminInputPass) === ADMIN_HASH) {
@@ -241,7 +247,6 @@ const App = () => {
   };
 
   const getWaLink = (msg) => `https://wa.me/5511940741355?text=${encodeURIComponent(msg)}`;
-  
   const currentAlbum = useMemo(() => STATIC_GALLERY.find(a => a.id === activeAlbumId), [activeAlbumId]);
 
   return (
@@ -256,140 +261,158 @@ const App = () => {
         .animate-infinite-scroll:hover { animation-play-state: paused; }
       `}</style>
 
-      {/* Floating Elements */}
-      <div className="fixed bottom-6 right-6 z-[250] flex flex-col items-end gap-3 font-black">
+      {/* Botão Flutuante WhatsApp */}
+      <div className="fixed bottom-6 right-6 z-[250] flex flex-col items-end gap-3">
           <button onClick={() => window.open(getWaLink("Olá! Gostaria de falar com um consultor oficial da Arena Henko."))} className="w-16 h-16 bg-emerald-500 rounded-full shadow-2xl flex items-center justify-center animate-pulse-wa">
               <MessageCircle className="w-8 h-8 text-white fill-white" />
           </button>
       </div>
 
-      <nav className="fixed top-0 w-full z-[100] bg-black/60 backdrop-blur-xl border-b border-white/5 py-4 px-8 flex justify-between items-center font-black">
-        <div className="cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}><img src={LOGO_URL} alt="Logo" className="w-12 h-12 object-contain" /></div>
+      {/* Header */}
+      <nav className="fixed top-0 w-full z-[100] bg-black/60 backdrop-blur-xl border-b border-white/5 py-2 px-8 flex justify-between items-center font-black">
+        <div className="cursor-pointer" onClick={() => window.scrollTo({top:0, behavior:'smooth'})}>
+          <img src={LOGO_URL} alt="Logo" className="h-16 w-auto object-contain transition-transform hover:scale-105" />
+        </div>
         <div className="hidden md:flex items-center gap-10 uppercase text-[10px] tracking-widest text-white">
-            {NAV_LINKS.map(link => <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300 font-black">{link.name}</a>)}
+            {NAV_LINKS.map(link => <a key={link.name} href={link.href} className="hover:text-red-600 transition-all duration-300">{link.name}</a>)}
             <button onClick={() => setIsLoginModalOpen(true)} className={`p-2 rounded-full transition-colors ${isAdmin ? 'bg-red-600 text-white' : 'bg-white/5 hover:text-red-600'}`}>
-                {isAdmin ? <UserCheck className="w-5 h-5 font-black" /> : <LockKeyhole className="w-5 h-5 font-black" />}
+                {isAdmin ? <UserCheck className="w-5 h-5" /> : <LockKeyhole className="w-5 h-5" />}
             </button>
         </div>
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-red-600 font-black"><MenuIcon /></button>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-red-600"><MenuIcon /></button>
       </nav>
 
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-3xl p-10 animate-fadeIn text-center flex flex-col gap-10 justify-center font-black">
-          <button onClick={() => setIsMenuOpen(false)} className="absolute top-10 right-10 p-4 bg-neutral-900 rounded-full text-white font-black"><X /></button>
-          {NAV_LINKS.map(link => <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-4xl uppercase hover:text-red-600 italic font-black font-black font-black">{link.name}</a>)}
+        <div className="fixed inset-0 z-[200] bg-black/98 backdrop-blur-3xl p-10 animate-fadeIn text-center flex flex-col gap-10 justify-center">
+          <button onClick={() => setIsMenuOpen(false)} className="absolute top-10 right-10 p-4 bg-neutral-900 rounded-full text-white"><X /></button>
+          {NAV_LINKS.map(link => <a key={link.name} href={link.href} onClick={() => setIsMenuOpen(false)} className="text-4xl uppercase hover:text-red-600 italic">{link.name}</a>)}
         </div>
       )}
 
       {/* Hero */}
-      <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden font-black">
-        <div className="absolute inset-0 z-0 opacity-40 font-black"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
-        <div className="relative z-10 w-full max-w-5xl font-black">
-          <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter text-white font-black">ARENA <span className="text-red-600 font-black">HENKO</span></h1>
-          <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg font-light font-black">Hospitalidade Premium & Experiências</p>
-          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12 font-black font-black">
+      <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-40"><img src="https://i.imgur.com/lKKQfgK.png" className="w-full h-full object-cover" alt="Hero" /></div>
+        <div className="relative z-10 w-full max-w-5xl">
+          <h1 className="text-6xl md:text-[8rem] font-black mb-2 uppercase italic tracking-tighter text-white">ARENA <span className="text-red-600">HENKO</span></h1>
+          <p className="text-gray-400 uppercase tracking-[0.4em] mb-12 text-sm md:text-lg">Hospitalidade Premium & Experiências</p>
+          <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-12">
             {nextMatch && (
-              <div onClick={() => window.open(getWaLink(`Interesse no jogo ${nextMatch.home} x ${nextMatch.away}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 cursor-pointer text-left shadow-2xl font-black font-black">
-                <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-2 flex items-center justify-center border border-white/5 font-black font-black"><img src={nextMatch.homeLogo} alt="Next" className="object-contain w-full h-full p-2 font-black" /></div>
-                <div className="flex-1 font-black font-black"><p className="text-red-500 text-[10px] font-black uppercase tracking-widest mb-1 font-black font-black"><Zap className="w-3 h-3 inline mr-1 fill-red-500 font-black" /> Próximo Jogo</p><h3 className="text-base font-bold uppercase truncate text-white font-black font-black">{nextMatch.home} x {nextMatch.away}</h3><div className="text-gray-500 text-[10px] font-mono font-black">{timeLeft.d}d {timeLeft.h}h {timeLeft.m}m</div></div>
+              <div onClick={() => window.open(getWaLink(`Interesse no jogo ${nextMatch.home} x ${nextMatch.away}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 cursor-pointer text-left shadow-2xl">
+                <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-2 flex items-center justify-center border border-white/5"><img src={nextMatch.homeLogo} alt="Next" className="object-contain w-full h-full p-2" /></div>
+                <div className="flex-1"><p className="text-red-500 text-[10px] font-bold uppercase tracking-widest mb-1"><Zap className="w-3 h-3 inline mr-1 fill-red-500" /> Próximo Jogo</p><h3 className="text-base font-bold uppercase truncate text-white">{nextMatch.home} x {nextMatch.away}</h3><div className="text-gray-500 text-[10px] font-mono">{timeLeft.d}d {timeLeft.h}h {timeLeft.m}m</div></div>
               </div>
             )}
-            <div onClick={() => window.open(getWaLink(`Interesse oficial no show do ${nextEvent.name}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl font-black font-black">
-              <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5 font-black font-black font-black"><Music className="w-7 h-7 font-black" /></div>
-              <div className="flex-1 text-white font-black font-black font-black"><p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 font-black">Próximo Evento</p><h3 className="text-base font-black uppercase leading-none font-black font-black">{nextEvent.name}</h3><p className="text-red-600 text-[9px] font-mono mt-1 font-black">{nextEvent.date}</p></div>
+            <div onClick={() => window.open(getWaLink(`Interesse oficial no show do ${nextEvent.name}`))} className="bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl flex items-center gap-5 hover:bg-white/10 transition-all cursor-pointer text-left group shadow-2xl font-bold">
+              <div className="w-14 h-14 bg-neutral-900 rounded-2xl p-3 flex items-center justify-center text-red-500 shadow-xl border border-white/5"><Music className="w-7 h-7" /></div>
+              <div className="flex-1 text-white"><p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Próximo Evento</p><h3 className="text-base font-black uppercase leading-none">{nextEvent.name}</h3><p className="text-red-600 text-[9px] font-mono mt-1 font-bold">{nextEvent.date}</p></div>
             </div>
           </div>
-          <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl font-black font-black">Explorar Agenda Completa</a>
+          <a href="#calendario" className="inline-flex px-12 py-5 bg-red-600 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-700 transition-all shadow-xl">Explorar Agenda Completa</a>
         </div>
       </section>
 
       {/* Trust Bar */}
-      <section className="bg-neutral-900/50 border-y border-white/5 py-8 font-black text-emerald-500 text-[10px] tracking-widest uppercase font-black font-black">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center font-black font-black font-black">
-            <div className="flex items-center justify-center gap-4 font-black font-black"><ShieldCheck className="w-6 h-6 font-black font-black" /> Canal Oficial</div>
-            <div className="flex items-center justify-center gap-4 font-black font-black"><CheckCircle className="w-6 h-6 font-black font-black" /> Acesso Garantido</div>
-            <div className="flex items-center justify-center gap-4 font-black font-black"><Headphones className="w-6 h-6 font-black font-black" /> Suporte VIP Credenciado</div>
+      <section className="bg-neutral-900/50 border-y border-white/5 py-8 font-black text-emerald-500 text-[10px] tracking-widest uppercase">
+        <div className="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="flex items-center justify-center gap-4 font-black"><ShieldCheck className="w-6 h-6" /> Canal Oficial</div>
+            <div className="flex items-center justify-center gap-4 font-black"><CheckCircle className="w-6 h-6" /> Acesso Garantido</div>
+            <div className="flex items-center justify-center gap-4 font-black"><Headphones className="w-6 h-6" /> Suporte VIP Credenciado</div>
         </div>
       </section>
 
       {/* Sobre */}
-      <section id="sobre" className="py-24 px-6 bg-neutral-950 border-y border-neutral-900 font-black text-center sm:text-left font-black font-black">
+      <section id="sobre" className="py-24 px-6 bg-neutral-950 border-y border-neutral-900 font-bold text-center sm:text-left">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
-          <div className="font-black font-black font-black">
-            <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block font-black">A Arena</span>
-            <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight font-black font-black">Onde a emoção <br/>encontra o luxo.</h2>
-            <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed font-normal font-black font-black">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação própria e oficial.</p>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 font-black font-black">
-              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-black font-black"><span className="text-4xl font-black text-emerald-500 font-black font-black">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500 font-black font-black" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black">Google Rating</p></div>
-              <div><h4 className="text-4xl font-black text-white font-black font-black">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black">Reviews</p></div>
-              <div><h4 className="text-4xl font-black text-white font-black font-black">5+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-black font-black font-black">Anos</p></div>
+          <div>
+            <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block">A Arena</span>
+            <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight">Onde a emoção <br/>encontra o luxo.</h2>
+            <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação própria e oficial.</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
+              <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-bold"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500">Google Rating</p></div>
+              <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500">Reviews</p></div>
+              <div><h4 className="text-4xl font-black text-white font-bold">5+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500 font-bold">Anos</p></div>
             </div>
           </div>
-          <div className="grid gap-4 font-black">
-             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl group font-black font-black">
-                <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform font-black font-black" />
-                <div className="font-black font-black">
-                    <h4 className="text-sm font-black uppercase italic text-white font-black font-black">Operação Oficial</h4>
-                    <p className="text-gray-500 text-xs mt-1 font-normal font-black font-normal">Tratativa direta com o camarote. Sem intermediários ou riscos.</p>
+          <div className="grid gap-4">
+             <div className="bg-neutral-900/40 p-6 rounded-2xl border border-neutral-800 flex gap-4 items-start shadow-xl group">
+                <Shield className="text-red-600 w-8 h-8 shrink-0 group-hover:scale-110 transition-transform" />
+                <div className="font-bold text-left">
+                    <h4 className="text-sm font-black uppercase italic text-white">Operação Oficial</h4>
+                    <p className="text-gray-500 text-xs mt-1 font-normal">Tratativa direta com o camarote. Sem intermediários ou riscos.</p>
                 </div>
              </div>
           </div>
         </div>
       </section>
 
-      {/* Agenda */}
-      <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white font-black font-black">
-        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic font-black font-black">Agenda <span className="text-red-600 font-black font-black">2026</span></h2>
-        <div className="flex flex-wrap gap-2 justify-center mb-12 font-black font-black">
+      {/* Agenda - Melhorada com nomes e transições */}
+      <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white">
+        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic">Agenda <span className="text-red-600">2026</span></h2>
+        <div className="flex flex-wrap gap-2 justify-center mb-12">
             {SPORT_DATA.map(s => (
-              <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase transition-all ${activeSportId === s.id ? 'bg-red-600 shadow-xl font-black font-black' : 'bg-neutral-900 text-gray-500 hover:text-white font-black font-black'}`}>{s.name}</button>
+              <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase transition-all ${activeSportId === s.id ? 'bg-red-600 shadow-xl' : 'bg-neutral-900 text-gray-500 hover:text-white'}`}>{s.name}</button>
             ))}
         </div>
-        <div key={activeSportId} className="max-w-6xl mx-auto bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth font-black font-black">
-            <div className="grid lg:grid-cols-5 gap-12 items-center font-black font-black">
-                <div className="lg:col-span-2 text-center font-black font-black font-black font-black">
-                    <div className="bg-black w-32 h-32 mx-auto rounded-3xl p-6 border border-neutral-800 flex items-center justify-center mb-6 overflow-hidden font-black">
-                      <ImageWithFallback src={selectedSport.image} alt="Camp" className="max-h-full object-contain font-black font-black" />
+        <div key={activeSportId} className="max-w-6xl mx-auto bg-neutral-900/20 rounded-[3rem] p-8 md:p-16 border border-neutral-800 shadow-3xl animate-smooth">
+            <div className="grid lg:grid-cols-5 gap-12 items-center font-bold">
+                <div className="lg:col-span-2 text-center font-bold">
+                    <div className="bg-black w-32 h-32 mx-auto rounded-3xl p-6 border border-neutral-800 flex items-center justify-center mb-6 overflow-hidden">
+                      <ImageWithFallback src={selectedSport.image} alt="League" className="max-h-full object-contain" />
                     </div>
-                    <h3 className="text-4xl font-black uppercase italic font-black font-black">{selectedSport.name}</h3>
+                    <h3 className="text-4xl font-black uppercase italic">{selectedSport.name}</h3>
                 </div>
-                <div className="lg:col-span-3 space-y-4 font-black">
-                    {visibleMatches.length > 0 ? visibleMatches.map((m, i) => (
-                    <div key={i} className={`bg-neutral-950 border transition-all rounded-[2rem] overflow-hidden ${expandedMatchKey === i ? 'border-red-600/50 shadow-2xl' : 'border-neutral-800'} font-black font-black`}>
-                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === i ? null : i)} className="w-full p-6 flex items-center justify-between uppercase text-xs font-black font-black">
-                           <span>{m.date}</span> <div className="flex items-center gap-4 font-black font-black"><img src={m.homeLogo} className="w-6 h-6 font-black font-black" alt="" /> <span className="opacity-30 italic font-black font-black">VS</span> <img src={TEAM_LOGOS[m.away] || m.awayLogo} className="w-6 h-6 font-black font-black" alt="" /></div> <ChevronDown className={`w-4 h-4 transition-transform ${expandedMatchKey === i ? 'rotate-180' : ''} font-black`} />
-                        </button>
-                        {expandedMatchKey === i && (
-                           <div className="px-10 pb-10 pt-4 bg-white/5 border-t border-white/5 text-white animate-smooth font-black font-black">
-                              <div className="grid grid-cols-2 gap-4 mb-8 text-[9px] uppercase tracking-widest font-black font-black font-black">
-                                  <div className="flex items-center gap-2 font-black font-black font-black"><Clock className="w-3 h-3 text-red-600 font-black font-black" /> {m.time}</div>
-                                  <div className="flex items-center gap-2 font-black font-black font-black"><Wine className="w-3 h-3 text-red-600 font-black font-black" /> Open Bar</div>
-                                  <div className="flex items-center gap-2 font-black font-black font-black"><Coffee className="w-3 h-3 text-red-600 font-black font-black" /> Open Food</div>
-                                  <div className="flex items-center gap-2 font-black font-black font-black"><Award className="w-3 h-3 text-red-600 font-black font-black" /> VIP</div>
+                <div className="lg:col-span-3 space-y-4">
+                    {visibleMatches.length > 0 ? visibleMatches.map((m) => (
+                    <div key={m.id} className={`bg-neutral-950 border transition-all duration-300 rounded-[2rem] overflow-hidden ${expandedMatchKey === m.id ? 'border-red-600 shadow-2xl bg-neutral-900/50' : 'border-neutral-800 hover:border-neutral-700'}`}>
+                        <button onClick={() => setExpandedMatchKey(expandedMatchKey === m.id ? null : m.id)} className="w-full p-6 md:p-8 flex flex-wrap md:flex-nowrap items-center justify-between gap-4 font-black">
+                           <span className="text-red-600 text-sm md:text-base font-mono w-full md:w-auto text-left mb-2 md:mb-0">{m.date}</span> 
+                           
+                           <div className="flex flex-1 items-center justify-center gap-3 md:gap-6">
+                              <div className="flex items-center gap-2 md:gap-3">
+                                  <span className="hidden sm:inline uppercase text-[11px] tracking-tighter">{m.home}</span>
+                                  <img src={m.homeLogo} className="w-8 h-8 md:w-10 md:h-10 object-contain" alt="" />
                               </div>
-                              <button onClick={() => window.open(getWaLink(`Reserva para ${m.home} x ${m.away} no dia ${m.date}`))} className="w-full bg-red-600 py-4 rounded-2xl uppercase text-[10px] font-black hover:bg-red-700 transition-all font-black font-black">Garantir Ingresso Seguro</button>
+                              <span className="opacity-30 italic text-sm font-black">VS</span>
+                              <div className="flex items-center gap-2 md:gap-3">
+                                  <img src={m.awayLogo} className="w-8 h-8 md:w-10 md:h-10 object-contain" alt="" />
+                                  <span className="uppercase text-[11px] tracking-tighter">{m.away}</span>
+                              </div>
                            </div>
-                        )}
+                           
+                           <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${expandedMatchKey === m.id ? 'rotate-180 text-red-600' : ''}`} />
+                        </button>
+                        
+                        <div className={`transition-all duration-500 ease-in-out ${expandedMatchKey === m.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'} overflow-hidden`}>
+                           <div className="px-8 pb-10 pt-4 bg-black/40 border-t border-white/5 text-white">
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 text-[10px] uppercase tracking-widest">
+                                  <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl"><Clock className="w-4 h-4 text-red-600" /> {m.time}</div>
+                                  <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl"><Wine className="w-4 h-4 text-red-600" /> Open Bar</div>
+                                  <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl"><Coffee className="w-4 h-4 text-red-600" /> Open Food</div>
+                                  <div className="flex items-center gap-2 bg-white/5 p-3 rounded-xl"><Award className="w-4 h-4 text-red-600" /> VIP</div>
+                              </div>
+                              <button onClick={() => window.open(getWaLink(`Reserva para ${m.home} x ${m.away} no dia ${m.date}`))} className="w-full bg-red-600 py-5 rounded-2xl uppercase text-[11px] font-black hover:bg-red-700 transition-all shadow-xl hover:scale-[1.01]">Garantir Ingresso Seguro</button>
+                           </div>
+                        </div>
                     </div>
-                    )) : <p className="text-center text-gray-700 py-16 uppercase text-[10px] font-normal font-black">Novas datas em breve.</p>}
+                    )) : <p className="text-center text-gray-700 py-16 uppercase text-[10px] font-normal">Novas datas em breve.</p>}
                 </div>
             </div>
         </div>
       </section>
 
       {/* Mega Eventos */}
-      <section id="eventos" className="py-24 px-6 bg-black font-black font-black font-black font-black">
-        <div className="max-w-7xl mx-auto font-black font-black font-black">
-          <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-20 italic text-white font-black font-black font-black">Mega <span className="text-red-600 font-black font-black font-black">Eventos</span></h2>
-          <div className="grid md:grid-cols-2 gap-12 font-black font-black">
+      <section id="eventos" className="py-24 px-6 bg-black font-black text-center">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white">Mega <span className="text-red-600 font-black">Eventos</span></h2>
+          <div className="grid md:grid-cols-2 gap-12 font-black">
             {SHOWS_DATA.map((show, i) => (
-              <div key={i} className="group flex flex-col font-black font-black">
-                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900 font-black font-black"><img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110 font-black" alt={show.name} /></div>
-                <div className="px-2 text-left font-black font-black">
-                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block font-black">{show.date}</span>
-                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none font-black">{show.name}</h3>
-                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal font-black">{show.desc}</p>
-                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn font-black uppercase font-black"><ArrowRight className="w-4 h-4 font-black" /> Ver Disponibilidade</button>
+              <div key={show.id} className="group flex flex-col">
+                <div className="relative h-[420px] rounded-[3rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900"><img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={show.name} /></div>
+                <div className="px-2 text-left">
+                    <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">{show.date}</span>
+                    <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
+                    <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal">{show.desc}</p>
+                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn"><ArrowRight className="w-4 h-4" /> Ver Disponibilidade</button>
                 </div>
               </div>
             ))}
@@ -397,62 +420,80 @@ const App = () => {
         </div>
       </section>
 
+      {/* Experiência */}
+      <section id="servicos" className="py-24 px-6 bg-neutral-950 border-t border-white/5 font-black text-center">
+        <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic">A Experiência</h2>
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10 font-bold">
+          {SERVICES_DATA.map((s, i) => (
+            <div key={s.id} className="group relative h-[450px] rounded-[2.5rem] overflow-hidden border border-neutral-800 hover:border-red-600/50 transition-all duration-700 shadow-2xl">
+              <div className="absolute inset-0"><img src={s.imageUrl} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000" alt={s.title} /></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
+              <div className="relative z-20 h-full p-10 flex flex-col justify-end text-left font-bold">
+                <div className="bg-red-600 p-3 rounded-2xl w-fit mb-4 text-white shadow-xl font-bold">{s.icon}</div>
+                <h3 className="text-2xl font-black uppercase mb-2 text-white italic">{s.title}</h3>
+                <p className="text-gray-300 text-sm font-normal leading-tight font-normal">{s.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Galeria - SISTEMA DE PASTAS FECHADAS */}
-      <section id="galeria" className="py-24 px-6 bg-black border-y border-white/5 font-black text-center font-black font-black font-black">
-        <div className="max-w-7xl mx-auto font-black font-black font-black font-black">
-          <div className="flex flex-col items-center justify-center mb-16 gap-4 font-black font-black font-black">
-            <h2 className="text-4xl md:text-6xl font-black uppercase italic text-white font-black font-black">Nossa <span className="text-red-600 font-black font-black">Galeria</span></h2>
-            <p className="text-gray-500 uppercase text-[10px] tracking-widest font-black font-black font-black">
+      <section id="galeria" className="py-24 px-6 bg-black border-y border-white/5 font-black text-center">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col items-center justify-center mb-16 gap-4 font-black">
+            <h2 className="text-4xl md:text-6xl font-black uppercase italic text-white">Nossa <span className="text-red-600">Galeria</span></h2>
+            <p className="text-gray-500 uppercase text-[10px] tracking-widest">
               {isAlbumOpen ? `Explorando: ${currentAlbum.name}` : 'Selecione uma pasta para visualizar'}
             </p>
             {isAlbumOpen && (
               <button 
                 onClick={() => setIsAlbumOpen(false)}
-                className="mt-4 flex items-center gap-2 text-red-500 hover:text-white transition-colors uppercase text-[10px] font-black font-black font-black"
+                className="mt-4 flex items-center gap-2 text-red-500 hover:text-white transition-colors uppercase text-[10px]"
               >
-                <ArrowLeft className="w-4 h-4 font-black font-black font-black" /> Voltar para Álbuns
+                <ArrowLeft className="w-4 h-4" /> Voltar para Álbuns
               </button>
             )}
           </div>
 
-          <div className="min-h-[400px] font-black font-black font-black">
+          <div className="min-h-[400px]">
             {!isAlbumOpen ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-smooth font-black font-black font-black">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-smooth">
                 {STATIC_GALLERY.map((album) => (
                   <div 
                     key={album.id}
                     onClick={() => { setActiveAlbumId(album.id); setIsAlbumOpen(true); }}
-                    className="group cursor-pointer relative overflow-hidden rounded-[3rem] aspect-[4/3] border border-white/10 bg-neutral-900 shadow-2xl font-black font-black font-black"
+                    className="group cursor-pointer relative overflow-hidden rounded-[3rem] aspect-[4/3] border border-white/10 bg-neutral-900 shadow-2xl"
                   >
-                    <div className="absolute inset-0 font-black font-black font-black">
+                    <div className="absolute inset-0">
                       <img 
                         src={album.cover} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100 font-black font-black font-black" 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-100" 
                         alt={album.name} 
                       />
                     </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80 font-black font-black font-black" />
-                    <div className="absolute bottom-10 left-10 text-left font-black font-black font-black font-black">
-                       <div className="bg-red-600 px-4 py-1 rounded-full text-[8px] w-fit mb-3 uppercase font-black font-black">Pasta</div>
-                       <h3 className="text-2xl italic uppercase font-black font-black font-black">{album.name}</h3>
-                       <p className="text-gray-400 text-[10px] mt-1 uppercase font-black font-black">{album.photos.length} Fotos</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+                    <div className="absolute bottom-10 left-10 text-left font-black">
+                       <div className="bg-red-600 px-4 py-1 rounded-full text-[8px] w-fit mb-3 uppercase">Pasta</div>
+                       <h3 className="text-2xl italic uppercase">{album.name}</h3>
+                       <p className="text-gray-400 text-[10px] mt-1 uppercase">{album.photos.length} Fotos</p>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-smooth font-black font-black font-black font-black">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 animate-smooth">
                 {currentAlbum.photos.map((photoName, idx) => (
-                  <div key={idx} className="group relative aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 shadow-xl font-black font-black font-black">
+                  <div key={idx} className="group relative aspect-square rounded-[2rem] overflow-hidden border border-white/5 bg-neutral-900 shadow-xl">
                     <img 
                       src={`${currentAlbum.folder}/${photoName}`} 
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 font-black font-black font-black" 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 font-black" 
                       alt="Evento" 
                       onError={(e) => { e.target.src = 'https://via.placeholder.com/400x400?text=Erro+Imagem'; }}
                     />
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 font-black font-black font-black">
-                       <button onClick={() => handleDownload(`${currentAlbum.folder}/${photoName}`)} className="bg-white/10 backdrop-blur-md p-4 rounded-2xl text-white hover:bg-red-600 hover:scale-110 transition-all shadow-2xl font-black font-black font-black">
-                         <Download className="w-6 h-6 font-black font-black font-black font-black" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3 font-black">
+                       <button onClick={() => handleDownload(`${currentAlbum.folder}/${photoName}`)} className="bg-white/10 backdrop-blur-md p-4 rounded-2xl text-white hover:bg-red-600 hover:scale-110 transition-all shadow-2xl">
+                         <Download className="w-6 h-6 font-bold" />
                        </button>
                     </div>
                   </div>
@@ -463,15 +504,29 @@ const App = () => {
         </div>
       </section>
 
+      {/* Parceiros */}
+      <section id="parceiros" className="py-24 bg-neutral-900/40 border-y border-neutral-900 overflow-hidden font-black">
+        <h3 className="text-[10px] text-gray-500 uppercase tracking-widest mb-16 italic text-center font-bold">Parceiros Oficiais</h3>
+        <div className="relative flex overflow-hidden">
+          <div className="flex animate-infinite-scroll whitespace-nowrap gap-28 items-center font-bold">
+            {[...PARTNERS_DATA, ...PARTNERS_DATA].map((p, i) => (
+                <div key={i} className="flex-shrink-0 flex items-center justify-center w-64 h-24 transition-all duration-500 font-bold font-black">
+                    <img src={p.logoUrl} className="object-contain" alt={p.name} style={{ maxHeight: '70px', maxWidth: '220px', transform: `scale(${p.scale || 1.0})`, filter: p.invert ? 'brightness(0) invert(1)' : 'none' }} />
+                </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
-      <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white text-center font-black font-black font-black font-black">
-        <div className="max-w-3xl mx-auto font-black font-black font-black font-black font-black">
-            <h2 className="text-4xl font-black uppercase mb-16 italic font-black font-black font-black font-black">Dúvidas <span className="text-red-600 font-black font-black font-black font-black">Frequentes</span></h2>
-            <div className="space-y-4 font-black font-black font-black font-black font-black">
+      <section id="faq" className="py-24 px-6 bg-black border-t border-white/5 font-black text-white text-center">
+        <div className="max-w-3xl mx-auto">
+            <h2 className="text-4xl font-black uppercase mb-16 italic font-bold">Dúvidas <span className="text-red-600">Frequentes</span></h2>
+            <div className="space-y-4 font-bold">
                 {FAQ_DATA.map((item, i) => (
-                    <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden text-left transition-all font-black font-black font-black font-black">
-                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest group font-black font-black font-black font-black">{item.q}<ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedFaqKey === i ? 'rotate-180' : ''} font-black font-black font-black font-black font-black font-black`} /></button>
-                        {expandedFaqKey === i && <p className="px-6 pb-6 text-gray-400 text-xs font-light leading-relaxed animate-smooth font-normal font-black font-black font-black font-black font-black">{item.a}</p>}
+                    <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-2xl overflow-hidden text-left transition-all font-bold">
+                        <button onClick={() => setExpandedFaqKey(expandedFaqKey === i ? null : i)} className="w-full p-6 flex items-center justify-between font-black uppercase text-[10px] tracking-widest group font-bold font-black">{item.q}<ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${expandedFaqKey === i ? 'rotate-180' : ''}`} /></button>
+                        {expandedFaqKey === i && <p className="px-6 pb-6 text-gray-400 text-xs font-light leading-relaxed animate-smooth font-normal">{item.a}</p>}
                     </div>
                 ))}
             </div>
@@ -479,38 +534,38 @@ const App = () => {
       </section>
 
       {/* Footer */}
-      <footer id="contato" className="py-32 bg-neutral-950 border-t border-neutral-900 text-center font-black font-black font-black font-black font-black font-black">
-        <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white font-black font-black font-black font-black font-black font-black">Viva sua <br/><span className="text-red-600 font-black font-black font-black font-black font-black font-black">ARENA HENKO.</span></h2>
-        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-black font-black font-black font-black">
-            <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black"><Instagram className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> Instagram</a>
-            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black"><Phone className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> WhatsApp</a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black font-black font-black font-black font-black"><Mail className="text-red-600 w-10 h-10 font-black font-black font-black font-black font-black" /> E-mail</a>
+      <footer id="contato" className="py-32 bg-neutral-950 border-t border-neutral-900 text-center font-black">
+        <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white font-bold">Viva sua <br/><span className="text-red-600">ARENA HENKO.</span></h2>
+        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-bold">
+            <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-bold"><Instagram className="text-red-600 w-10 h-10 font-bold" /> Instagram</a>
+            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-bold"><Phone className="text-red-600 w-10 h-10 font-bold" /> WhatsApp</a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-12 rounded-[2.5rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-bold"><Mail className="text-red-600 w-10 h-10 font-bold" /> E-mail</a>
         </div>
-        <img src={LOGO_URL} className="h-14 mx-auto opacity-30 font-black font-black font-black font-black" alt="" />
+        <img src={LOGO_URL} className="h-14 mx-auto opacity-30 font-bold" alt="" />
       </footer>
 
       {/* Login Modal */}
       {isLoginModalOpen && (
-        <div className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black">
-          <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm shadow-3xl text-center font-black font-black font-black font-black font-black font-black font-black font-black">
-            <h2 className="text-xl uppercase mb-8 italic text-white font-black font-black font-black font-black font-black font-black font-black font-black">Painel <span className="text-red-600 font-black font-black font-black font-black font-black font-black font-black font-black">Admin</span></h2>
+        <div className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-2xl flex items-center justify-center p-8 font-bold">
+          <div className="bg-neutral-900 border border-neutral-800 p-12 rounded-[3rem] w-full max-w-sm shadow-3xl text-center font-bold">
+            <h2 className="text-xl uppercase mb-8 italic text-white font-black font-black">Painel <span className="text-red-600">Admin</span></h2>
             <form onSubmit={handleAdminLogin}>
               <input 
                 type="password" 
                 placeholder="Senha" 
                 value={adminInputPass} 
                 onChange={(e) => setAdminInputPass(e.target.value)} 
-                className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-black font-black font-black font-black font-black font-black font-black font-black" 
+                className="w-full bg-black border border-neutral-800 rounded-2xl px-8 py-5 mb-6 text-white focus:outline-none focus:border-red-600 text-center tracking-widest font-bold font-black" 
               />
-              <div className="flex gap-4 font-black font-black font-black font-black font-black font-black font-black font-black">
-                <button type="button" onClick={() => setIsLoginModalOpen(false)} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-black font-black font-black font-black font-black font-black font-black font-black">Voltar</button>
-                <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl text-white font-black font-black font-black font-black font-black font-black font-black font-black">Entrar</button>
+              <div className="flex gap-4 font-bold">
+                <button type="button" onClick={() => setIsLoginModalOpen(false)} className="flex-1 py-4 text-[10px] uppercase border border-neutral-800 rounded-2xl font-bold font-black font-black">Voltar</button>
+                <button type="submit" className="flex-1 py-4 text-[10px] uppercase bg-red-600 rounded-2xl text-white font-bold font-black font-black font-black">Entrar</button>
               </div>
             </form>
           </div>
         </div>
       )}
-      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[500] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest animate-bounce flex items-center gap-2 font-black font-black font-black font-black font-black font-black font-black"><AlertTriangle className="w-4 h-4 font-black" /> {toast}</div>}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[500] bg-red-600 text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-widest animate-bounce flex items-center gap-2 font-black font-black font-black"><AlertTriangle className="w-4 h-4 font-bold" /> {toast}</div>}
     </div>
   );
 };
