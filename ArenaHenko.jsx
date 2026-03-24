@@ -109,7 +109,8 @@ const SPORT_DATA = [
 
 const SHOWS_DATA = [
   { id: 'show1', name: 'The Weeknd', date: '30/04/2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Uma experiência visual e sonora imersiva com a melhor vista.' },
-  { id: 'show2', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
+  { id: 'show2', name: 'Harry Styles', date: '18/07/2026', image: 'https://i.imgur.com/JbcYLor.jpeg', desc: 'O fenômeno pop chega ao Morumbis com a Love On Tour.' },
+  { id: 'show3', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
 ];
 
 const REVIEWS_DATA = [
@@ -326,7 +327,7 @@ const App = () => {
           <div>
             <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block">A Arena</span>
             <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight">Onde a emoção <br/>encontra o luxo.</h2>
-            <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operação própria e oficial.</p>
+            <p className="text-gray-400 text-lg mb-12 font-light leading-relaxed">Localizada no Morumbis, a Arena Henko oferece hospitalidade máxima e segurança total. Somos uma operation própria e oficial.</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-8">
               <div><div className="flex items-center gap-1 mb-1 justify-center sm:justify-start font-bold"><span className="text-4xl font-black text-emerald-500">4.9</span><Star className="w-5 h-5 text-emerald-500 fill-emerald-500" /></div><p className="text-[9px] uppercase tracking-widest text-gray-500">Google Rating</p></div>
               <div><h4 className="text-4xl font-black text-white">200+</h4><p className="text-[9px] uppercase tracking-widest text-gray-500">Reviews</p></div>
@@ -345,7 +346,7 @@ const App = () => {
         </div>
       </section>
 
-      {/* Agenda - Melhorada com nomes e transições */}
+      {/* Agenda */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 font-black text-white">
         <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic">Agenda <span className="text-red-600">2026</span></h2>
         <div className="flex flex-wrap gap-2 justify-center mb-12">
@@ -412,7 +413,7 @@ const App = () => {
                     <span className="text-red-600 text-[10px] font-black uppercase tracking-[0.4em] mb-2 block">{show.date}</span>
                     <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
                     <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed font-normal">{show.desc}</p>
-                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn"><ArrowRight className="w-4 h-4" /> Ver Disponibilidade</button>
+                    <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[10px] font-black uppercase trackingest flex items-center gap-3 text-white hover:text-red-600 transition-colors group/btn"><ArrowRight className="w-4 h-4" /> Ver Disponibilidade</button>
                 </div>
               </div>
             ))}
