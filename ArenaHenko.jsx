@@ -77,7 +77,7 @@ const SPORT_DATA = [
 const SHOWS_DATA = [
   { id: 'show1', name: 'The Weeknd', date: '30/04/2026', image: 'https://i.imgur.com/1zpCq3e.jpg', desc: 'Uma experiência visual imersiva no Estádio do Morumbis.' },
   { id: 'show2', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo.' },
-  { id: 'show3', name: 'Harry Styles', date: '18/07/2026', image: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&q=80&w=2000', desc: 'A experiência definitiva no Camarote Arena Henko.' },
+  { id: 'show3', name: 'Harry Styles', date: '18/07/2026', image: 'https://i.imgur.com/JbcYLor.jpg', desc: 'A experiência definitiva no Camarote Arena Henko.' },
 ];
 
 const REVIEWS_DATA = [
@@ -217,7 +217,7 @@ const App = () => {
           </div>
       </div>
 
-      {/* BTS SECTION - CLEANEST LAYOUT */}
+      {/* BTS SECTION - CLEANEST LAYOUT FOR ARMY */}
       <section className="relative h-screen flex flex-col justify-between bg-black overflow-hidden border-b border-white/5 font-black">
         <div className="absolute inset-0 z-0">
           <img src={BTS_BANNER_URL} className="w-full h-full object-cover object-top lg:object-center opacity-90 scale-100" alt="BTS" />
@@ -226,11 +226,11 @@ const App = () => {
 
         {/* TOP: Título Reduzido */}
         <div className="relative z-20 w-full max-w-7xl mx-auto px-10 pt-32 text-center lg:text-left animate-smooth">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-tight text-white drop-shadow-2xl font-black">
+            <h1 className="text-3xl md:text-5xl lg:text-6xl font-black uppercase tracking-tighter leading-tight text-white drop-shadow-2xl">
               BTS WORLD TOUR <br/> - ARIRANG
             </h1>
             <div className="flex items-center justify-center lg:justify-start gap-4 mt-2 font-black">
-                <p className="text-lg md:text-2xl font-black uppercase tracking-[0.3em] text-red-600 italic font-black">MORUMBIS</p>
+                <p className="text-lg md:text-2xl font-black uppercase tracking-[0.3em] text-red-600 italic">MORUMBIS</p>
                 <div className="h-[1px] w-8 bg-white/20" />
                 <p className="text-sm md:text-base font-black uppercase tracking-widest text-white/40 italic font-black">2026</p>
             </div>
@@ -249,15 +249,12 @@ const App = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col items-center lg:items-end gap-5 w-full lg:w-auto font-black">
+            <div className="flex flex-col items-center lg:items-end gap-5 w-full lg:w-auto">
                 <div className="flex flex-col items-center lg:items-end text-center lg:text-right font-black">
-                    <p className="text-white text-base md:text-lg font-black uppercase tracking-widest mb-1 italic font-black">ENTRE NA NOSSA LISTA DE ESPERA</p>
+                    <p className="text-white text-base md:text-lg font-black uppercase tracking-widest mb-1 italic">ENTRE NA NOSSA LISTA DE ESPERA</p>
                     <p className="text-white/40 text-[10px] uppercase tracking-[0.2em] mb-4 font-black">PARA A PRÉ-VENDA EXCLUSIVA</p>
                 </div>
-                <button 
-                  onClick={() => window.open(getWaLink("QUERO ENTRAR NA LISTA DE ESPERA DO BTS - CAMAROTE ARENA HENKO"))}
-                  className="w-full sm:w-80 py-5 rounded-full bg-orange-gradient text-white font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group font-black"
-                >
+                <button onClick={() => window.open(getWaLink("QUERO ENTRAR NA LISTA DE ESPERA DO BTS - CAMAROTE ARENA HENKO"))} className="w-full sm:w-80 py-5 rounded-full bg-orange-gradient text-white font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group">
                   GARANTIR MEU LUGAR <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                 </button>
             </div>
@@ -304,7 +301,7 @@ const App = () => {
 
       {/* Sobre Section */}
       <section id="sobre" className="py-24 px-6 bg-neutral-950 border-y border-neutral-900 text-center sm:text-left font-black italic font-black">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center font-black">
           <div className="font-black font-black font-black">
             <span className="text-red-600 text-xs uppercase tracking-[0.3em] mb-4 block font-black font-black font-black font-black">A Arena</span>
             <h2 className="text-5xl font-black uppercase mb-8 italic text-white leading-tight font-black font-black font-black font-black">Onde a emoção <br/>encontra o luxo.</h2>
@@ -325,7 +322,7 @@ const App = () => {
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black font-black">Nossa <span className="text-red-600 font-black font-black">Experiência</span></h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {SERVICES_DATA.map((service) => (
-              <div key={service.id} className="group relative h-[400px] rounded-[3rem] overflow-hidden border border-white/5 bg-neutral-900 shadow-2xl transition-all hover:scale-[1.02]">
+              <div key={service.id} className="group relative h-[400px] rounded-[3rem] overflow-hidden border border-white/5 bg-neutral-900 shadow-2xl transition-all hover:scale-[1.02] font-black">
                 <img src={service.imageUrl} className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity" alt={service.title} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
                 <div className="absolute bottom-10 left-10 right-10 text-left font-black">
@@ -355,9 +352,9 @@ const App = () => {
         </div>
       </section>
 
-      {/* Agenda Futebol (SUDAMERICANA + COPA DO BRASIL) */}
+      {/* Agenda Futebol (COMPLETA) */}
       <section id="calendario" className="py-24 px-6 bg-black font-black text-white italic font-black font-black">
-        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic font-black font-black font-black">Agenda <span className="text-red-600 font-black font-black">2026</span></h2>
+        <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic font-black font-black font-black">Agenda <span className="text-red-600 font-black font-black font-black">2026</span></h2>
         <div className="flex flex-wrap gap-2 justify-center mb-12 font-black font-black font-black">
             {SPORT_DATA.map(s => (
               <button key={s.id} onClick={() => setActiveSportId(s.id)} className={`px-8 py-3 rounded-full text-[10px] font-black uppercase transition-all ${activeSportId === s.id ? 'bg-red-600 shadow-xl font-black font-black' : 'bg-neutral-900 text-gray-500 hover:text-white font-black font-black'}`}>{s.name}</button>
@@ -397,11 +394,11 @@ const App = () => {
         </div>
       </section>
 
-      {/* Mega Eventos (RESTAURADOS) */}
+      {/* Mega Eventos (COM HARRY STYLES ATUALIZADO) */}
       <section id="eventos" className="py-24 px-6 bg-neutral-950 font-black text-center italic">
-        <div className="max-w-7xl mx-auto font-black font-black">
+        <div className="max-w-7xl mx-auto font-black font-black font-black font-black">
           <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white font-black font-black font-black font-black">Mega <span className="text-red-600 font-black font-black font-black font-black">Eventos</span></h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-12 font-black font-black font-black">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 font-black font-black font-black">
             {SHOWS_DATA.map((show) => (
               <div key={show.id} className="group flex flex-col text-left font-black font-black">
                 <div className="relative h-[450px] rounded-[3.5rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900 font-black font-black font-black">
@@ -466,10 +463,10 @@ const App = () => {
       {/* Footer */}
       <footer id="contato" className="py-32 bg-neutral-950 border-t border-neutral-900 text-center font-black italic font-black font-black font-black font-black font-black">
         <h2 className="text-5xl md:text-7xl font-black mb-20 uppercase italic text-white leading-none font-black font-black font-black font-black font-black font-black">VIVA SUA <br/><span className="text-red-600 font-black font-black font-black font-black font-black">ARENA HENKO.</span></h2>
-        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-black font-black font-black font-black font-black font-black font-black">
+        <div className="grid sm:grid-cols-3 gap-6 max-w-5xl mx-auto px-6 text-white uppercase text-[10px] tracking-widest mb-20 font-black font-black font-black font-black font-black">
             <a href="https://instagram.com/arenahenko" target="_blank" rel="noopener noreferrer" className="bg-black p-14 rounded-[3rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black italic font-black font-black font-black font-black font-black font-black font-black"><Instagram className="text-red-600 w-12 h-12 font-black font-black font-black font-black" /> Instagram</a>
-            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-14 rounded-[3rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black italic font-black font-black font-black font-black font-black font-black font-black font-black"><Phone className="text-red-600 w-12 h-12 font-black font-black font-black font-black" /> WhatsApp</a>
-            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-14 rounded-[3rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black italic font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black"><Mail className="text-red-600 w-12 h-12 font-black font-black font-black font-black" /> E-mail</a>
+            <a href="https://wa.me/5511940741355" target="_blank" rel="noopener noreferrer" className="bg-black p-14 rounded-[3rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black italic font-black font-black font-black font-black font-black font-black font-black"><Phone className="text-red-600 w-12 h-12 font-black font-black font-black font-black" /> WhatsApp</a>
+            <a href="mailto:sergio@henkoproducoes.com.br" className="bg-black p-14 rounded-[3rem] border border-neutral-800 hover:border-red-600 transition-all flex flex-col items-center gap-5 shadow-2xl font-black italic font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black"><Mail className="text-red-600 w-12 h-12 font-black font-black font-black font-black" /> E-mail</a>
         </div>
         <img src={LOGO_URL} className="h-16 mx-auto opacity-30 font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black" alt="" />
       </footer>
@@ -490,7 +487,7 @@ const App = () => {
         </div>
       )}
 
-      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[500] bg-red-600 text-white px-12 py-5 rounded-full font-black text-[11px] uppercase tracking-widest animate-bounce flex items-center gap-3 font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black"><AlertTriangle size={16} /> {toast}</div>}
+      {toast && <div className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[500] bg-red-600 text-white px-12 py-5 rounded-full font-black text-[11px] uppercase tracking-widest animate-bounce flex items-center gap-3 font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black font-black"><AlertTriangle size={16} /> {toast}</div>}
     </div>
   );
 };
