@@ -281,7 +281,7 @@ const App = () => {
                             <div className="flex items-center gap-3 text-red-600 font-black font-black"><Globe size={20}/><span className="uppercase tracking-widest text-xs font-black">Lendas Globais</span></div>
                             <p className="font-normal font-black font-black">O BTS não é apenas o maior grupo de K-Pop, mas a maior força cultural do planeta nesta década. Formado por RM, Jin, Suga, J-Hope, Jimin, V e Jungkook, conquistaram o topo da Billboard dezenas de vezes e possuem a fanbase mais apaixonada do mundo: o ARMY.</p>
                             <div className="flex items-center gap-3 text-red-600 font-black font-black"><Flame size={20}/><span className="uppercase tracking-widest text-xs font-black">Legado no Brasil</span></div>
-                            <p className="font-normal font-black">A conexão com o Brasil é lendária. Em 2019, na tour 'Speak Yourself', pararam o país com dois Allianz Parque lotados em minutos. O retorno em 2026 no Morumbis será o evento da década.</p>
+                            <p className="font-normal font-black">A conexão com o Brasil é lendária. Em 2019, na tour 'Speak Yourself', pararam o país com dois shows Allianz Parque lotados em minutos. O retorno em 2026 no Morumbis será o evento da década.</p>
                         </div>
                         <div className="space-y-6 font-black">
                             <div className="flex items-center gap-3 text-emerald-500 font-black font-black"><TrendingUp size={20}/><span className="uppercase tracking-widest text-sm font-black">Arirang Tour 2026</span></div>
