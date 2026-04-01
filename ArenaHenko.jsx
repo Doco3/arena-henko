@@ -230,9 +230,9 @@ const App = () => {
             </div>
         </div>
 
-        {/* BOTTOM: Lista de Espera */}
+        {/* BOTTOM: Lote Esgotado e Instagram */}
         <div className="relative z-20 w-full max-w-7xl mx-auto px-10 pb-12 flex flex-col lg:flex-row items-center lg:items-end justify-between gap-8">
-            <div className="flex flex-col gap-2 font-black text-white/40 text-[9px] md:text-xs uppercase tracking-[0.3em] italic text-center lg:text-left">
+            <div className="flex flex-col gap-2 font-black text-white/40 text-[9px] md:text-xs uppercase tracking-[0.3em] italic text-center lg:text-left font-black">
                 <div className="flex items-center gap-3 justify-center lg:justify-start">
                     <Verified size={16} className="text-purple-500" />
                     <span>CAMAROTE ARENA HENKO POP-UP</span>
@@ -243,16 +243,16 @@ const App = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col items-center lg:items-end gap-5 w-full lg:w-auto">
-                <div className="flex flex-col items-center lg:items-end text-center lg:text-right">
-                    <p className="text-white text-base md:text-lg font-black uppercase tracking-widest mb-1 italic">ENTRE NA NOSSA LISTA DE ESPERA</p>
-                    <p className="text-purple-400 text-[10px] uppercase tracking-[0.2em] mb-4">PARA A PRÉ-VENDA EXCLUSIVA</p>
+            <div className="flex flex-col items-center lg:items-end gap-5 w-full lg:w-auto font-black">
+                <div className="flex flex-col items-center lg:items-end text-center lg:text-right font-black">
+                    <p className="text-white text-base md:text-lg font-black uppercase tracking-widest mb-1 italic">LOTE ESGOTADO</p>
+                    <p className="text-purple-400 text-[10px] uppercase tracking-[0.2em] mb-4 font-black">MAIS INFORMAÇÕES NO NOSSO INSTAGRAM</p>
                 </div>
                 <button 
-                  onClick={() => window.open(getWaLink("QUERO ENTRAR NA LISTA DE ESPERA DO BTS - CAMAROTE ARENA HENKO"))}
-                  className="w-full sm:w-80 py-5 rounded-full bg-purple-gradient text-white font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group"
+                  onClick={() => window.open("https://instagram.com/arenahenko", "_blank")}
+                  className="w-full sm:w-80 py-5 rounded-full bg-purple-gradient text-white font-black text-xs uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group font-black"
                 >
-                  GARANTIR MEU LUGAR <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                  ACESSAR INSTAGRAM <Instagram size={18} className="group-hover:scale-110 transition-transform" />
                 </button>
             </div>
         </div>
