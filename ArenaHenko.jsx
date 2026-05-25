@@ -68,7 +68,7 @@ const SPORT_DATA = [
 
 // MEGA EVENTOS ATUALIZADOS
 const SHOWS_DATA = [
-  { id: 'show_bts', name: 'BTS - ARIRANG TOUR', date: '12/11/2026', image: BTS_BANNER_URL, desc: 'O retorno triunfal dos reis do K-Pop no Camarote Arena Henko.' },
+  { id: 'show_bts', name: 'BTS - ARIRANG TOUR', date: '28, 30 e 31 de Outubro', image: BTS_BANNER_URL, desc: 'O retorno triunfal dos reis do K-Pop no Camarote Arena Henko.' },
   { id: 'show_harry', name: 'Harry Styles', date: '18/07/2026', image: HARRY_STYLES_BANNER_URL, desc: 'A experiência definitiva no Camarote Arena Henko.' },
   { id: 'show_peao', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo do Brasil.' }
 ];
