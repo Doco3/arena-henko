@@ -28,11 +28,12 @@ const db = getFirestore(app);
 const ADMIN_HASH = "SGVua29fTWFzdGVyXzIwMjZfU2VjdXJlISM="; 
 const LOGO_URL = 'https://i.imgur.com/vIWDDID.png'; 
 const BTS_BANNER_URL = 'https://static.wikia.nocookie.net/the-bangtan-boys/images/e/ed/BTS_ARIRANG_Concept_Picture.png/revision/latest?cb=20260313221019';
-const HARRY_STYLES_BANNER_URL = 'https://i.imgur.com/JbcYLor.jpg';
+const PEAO_BANNER_URL = 'https://i.imgur.com/GW8we0X.png';
 
 const TEAM_LOGOS = {
   SPFC: "https://a.espncdn.com/combiner/i?img=/i/teamlogos/soccer/500/2026.png",
-  BOSTON_RIVER: "https://upload.wikimedia.org/wikipedia/commons/d/da/Escudo_Boston_River_2019.png"
+  CORITIBA: "https://upload.wikimedia.org/wikipedia/commons/c/ca/ECFC6.png?utm_source=pt.wikipedia.org&utm_campaign=index&utm_content=original",
+  BOLIVAR: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Escudo_de_Club_Bol%C3%ADvar.svg/1920px-Escudo_de_Club_Bol%C3%ADvar.svg.png"
 };
 
 const SERVICES_DATA = [
@@ -44,17 +45,19 @@ const SERVICES_DATA = [
     { id: 6, title: 'Segurança Dedicada', icon: <Shield className="w-6 h-6" />, desc: 'Equipe especializada para garantir sua total tranquilidade.', imageUrl: 'https://i.imgur.com/Gy62moQ.png' },
 ];
 
-// AGENDA FUTEBOL: COMPLETA COM TODOS OS CAMPEONATOS
+// AGENDA FUTEBOL: ATUALIZADA (AGOSTO 2026)
 const SPORT_DATA = [
   { 
-    id: 1, name: 'Sudamericana', subtitle: 'Último jogo antes da Copa', image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', 
+    id: 1, name: 'Brasileirão', subtitle: 'Série A 2026', image: "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/85.png", 
     matches: [
-        { id: 'sd3', date: '26/05', home: 'SPFC', away: 'BOSTON RIVER', time: '19h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.BOSTON_RIVER }
-    ] 
+      { id: 'br1', date: '15/08', home: 'SPFC', away: 'CORITIBA', time: '21h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CORITIBA }
+    ]
   },
   { 
-    id: 2, name: 'Brasileirão', subtitle: 'Série A 2026', image: "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/85.png", 
-    matches: []
+    id: 2, name: 'Sudamericana', subtitle: 'Conmebol 2026', image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', 
+    matches: [
+        { id: 'sd1', date: '18/08', home: 'SPFC', away: 'BOLIVAR', time: '19h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.BOLIVAR }
+    ] 
   },
   { 
     id: 3, name: 'Paulistão', subtitle: '2026', image: 'https://i.imgur.com/Kl9LPUl.png', 
@@ -66,11 +69,8 @@ const SPORT_DATA = [
   }
 ];
 
-// MEGA EVENTOS ATUALIZADOS
 const SHOWS_DATA = [
-  { id: 'show_bts', name: 'BTS - ARIRANG TOUR', date: '28, 30 e 31 de Outubro', image: BTS_BANNER_URL, desc: 'O retorno triunfal dos reis do K-Pop no Camarote Arena Henko.' },
-  { id: 'show_harry', name: 'Harry Styles', date: '18/07/2026', image: HARRY_STYLES_BANNER_URL, desc: 'A experiência definitiva no Camarote Arena Henko.' },
-  { id: 'show_peao', name: 'Festa do Peão', date: '20/08/2026', image: 'https://i.imgur.com/GW8we0X.png', desc: 'Hospitalidade Arena Henko presente no maior evento sertanejo do Brasil.' }
+  { id: 'show_bts', name: 'BTS - ARIRANG TOUR', date: '12/11/2026', image: BTS_BANNER_URL, desc: 'O retorno triunfal dos reis do K-Pop no Camarote Arena Henko.' }
 ];
 
 const REVIEWS_DATA = [
@@ -170,7 +170,8 @@ const App = () => {
         @keyframes pulse-emerald { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .animate-pulse-wa { animation: pulse-emerald 2s infinite; }
         .bg-orange-gradient { background: linear-gradient(90deg, #ff8a00 0%, #e52e12 100%); }
-        .harry-hero-overlay { background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.95) 100%); }
+        .bg-purple-gradient { background: linear-gradient(90deg, #7c3aed 0%, #4c1d95 100%); }
+        .hero-overlay { background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0) 60%, rgba(0, 0, 0, 0.95) 100%); }
         .drawer-content { max-height: 0; opacity: 0; overflow: hidden; transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
         .drawer-open { max-height: 4000px; opacity: 1; padding-top: 1rem; }
       `}</style>
@@ -202,22 +203,22 @@ const App = () => {
           </div>
       </div>
 
-      {/* HARRY STYLES SECTION - HERO PRINCIPAL (TEXTO REDUZIDO) */}
+      {/* FESTA DO PEÃO SECTION - HERO PRINCIPAL */}
       <section className="relative h-screen flex flex-col justify-between bg-black overflow-hidden border-b border-white/5">
         <div className="absolute inset-0 z-0">
-          <img src={HARRY_STYLES_BANNER_URL} className="w-full h-full object-cover object-center opacity-80 transition-transform duration-[30s] hover:scale-110" alt="Harry Styles" />
-          <div className="absolute inset-0 harry-hero-overlay z-10" />
+          <img src={PEAO_BANNER_URL} className="w-full h-full object-cover object-center opacity-80 transition-transform duration-[30s] hover:scale-110" alt="Festa do Peão" />
+          <div className="absolute inset-0 hero-overlay z-10" />
         </div>
 
-        {/* TOP: Título Discreto */}
+        {/* TOP: Título */}
         <div className="relative z-20 w-full max-w-7xl mx-auto px-10 pt-40 text-center lg:text-left animate-smooth">
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter leading-[0.9] text-white drop-shadow-2xl">
-              HARRY STYLES <span className="text-red-600 block mt-2 text-xl md:text-2xl">LOVE ON TOUR</span>
+            <h1 className="text-4xl md:text-6xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-white drop-shadow-2xl">
+              FESTA DO PEÃO <span className="text-red-600 block mt-2 text-xl md:text-3xl">DE BARRETOS</span>
             </h1>
             <div className="flex items-center justify-center lg:justify-start gap-4 mt-4">
-                <p className="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-white italic">MORUMBIS</p>
+                <p className="text-sm md:text-lg font-black uppercase tracking-[0.3em] text-white italic">AGOSTO 2026</p>
                 <div className="h-[2px] w-8 bg-red-600/60" />
-                <p className="text-xs md:text-sm font-black uppercase tracking-widest text-red-500 italic">18 DE JULHO DE 2026</p>
+                <p className="text-xs md:text-sm font-black uppercase tracking-widest text-red-500 italic">EDIÇÃO HISTÓRICA</p>
             </div>
         </div>
 
@@ -230,13 +231,13 @@ const App = () => {
                 </div>
                 <div className="flex items-center gap-3 justify-center lg:justify-start">
                     <Star size={16} className="text-red-600 fill-red-600" />
-                    <span className="font-bold">HOSPITALIDADE PREMIUM</span>
+                    <span className="font-bold">HOSPITALIDADE EXCLUSIVA</span>
                 </div>
             </div>
 
             <div className="flex flex-col items-center lg:items-end gap-5 w-full lg:w-auto">
                 <button 
-                  onClick={() => window.open(getWaLink("QUERO GARANTIR MEU LUGAR NO SHOW DO HARRY STYLES - CAMAROTE ARENA HENKO"))}
+                  onClick={() => window.open(getWaLink("QUERO GARANTIR MEU LUGAR NA FESTA DO PEÃO - CAMAROTE ARENA HENKO"))}
                   className="w-full sm:w-80 py-5 rounded-full bg-orange-gradient text-white text-xs uppercase tracking-[0.3em] shadow-2xl hover:scale-[1.05] active:scale-95 transition-all flex items-center justify-center gap-4 group font-black"
                 >
                   CONSULTAR DISPONIBILIDADE <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
@@ -245,7 +246,7 @@ const App = () => {
         </div>
       </section>
 
-      {/* BTS SECTION - REDUZIDA, ESGOTADO, INSTAGRAM (EM ROXO) */}
+      {/* BTS SECTION - REDUZIDA, ESGOTADO, INSTAGRAM */}
       <section className="relative py-24 bg-neutral-950 overflow-hidden border-b border-purple-900/30">
         <div className="absolute inset-0 z-0">
           <img src={BTS_BANNER_URL} className="w-full h-full object-cover object-center opacity-20 scale-105" alt="BTS" />
@@ -321,7 +322,7 @@ const App = () => {
         </div>
       </section>
 
-      {/* Agenda Futebol (COMPLETA) */}
+      {/* Agenda Futebol (ATUALIZADA) */}
       <section id="calendario" className="py-24 px-6 bg-neutral-950 text-white italic border-y border-white/5">
         <h2 className="text-4xl md:text-6xl font-black uppercase text-center mb-16 italic">Agenda <span className="text-red-600">2026</span></h2>
         <div className="flex flex-wrap gap-2 justify-center mb-12">
@@ -358,29 +359,9 @@ const App = () => {
                              </div>
                         </div>
                     </div>
-                    )) : <p className="text-center text-gray-700 py-16 uppercase text-[10px] font-black">Novos jogos após a Copa.</p>}
+                    )) : <p className="text-center text-gray-700 py-16 uppercase text-[10px] font-black">Nenhum jogo confirmado para esta data.</p>}
                 </div>
             </div>
-        </div>
-      </section>
-
-      {/* Mega Eventos (ATUALIZADO) */}
-      <section id="eventos" className="py-24 px-6 bg-black text-center italic border-b border-white/5">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-6xl font-black uppercase mb-20 italic text-white">Mega <span className="text-red-600">Eventos</span></h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {SHOWS_DATA.map((show) => (
-              <div key={show.id} className="group flex flex-col text-left">
-                <div className="relative h-[400px] rounded-[3.5rem] overflow-hidden mb-8 border border-neutral-800 group-hover:border-red-600 transition-all duration-700 shadow-2xl bg-neutral-900">
-                  <img src={show.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-1000 scale-105 group-hover:scale-110" alt={show.name} />
-                </div>
-                <span className="text-red-600 text-[11px] font-black uppercase tracking-[0.4em] mb-3 block italic">{show.date}</span>
-                <h3 className="text-3xl font-black uppercase mb-4 italic text-white leading-none">{show.name}</h3>
-                <p className="text-gray-500 text-sm font-normal mb-8 leading-relaxed italic pr-4">{show.desc}</p>
-                <button onClick={() => window.open(getWaLink(`Interesse oficial no evento ${show.name}.`))} className="text-[11px] font-black uppercase tracking-widest flex items-center gap-3 text-white hover:text-red-600 transition-colors"><ArrowRight size={18} /> Ver Disponibilidade</button>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
