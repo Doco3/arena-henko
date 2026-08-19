@@ -4,20 +4,23 @@ import {
   CheckCircle, ArrowRight, Clock, Shield, ChevronDown, Star, MessageCircle, Quote, 
   LockKeyhole, Coffee, Wine, ShieldCheck, Headphones, MousePointerClick, Smartphone, UserCheck,
   Beer, Zap, Play, Image as ImageIcon, Plus, Trash2, FolderOpen, AlertTriangle, Loader2, Download, Link as LinkIcon, ArrowLeft,
-  Sparkles, Heart, MicVocal, Globe, Flame, Music2, TrendingUp, Verified, Info, Ticket
+  Sparkles, Heart, MicVocal, Globe, Flame, Music2, TrendingUp, Verified, Info, Ticket, RefreshCw
 } from 'lucide-react';
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, collection, onSnapshot, query, doc, setDoc } from 'firebase/firestore';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDwLDVpSFe7aA2IX7Vhn736GETRvvjAorI", 
-  authDomain: "arena-henko.firebaseapp.com",
-  projectId: "arena-henko",
-  storageBucket: "arena-henko.firebasestorage.app",
-  messagingSenderId: "34887593341",
-  appId: "1:34887593341:web:d6d68012cc9b8389797014"
-};
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'arena-henko-app';
+const firebaseConfig = typeof __firebase_config !== 'undefined' 
+  ? JSON.parse(__firebase_config) 
+  : {
+      apiKey: "AIzaSyDwLDVpSFe7aA2IX7Vhn736GETRvvjAorI", 
+      authDomain: "arena-henko.firebaseapp.com",
+      projectId: "arena-henko",
+      storageBucket: "arena-henko.firebasestorage.app",
+      messagingSenderId: "34887593341",
+      appId: "1:34887593341:web:d6d68012cc9b8389797014"
+    };
 
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 const auth = getAuth(app);
@@ -27,17 +30,18 @@ const ADMIN_HASH = "SGVua29fTWFzdGVyXzIwMjZfU2VjdXJlISM=";
 const LOGO_URL = 'https://i.imgur.com/vIWDDID.png'; 
 const BTS_BANNER_URL = 'https://static.wikia.nocookie.net/the-bangtan-boys/images/e/ed/BTS_ARIRANG_Concept_Picture.png/revision/latest?cb=20260313221019';
 
-// LOGOS CORRIGIDOS E BLINDADOS (WIKIMEDIA E SPFCPEDIA)
 const TEAM_LOGOS = {
   SPFC: "https://www.spfcpedia.com.br/escudos/bra_sp_sao-paulo_1938-19XXcamisa.png",
   SANTOS: "https://upload.wikimedia.org/wikipedia/commons/1/15/Santos_Logo.png",
   MACARA: "https://upload.wikimedia.org/wikipedia/commons/5/57/Macara_6.png",
   MIRASSOL: "https://upload.wikimedia.org/wikipedia/commons/5/5b/Mirassol_FC_logo.png",
   CORITIBA: "https://upload.wikimedia.org/wikipedia/commons/c/ca/ECFC6.png",
-  BOLIVAR: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Escudo_de_Club_Bol%C3%ADvar.svg/1920px-Escudo_de_Club_Bol%C3%ADvar.svg.png"
+  BOLIVAR: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Escudo_de_Club_Bol%C3%ADvar.svg/1920px-Escudo_de_Club_Bol%C3%ADvar.svg.png",
+  RBB: "https://a.espncdn.com/i/teamlogos/soccer/500/6079.png",
+  ATLETICO_MG: "https://cdn.freebiesupply.com/logos/large/2x/clube-atletico-mineiro-de-belo-horizonte-mg-logo-black-and-white.png"
 };
 
-const VENUES_DATA = {
+const DEFAULT_VENUES_DATA = {
   spfc: {
     id: 'spfc',
     name: 'Camarote Morumbis',
@@ -51,11 +55,16 @@ const VENUES_DATA = {
     gradientClass: 'bg-gradient-to-r from-[#ff8a00] to-[#e52e12]',
     sportData: [
       { id: 1, name: 'Brasileirão', subtitle: 'Série A 2026', image: "https://a.espncdn.com/combiner/i?img=/i/leaguelogos/soccer/500/85.png", 
-        matches: [ { id: 'br_spfc_1', date: '15/08', home: 'SPFC', away: 'CORITIBA', time: '21h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.CORITIBA } ] },
+        matches: [ 
+          { id: 'br_spfc_2', date: '29/08', home: 'SPFC', away: 'RBB', time: '18h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.RBB },
+          { id: 'br_spfc_3', date: '05/09', home: 'SPFC', away: 'ATLÉTICO-MG', time: '16h00', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.ATLETICO_MG }
+        ] 
+      },
       { id: 2, name: 'Copa do Brasil', subtitle: '2026', image: 'https://upload.wikimedia.org/wikipedia/pt/9/96/CopaDoBrasil.png', matches: [] },
       { id: 3, name: 'Paulistão', subtitle: '2026', image: 'https://i.imgur.com/Kl9LPUl.png', matches: [] },
       { id: 4, name: 'Sudamericana', subtitle: '2026', image: 'https://upload.wikimedia.org/wikipedia/en/thumb/c/c2/CONMEBOL_Sudamericana_logo_%282017%29.svg/250px-CONMEBOL_Sudamericana_logo_%282017%29.svg.png', 
-        matches: [ { id: 'sd_spfc_1', date: '18/08', home: 'SPFC', away: 'BOLÍVAR', time: '19h30', homeLogo: TEAM_LOGOS.SPFC, awayLogo: TEAM_LOGOS.BOLIVAR } ] }
+        matches: [] 
+      }
     ]
   },
   santos: {
@@ -136,7 +145,11 @@ const ImageWithFallback = ({ src, alt, className }) => {
 
 const App = () => {
   const [activeVenue, setActiveVenue] = useState('spfc');
-  const currentVenue = VENUES_DATA[activeVenue];
+  const [venuesData, setVenuesData] = useState(DEFAULT_VENUES_DATA);
+  const [isFirebaseSyncing, setIsFirebaseSyncing] = useState(false);
+  const [user, setUser] = useState(null);
+
+  const currentVenue = venuesData[activeVenue] || DEFAULT_VENUES_DATA[activeVenue];
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSportId, setActiveSportId] = useState(1); 
@@ -149,28 +162,49 @@ const App = () => {
   const [adminInputPass, setAdminInputPass] = useState('');
 
   useEffect(() => {
-    signInAnonymously(auth).catch(() => {});
-    onAuthStateChanged(auth, () => {});
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error("Auth error:", err);
+      }
+    };
+    initAuth();
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
     const itv = setInterval(() => setCurrentReviewIndex(p => (p + 1) % REVIEWS_DATA.length), 6000);
-    return () => clearInterval(itv);
+    
+    return () => {
+      unsubscribeAuth();
+      clearInterval(itv);
+    };
   }, []);
 
   const selectedSport = useMemo(() => currentVenue.sportData.find(s => s.id === activeSportId) || currentVenue.sportData[0], [activeSportId, currentVenue]);
   const currentAlbum = useMemo(() => STATIC_GALLERY.find(a => a.id === activeAlbumId), [activeAlbumId]);
   
   const today = useMemo(() => {
-    const d = new Date('2026-08-10T00:00:00');
+    // Current simulated date: Aug 19, 2026
+    const d = new Date('2026-08-19T00:00:00');
     d.setHours(0, 0, 0, 0);
     return d;
   }, []);
 
   const visibleMatches = useMemo(() => (selectedSport.matches || []).filter(m => {
       const [d, mo] = m.date.split('/');
+      // Treat year as 2026 for all matches
       const pDate = new Date(2026, parseInt(mo) - 1, parseInt(d));
+      // Show matches from today onwards
       return pDate >= today;
   }), [selectedSport, today]);
 
-  // Lógica para encontrar o Próximo Jogo Globalmente (de todas as abas do venue atual)
   const nextMatch = useMemo(() => {
     let allMatches = [];
     currentVenue.sportData.forEach(league => {
@@ -251,7 +285,13 @@ const App = () => {
             </div>
             <div className="hidden lg:flex items-center gap-10 uppercase text-[11px] tracking-[0.2em] text-white/80">
                 {NAV_LINKS.map(link => <a key={link.name} href={link.href} className={`hover:${currentVenue.accentClass} transition-all`}>{link.name}</a>)}
-                <button onClick={() => setIsLoginModalOpen(true)} className={`hover:${currentVenue.accentClass} transition-all opacity-20`}><LockKeyhole size={14}/></button>
+                
+                {/* Visual Indicator of Firebase Sync Status */}
+                {isFirebaseSyncing ? (
+                    <RefreshCw size={14} className="text-gray-600 animate-spin" />
+                ) : (
+                    <button onClick={() => setIsLoginModalOpen(true)} className={`hover:${currentVenue.accentClass} transition-all opacity-20`}><LockKeyhole size={14}/></button>
+                )}
             </div>
             <button onClick={() => setIsMenuOpen(true)} className="lg:hidden text-white p-2 hover:bg-white/5 rounded-lg transition-all"><MenuIcon /></button>
         </div>
